@@ -13,13 +13,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
-//Let's Spring know that it's a security config class
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    //Urls accessible without being authorized
     private static final String[] WHITE_LIST_URL = {
-            "api/v1/auth/**",
             "/api/v1/auth/**",
     };
     private final JwtAuthFilter jwtAuthFilter;
@@ -35,10 +35,12 @@ public class SecurityConfig {
                                 .anyRequest()
                                 .authenticated()
                 )
+                //Does not maintain session on user: using JWT token for that
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(STATELESS)
                 )
                 .authenticationProvider(authenticationProvider)
+                //Checks before if the jwtToken is right
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
