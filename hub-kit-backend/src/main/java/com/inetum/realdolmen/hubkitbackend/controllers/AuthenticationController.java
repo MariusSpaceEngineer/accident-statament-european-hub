@@ -1,5 +1,9 @@
-package com.inetum.realdolmen.hubkitbackend.auth;
+package com.inetum.realdolmen.hubkitbackend.controllers;
 
+import com.inetum.realdolmen.hubkitbackend.utils.AuthenticationRequest;
+import com.inetum.realdolmen.hubkitbackend.utils.AuthenticationResponse;
+import com.inetum.realdolmen.hubkitbackend.services.AuthenticationService;
+import com.inetum.realdolmen.hubkitbackend.utils.RegisterRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

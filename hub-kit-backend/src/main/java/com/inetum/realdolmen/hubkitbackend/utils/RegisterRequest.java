@@ -1,4 +1,4 @@
-package com.inetum.realdolmen.hubkitbackend.auth;
+package com.inetum.realdolmen.hubkitbackend.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

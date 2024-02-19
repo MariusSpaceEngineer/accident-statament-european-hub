@@ -1,4 +1,4 @@
-package com.inetum.realdolmen.hubkitbackend.config;
+package com.inetum.realdolmen.hubkitbackend.services;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

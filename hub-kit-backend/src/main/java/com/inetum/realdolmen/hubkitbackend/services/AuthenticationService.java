@@ -1,9 +1,12 @@
-package com.inetum.realdolmen.hubkitbackend.auth;
+package com.inetum.realdolmen.hubkitbackend.services;
 
-import com.inetum.realdolmen.hubkitbackend.config.JwtService;
+import com.inetum.realdolmen.hubkitbackend.services.JwtService;
 import com.inetum.realdolmen.hubkitbackend.user.Role;
-import com.inetum.realdolmen.hubkitbackend.user.User;
-import com.inetum.realdolmen.hubkitbackend.user.UserRepository;
+import com.inetum.realdolmen.hubkitbackend.models.User;
+import com.inetum.realdolmen.hubkitbackend.repositories.UserRepository;
+import com.inetum.realdolmen.hubkitbackend.utils.AuthenticationRequest;
+import com.inetum.realdolmen.hubkitbackend.utils.AuthenticationResponse;
+import com.inetum.realdolmen.hubkitbackend.utils.RegisterRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

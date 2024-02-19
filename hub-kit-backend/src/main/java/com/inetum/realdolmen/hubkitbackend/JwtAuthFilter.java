@@ -1,5 +1,6 @@
-package com.inetum.realdolmen.hubkitbackend.config;
+package com.inetum.realdolmen.hubkitbackend;
 
+import com.inetum.realdolmen.hubkitbackend.services.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

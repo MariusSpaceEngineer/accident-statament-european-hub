@@ -1,5 +1,6 @@
-package com.inetum.realdolmen.hubkitbackend.user;
+package com.inetum.realdolmen.hubkitbackend.models;
 
+import com.inetum.realdolmen.hubkitbackend.user.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

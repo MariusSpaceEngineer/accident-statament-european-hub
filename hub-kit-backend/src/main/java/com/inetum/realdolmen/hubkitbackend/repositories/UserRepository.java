@@ -1,5 +1,6 @@
-package com.inetum.realdolmen.hubkitbackend.user;
+package com.inetum.realdolmen.hubkitbackend.repositories;
 
+import com.inetum.realdolmen.hubkitbackend.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

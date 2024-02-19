@@ -1,4 +1,4 @@
-package com.inetum.realdolmen.hubkitbackend.demo;
+package com.inetum.realdolmen.hubkitbackend.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
