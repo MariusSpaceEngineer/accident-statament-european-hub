@@ -19,15 +19,14 @@ public class ApplicationConfig {
 
     private final UserRepository repository;
 
-    //Will check if the user exists
     @Bean
-    public UserDetailsService userDetailsService(){
+    public UserDetailsService userDetailsService() {
         return username -> repository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(){
+    public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvide = new DaoAuthenticationProvider();
         authProvide.setUserDetailsService(userDetailsService());
         authProvide.setPasswordEncoder(passwordEncoder());

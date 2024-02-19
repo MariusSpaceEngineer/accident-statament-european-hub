@@ -1,6 +1,6 @@
 package com.inetum.realdolmen.hubkitbackend.models;
 
-import com.inetum.realdolmen.hubkitbackend.user.Role;
+import com.inetum.realdolmen.hubkitbackend.Roles;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "_user")
+@Table(name = "users")
 public class User implements UserDetails {
     @Id
     @GeneratedValue
@@ -27,9 +27,8 @@ public class User implements UserDetails {
     private String lastName;
     private String email;
     private String password;
-    //By default is numeral
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Roles role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -46,7 +45,6 @@ public class User implements UserDetails {
         return password;
     }
 
-    //If it's not true the user won't be able to log in
     @Override
     public boolean isAccountNonExpired() {
         return true;

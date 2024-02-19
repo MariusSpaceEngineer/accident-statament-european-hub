@@ -1,7 +1,6 @@
 package com.inetum.realdolmen.hubkitbackend.services;
 
-import com.inetum.realdolmen.hubkitbackend.services.JwtService;
-import com.inetum.realdolmen.hubkitbackend.user.Role;
+import com.inetum.realdolmen.hubkitbackend.Roles;
 import com.inetum.realdolmen.hubkitbackend.models.User;
 import com.inetum.realdolmen.hubkitbackend.repositories.UserRepository;
 import com.inetum.realdolmen.hubkitbackend.utils.AuthenticationRequest;
@@ -28,7 +27,7 @@ public class AuthenticationService {
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
+                .role(Roles.POLICY_HOLDER)
                 .build();
 
         repository.save(user);
@@ -39,13 +38,13 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    public AuthenticationResponse login(AuthenticationRequest request) {
         //Throws an error if the user is not found
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.getEmail(),
                 request.getPassword())
         );
-        var user= repository.findByEmail(request.getEmail())
+        var user = repository.findByEmail(request.getEmail())
                 .orElseThrow();
 
         var jwtToken = jwtService.generateToken(user);

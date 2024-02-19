@@ -33,19 +33,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final String userEmail;
 
         //If there is no JWT token in the request
-        if (authHeader == null || !authHeader.startsWith("Bearer")){
+        if (authHeader == null || !authHeader.startsWith("Bearer")) {
             filterChain.doFilter(request, response);
             return;
         }
 
         //Before the token itself is the word 'Bearer'
-        jwtToken= authHeader.substring(7);
-        userEmail= jwtService.extractUsername(jwtToken);
+        jwtToken = authHeader.substring(7);
+        userEmail = jwtService.extractUsername(jwtToken);
         //If the userEmail is not null or user is not already logged in
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
+        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             //Checks if the username exists in the database
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-            if (jwtService.isTokenValid(jwtToken, userDetails)){
+            if (jwtService.isTokenValid(jwtToken, userDetails)) {
                 //Needed by security to update the tokens
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
@@ -57,7 +57,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 );
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
-            filterChain.doFilter(request,response);
+            filterChain.doFilter(request, response);
         }
 
     }
