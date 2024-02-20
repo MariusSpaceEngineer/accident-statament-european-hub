@@ -1,11 +1,11 @@
 package com.inetum.realdolmen.hubkitbackend.services;
 
 import com.inetum.realdolmen.hubkitbackend.Roles;
-import com.inetum.realdolmen.hubkitbackend.models.User;
+import com.inetum.realdolmen.hubkitbackend.models.PolicyHolder;
 import com.inetum.realdolmen.hubkitbackend.repositories.UserRepository;
 import com.inetum.realdolmen.hubkitbackend.utils.AuthenticationRequest;
 import com.inetum.realdolmen.hubkitbackend.utils.AuthenticationResponse;
-import com.inetum.realdolmen.hubkitbackend.utils.RegisterRequest;
+import com.inetum.realdolmen.hubkitbackend.utils.PolicyHolderRegisterRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,21 +21,32 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(RegisterRequest request) {
-        var user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Roles.POLICY_HOLDER)
-                .build();
+    public AuthenticationResponse register(PolicyHolderRegisterRequest request) {
 
-        repository.save(user);
+        if (repository.existsByEmail(request.getEmail())){
+            return AuthenticationResponse.builder()
+                    .errorMessage("User already exists")
+                    .build();
+        }
+        else {
 
-        var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .build();
+            var policyHolder = PolicyHolder.builder()
+                    .email(request.getEmail())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .role(Roles.POLICY_HOLDER)
+                    .firstName(request.getFirstName())
+                    .lastName(request.getLastName())
+                    .address(request.getAddress())
+                    .postalCode(request.getPostalCode())
+                    .build();
+
+            repository.save(policyHolder);
+
+            var jwtToken = jwtService.generateToken(policyHolder);
+            return AuthenticationResponse.builder()
+                    .token(jwtToken)
+                    .build();
+        }
     }
 
     public AuthenticationResponse login(AuthenticationRequest request) {
