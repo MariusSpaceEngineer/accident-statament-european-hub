@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+// TODO add logout logic
+// TODO add renewal token logic
 @Service
 public class JwtService {
 
@@ -22,6 +24,8 @@ public class JwtService {
     private String secretKey;
     @Value("${jwt.signature-algorithm}")
     private String signature_algorithm;
+    @Value("${jwt.expiration}")
+    private long tokenExpirationTime;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -34,15 +38,25 @@ public class JwtService {
 
     //If extra claims are provided
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return Jwts.builder()
+        return buildToken(extraClaims, userDetails, tokenExpirationTime);
+    }
+
+    private String buildToken(
+            Map<String, Object> extraClaims,
+            UserDetails userDetails,
+            long expirationTime
+    ) {
+        return Jwts
+                .builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                //The time that the token will be available: 24 hours
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
+                //The time that the token will be available
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(getSignInKey(), SignatureAlgorithm.valueOf(signature_algorithm))
                 .compact();
     }
+
 
     //Used to extract one claim from the claim's map
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -50,6 +64,7 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
+    //TODO handle expired tokens
     //Uses the signing key defined to parse the JWT token and extract the claims inside it
     //The key has to be 256 characters long
     private Claims extractAllClaims(String token) {
@@ -77,5 +92,4 @@ public class JwtService {
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
-
 }
