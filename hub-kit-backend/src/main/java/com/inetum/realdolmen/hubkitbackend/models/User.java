@@ -3,9 +3,9 @@ package com.inetum.realdolmen.hubkitbackend.models;
 import com.inetum.realdolmen.hubkitbackend.Roles;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,18 +14,17 @@ import java.util.Collection;
 import java.util.List;
 
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
+
     @Id
     @GeneratedValue
     private Integer id;
-    private String firstName;
-    private String lastName;
-    private String email;
+    public String email;
     private String password;
     @Enumerated(EnumType.STRING)
     private Roles role;
