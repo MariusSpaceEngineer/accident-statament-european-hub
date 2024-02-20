@@ -1,10 +1,9 @@
 package com.inetum.realdolmen.crashkit
 
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.inetum.realdolmen.crashkit.databinding.ActivityLoginBinding
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
@@ -16,15 +15,20 @@ import org.json.JSONObject
 import java.io.IOException
 
 class LoginActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityLoginBinding
     private val client = OkHttpClient()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
-        val loginButton = findViewById<Button>(R.id.btn_login_submit)
-        val fieldEmail = findViewById<EditText>(R.id.et_email)
-        val fieldPassword = findViewById<EditText>(R.id.et_password)
+        val fieldEmail = binding.etLoginEmail
+        val fieldPassword = binding.etLoginPassword
+        val loginButton = binding.btnLoginSubmit
+
 
         loginButton.setOnClickListener {
 
