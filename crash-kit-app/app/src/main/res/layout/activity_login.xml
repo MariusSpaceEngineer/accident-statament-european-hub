@@ -6,44 +6,48 @@
     android:layout_height="match_parent"
     tools:context=".LoginActivity">
 
-    <EditText
-        android:id="@+id/et_email"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="409dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="77dp"
-        android:layout_marginTop="132dp"
-        android:layout_marginEnd="124dp"
-        android:ems="10"
-        android:inputType="text"
-        android:hint="Email"
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="317dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
 
-    <EditText
-        android:id="@+id/et_password"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="83dp"
-        android:layout_marginTop="17dp"
-        android:layout_marginEnd="118dp"
-        android:ems="10"
-        android:hint="Password"
-        android:inputType="textPassword"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_email" />
+        <EditText
+            android:id="@+id/et_login_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="77dp"
+            android:layout_marginTop="132dp"
+            android:layout_marginEnd="124dp"
+            android:ems="10"
+            android:hint="@string/login_email_field_hint"
+            android:inputType="textEmailAddress" />
 
-    <Button
-        android:id="@+id/btn_login_submit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="151dp"
-        android:layout_marginTop="111dp"
-        android:layout_marginEnd="169dp"
-        android:text="Login"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_password" />
+        <EditText
+            android:id="@+id/et_login_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="83dp"
+            android:layout_marginTop="17dp"
+            android:layout_marginEnd="118dp"
+            android:ems="10"
+            android:hint="@string/login_password_field_hint"
+            android:inputType="textPassword" />
+
+        <Button
+            android:id="@+id/btn_login_submit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="151dp"
+            android:layout_marginTop="111dp"
+            android:layout_marginEnd="169dp"
+            android:text="@string/login" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
