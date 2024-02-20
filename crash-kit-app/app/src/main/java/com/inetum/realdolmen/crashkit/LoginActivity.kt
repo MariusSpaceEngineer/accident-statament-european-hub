@@ -1,0 +1,75 @@
+package com.inetum.realdolmen.crashkit
+
+import android.os.Bundle
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import org.json.JSONObject
+import java.io.IOException
+
+class LoginActivity : AppCompatActivity() {
+    private val client = OkHttpClient()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_login)
+
+        val loginButton = findViewById<Button>(R.id.btn_login_submit)
+        val fieldEmail = findViewById<EditText>(R.id.et_email)
+        val fieldPassword = findViewById<EditText>(R.id.et_password)
+
+        loginButton.setOnClickListener {
+
+            if (fieldEmail.text.toString().trim().isEmpty()) {
+                fieldEmail.error = "Email is required!"
+            }
+            if (fieldPassword.text.toString().trim().isEmpty()) {
+                fieldPassword.error = "Password is required!"
+            }
+            if (fieldEmail.text.toString().trim().isNotEmpty() && fieldPassword.text.toString()
+                    .trim()
+                    .isNotEmpty()
+            ) {
+
+                val jsonObject = JSONObject()
+                jsonObject.put("email", fieldEmail.text.toString())
+                jsonObject.put("password", fieldPassword.text.toString())
+
+                val mediaType = "application/json; charset=utf-8".toMediaType()
+                val body = jsonObject.toString().toRequestBody(mediaType)
+
+                val request = Request.Builder()
+                    .url("http://10.0.2.2:8080/api/v1/auth/login")
+                    .post(body)
+                    .build()
+
+                client.newCall(request).enqueue(object : Callback {
+                    override fun onFailure(call: Call, e: IOException) {
+                        e.printStackTrace()
+                    }
+
+                    override fun onResponse(call: Call, response: Response) {
+                        response.use {
+                            if (!response.isSuccessful) throw IOException("Unexpected code $response")
+                            println(response.body!!.string())
+
+                            runOnUiThread {
+                                Toast.makeText(this@LoginActivity, "Logged in", Toast.LENGTH_LONG)
+                                    .show()
+
+                            }
+                        }
+                    }
+                })
+            }
+        }
+    }
+}
