@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Crash Kit</string>
     <string name="login">Login</string>
-    <string name="login_email_field_hint">Enter your email</string>
-    <string name="login_password_field_hint">Enter your password</string>
+    <string name="login_email_field_hint">Enter email</string>
+    <string name="login_password_field_hint">Password</string>
     <string name="main_title">crash kit</string>
     <string name="main_description">Save time and hassle after a crash</string>
     <string name="main_register_button">Register</string>
