@@ -3,4 +3,8 @@
     <string name="login">Login</string>
     <string name="login_email_field_hint">Enter your email</string>
     <string name="login_password_field_hint">Enter your password</string>
+    <string name="main_title">crash kit</string>
+    <string name="main_description">Save time and hassle after a crash</string>
+    <string name="main_register_button">Register</string>
+    <string name="main_guest_button">Continue as guest</string>
 </resources>
