@@ -75,7 +75,6 @@
                     android:id="@+id/et_login_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/login_email_field_hint"
                     android:textColor="@color/input_hint" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -85,7 +84,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:hint="Password"
-
                 app:boxBackgroundColor="@color/input_field_background"
                 app:boxStrokeColor="@color/primary800"
 
@@ -96,7 +94,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
-                    android:text="@string/login_password_field_hint"
                     android:textColor="@color/input_hint" />
 
             </com.google.android.material.textfield.TextInputLayout>
