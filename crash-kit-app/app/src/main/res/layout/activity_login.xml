@@ -6,48 +6,112 @@
     android:layout_height="match_parent"
     tools:context=".LoginActivity">
 
-    <LinearLayout
-        android:layout_width="409dp"
+    <ImageView
+        android:id="@+id/img_main_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no"
+        android:scaleType="centerCrop"
+        android:src="@drawable/main_background_image"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="-79dp" />
+
+    <ImageView
+        android:id="@+id/img_main_logo"
+        android:layout_width="122dp"
+        android:layout_height="106dp"
+        android:layout_marginTop="56dp"
+        android:importantForAccessibility="no"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/ic_launcher_foreground" />
+
+    <TextView
+        android:id="@+id/tv_main_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="1dp"
-        android:layout_marginEnd="1dp"
-        android:layout_marginBottom="317dp"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        android:layout_marginTop="84dp"
+        android:text="@string/main_title"
+        android:textAllCaps="true"
+        android:textColor="@color/title"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/img_main_logo"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/et_login_email"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="77dp"
-            android:layout_marginTop="132dp"
-            android:layout_marginEnd="124dp"
-            android:ems="10"
-            android:hint="@string/login_email_field_hint"
-            android:inputType="textEmailAddress" />
 
-        <EditText
-            android:id="@+id/et_login_password"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="83dp"
-            android:layout_marginTop="17dp"
-            android:layout_marginEnd="118dp"
-            android:ems="10"
-            android:hint="@string/login_password_field_hint"
-            android:inputType="textPassword" />
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="18dp"
+        android:layout_marginBottom="24dp"
+        app:cardBackgroundColor="@color/primary300"
+        app:layout_constraintBottom_toBottomOf="@+id/img_main_background"
+        app:layout_constraintTop_toBottomOf="@+id/tv_main_title"
+        app:layout_constraintVertical_bias="0.372"
+        tools:layout_editor_absoluteX="20dp">
 
-        <Button
-            android:id="@+id/btn_login_submit"
-            android:layout_width="wrap_content"
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="151dp"
-            android:layout_marginTop="111dp"
-            android:layout_marginEnd="169dp"
-            android:text="@string/login" />
-    </LinearLayout>
+            android:layout_marginTop="18dp"
+            android:orientation="vertical"
+            android:padding="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_main_title">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="E-mail"
+                app:boxBackgroundColor="@color/input_field_background"
+                app:boxStrokeColor="@color/primary800">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_login_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/login_email_field_hint"
+                    android:textColor="@color/input_hint" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Password"
+
+                app:boxBackgroundColor="@color/input_field_background"
+                app:boxStrokeColor="@color/primary800"
+
+                >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_login_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:text="@string/login_password_field_hint"
+                    android:textColor="@color/input_hint" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/btn_login_submit"
+                android:layout_width="match_parent"
+                android:layout_height="65dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/rounded_main_button"
+                android:text="@string/login"
+                android:textSize="24sp" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
