@@ -2,4 +2,67 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="primary">#2D5C7E</color>
+    <color name="primary900">#1F3C52</color>
+    <color name="primary800">#2A4F6B</color>
+    <color name="primary700">#386283</color>
+    <color name="primary600">#4A769A</color>
+    <color name="primary500">#6089AE</color>
+    <color name="primary400">#7A9EC1</color>
+    <color name="primary300">#94B3D1</color>
+    <color name="primary200">#B1C8E0</color>
+    <color name="primary100">#D0DDED</color>
+    <color name="primary50">#EEF3F8</color>
+
+    <color name="secondary">#FE8E56</color>
+    <color name="secondary900">#632604</color>
+    <color name="secondary800">#803307</color>
+    <color name="secondary700">#9D420F</color>
+    <color name="secondary600">#B8541F</color>
+    <color name="secondary500">#D06934</color>
+    <color name="secondary400">#E3804E</color>
+    <color name="secondary300">#F39A6E</color>
+    <color name="secondary200">#FDB592</color>
+    <color name="secondary100">#FED2BB</color>
+    <color name="secondary50">#FEEFE7</color>
+
+    <color name="tertiary">#FEF0A7</color>
+    <color name="tertiary900">#3F3A11</color>
+    <color name="tertiary800">#524C17</color>
+    <color name="tertiary700">#675F22</color>
+    <color name="tertiary600">#7C7331</color>
+    <color name="tertiary500">#908646</color>
+    <color name="tertiary400">#A69B5F</color>
+    <color name="tertiary300">#BBB07C</color>
+    <color name="tertiary200">#CFC69D</color>
+    <color name="tertiary100">#E3DCC2</color>
+    <color name="tertiary50">#F5F3EA</color>
+
+    <color name="danger">#974A59</color>
+    <color name="danger900">#5B2A33</color>
+    <color name="danger800">#763844</color>
+    <color name="danger700">#904755</color>
+    <color name="danger600">#A95A68</color>
+    <color name="danger500">#BF6F7C</color>
+    <color name="danger400">#D18591</color>
+    <color name="danger300">#E19EA7</color>
+    <color name="danger200">#EDB8BF</color>
+    <color name="danger100">#F6D3D8</color>
+    <color name="danger50">#FCF0F1</color>
+
+    <color name="success">#3C8A0C</color>
+    <color name="success900">#104300</color>
+    <color name="success800">#135800</color>
+    <color name="success700">#1F6D00</color>
+    <color name="success600">#338200</color>
+    <color name="success500">#4C9621</color>
+    <color name="success400">#68AB41</color>
+    <color name="success300">#87BF64</color>
+    <color name="success200">#A8D28B</color>
+    <color name="success100">#CAE4B7</color>
+    <color name="success50">#EDF5E6</color>
+
+    <color name="title">#ECEDED</color>
+
 </resources>
