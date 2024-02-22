@@ -65,4 +65,8 @@
 
     <color name="title">#ECEDED</color>
 
+    <color name="input_field_background">#ECEDED</color>
+    <color name="input_hint">#49454F</color>
+
+
 </resources>
