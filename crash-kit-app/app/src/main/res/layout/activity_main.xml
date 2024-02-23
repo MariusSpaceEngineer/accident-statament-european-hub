@@ -12,9 +12,8 @@
         android:layout_height="match_parent"
         android:importantForAccessibility="no"
         android:scaleType="centerCrop"
-        android:src="@drawable/main_background_image"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="-79dp" />
+        android:src="@drawable/main_background_image" />
+
 
     <ImageView
         android:id="@+id/img_main_logo"
@@ -98,5 +97,10 @@
 
     </LinearLayout>
 
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fr_main_loading"
+        android:name="com.inetum.realdolmen.crashkit.LoadingFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

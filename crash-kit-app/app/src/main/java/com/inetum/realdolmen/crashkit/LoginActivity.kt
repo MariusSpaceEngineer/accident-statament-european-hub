@@ -1,5 +1,6 @@
 package com.inetum.realdolmen.crashkit
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +18,7 @@ import java.io.IOException
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
+    private lateinit var loadingFragment: LoadingFragment
     private val client = OkHttpClient()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,6 +30,11 @@ class LoginActivity : AppCompatActivity() {
         val fieldEmail = binding.etLoginEmail
         val fieldPassword = binding.etLoginPassword
         val loginButton = binding.btnLoginSubmit
+
+        val intent = Intent(this, HomeActivity::class.java)
+
+        loadingFragment =
+            supportFragmentManager.findFragmentById(R.id.fr_login_loading) as LoadingFragment
 
 
         loginButton.setOnClickListener {
@@ -66,14 +73,21 @@ class LoginActivity : AppCompatActivity() {
                             println(response.body!!.string())
 
                             runOnUiThread {
+                                loadingFragment.showLoadingFragment()
                                 Toast.makeText(this@LoginActivity, "Logged in", Toast.LENGTH_LONG)
                                     .show()
 
+                                startActivity(intent)
                             }
                         }
                     }
                 })
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadingFragment.hideLoadingFragment()
     }
 }
