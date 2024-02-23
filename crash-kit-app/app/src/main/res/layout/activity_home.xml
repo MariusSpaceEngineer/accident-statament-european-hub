@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
-        android:text="Welcome"
+        android:text="@string/home_title"
         android:textAllCaps="true"
         android:textColor="@color/title"
         android:textSize="45sp"
@@ -41,112 +41,111 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_home_title">
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card1"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            app:cardBackgroundColor="@color/primary300"
-            tools:layout_editor_absoluteX="8dp">
-
-            <GridLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:columnCount="2"
-                android:rowCount="1"
-                tools:layout_editor_absoluteX="1dp"
-                tools:layout_editor_absoluteY="485dp">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_row="0"
-                    android:layout_column="0"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginEnd="60dp"
-                    android:gravity="center_vertical"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="50dp"
-                        android:layout_marginBottom="5dp"
-                        android:text="New Statement"
-                        android:textStyle="bold"
-                        android:textAppearance="?attr/textAppearanceHeadline6" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="50dp"
-                        android:text="Create a new accident statement"
-                        android:textAppearance="?attr/textAppearanceBody2"
-                        android:textColor="?android:attr/textColorSecondary" />
-                </LinearLayout>
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_row="0"
-                    android:layout_column="1"
-                    android:scaleType="fitXY"
-                    app:srcCompat="@drawable/home_accident_statement_image" />
-
-            </GridLayout>
-
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card2"
+            android:id="@+id/cv_home_statement"
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:layout_marginTop="14dp"
             app:cardBackgroundColor="@color/primary300"
             tools:layout_editor_absoluteX="8dp">
 
-            <GridLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:columnCount="2"
-                android:rowCount="1"
-                tools:layout_editor_absoluteX="1dp"
-                tools:layout_editor_absoluteY="485dp">
+                android:layout_height="match_parent">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/tv_home_statement_title"
+                    android:layout_width="250dp"
                     android:layout_height="wrap_content"
-                    android:layout_row="0"
-                    android:layout_column="0"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginEnd="25dp"
-                    android:gravity="center_vertical"
-                    android:orientation="vertical">
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/home_new_statement_card_title"
+                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@+id/tv_home_statement_description"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
-                        android:layout_width="250dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="45dp"
-                        android:layout_marginBottom="5dp"
-                        android:text="Share insurance information"
-                        android:textStyle="bold"
-                        android:textAppearance="?attr/textAppearanceHeadline6" />
-
-                    <TextView
-                        android:layout_width="250dp"
-                        android:layout_height="wrap_content"
-                        android:text="Generate a QR-code which contains your insurance information"
-                        android:textAppearance="?attr/textAppearanceBody2"
-                        android:textColor="?android:attr/textColorSecondary" />
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/tv_home_statement_description"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/home_new_statement_card_description"
+                    android:textAppearance="?attr/textAppearanceBody2"
+                    android:textColor="?android:attr/textColorSecondary"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_home_statement_title" />
 
                 <ImageView
-                    android:layout_width="match_parent"
+                    android:layout_width="110dp"
                     android:layout_height="match_parent"
-                    android:layout_row="0"
-                    android:layout_column="1"
+                    android:contentDescription="@string/home_new_statement_card_image_description"
+                    android:scaleType="centerCrop"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toEndOf="@id/tv_home_statement_title"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/home_accident_statement_image" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cv_home_qr"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginTop="14dp"
+            app:cardBackgroundColor="@color/primary300"
+            tools:layout_editor_absoluteX="8dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/tv_home_qr_title"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/home_share_insurance_card_title"
+                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@+id/tv_home_qr_description"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_home_qr_description"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/home_share_insurance_card_description"
+                    android:textAppearance="?attr/textAppearanceBody2"
+                    android:textColor="?android:attr/textColorSecondary"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_home_qr_title" />
+
+                <ImageView
+                    android:layout_width="110dp"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@string/main_share_insurance_card_image_description"
                     android:scaleType="fitStart"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toEndOf="@id/tv_home_qr_title"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/home_qrcode_image" />
 
-            </GridLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </com.google.android.material.card.MaterialCardView>
 

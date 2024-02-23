@@ -11,4 +11,11 @@
     <string name="last_name">Last Name</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="register_title">Register</string>
+    <string name="home_title">Welcome</string>
+    <string name="home_new_statement_card_title">New statement</string>
+    <string name="home_new_statement_card_description">Create a new accident statement</string>
+    <string name="home_share_insurance_card_title">Share insurance information</string>
+    <string name="home_share_insurance_card_description">Generate a QR-code which contains your insurance information</string>
+    <string name="main_share_insurance_card_image_description">Person scanning QR-code with phone</string>
+    <string name="home_new_statement_card_image_description">Photo of a black insurance statement</string>
 </resources>
