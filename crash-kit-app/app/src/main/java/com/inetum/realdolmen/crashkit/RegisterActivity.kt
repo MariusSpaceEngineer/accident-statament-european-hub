@@ -1,5 +1,6 @@
 package com.inetum.realdolmen.crashkit
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -29,6 +30,8 @@ class RegisterActivity : AppCompatActivity() {
         val fieldLastName = binding.etRegisterLastName
         val fieldEmail = binding.etRegisterEmail
         val fieldPassword = binding.etRegisterPassword
+
+        val intent = Intent(this, HomeActivity::class.java)
 
         val fields = listOf(
             binding.etRegisterFirstName to "First Name is required!",
@@ -87,6 +90,7 @@ class RegisterActivity : AppCompatActivity() {
                                 )
                                     .show()
 
+                                startActivity(intent)
                             }
                         }
                     }
