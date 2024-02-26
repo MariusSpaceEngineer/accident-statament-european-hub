@@ -20,6 +20,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
     private val client = OkHttpClient()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
@@ -68,7 +69,7 @@ class RegisterActivity : AppCompatActivity() {
                 val body = jsonObject.toString().toRequestBody(mediaType)
 
                 val request = Request.Builder()
-                    .url("http://10.0.2.2:8080/api/v1/auth/register")
+                    .url("https://10.0.2.2:8080/api/v1/auth/register")
                     .post(body)
                     .build()
 
