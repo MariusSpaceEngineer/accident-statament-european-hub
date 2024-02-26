@@ -1,14 +1,10 @@
 package com.inetum.realdolmen.hubkitbackend.utils;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class PolicyHolderRegisterRequest {
     private String email;
     private String password;

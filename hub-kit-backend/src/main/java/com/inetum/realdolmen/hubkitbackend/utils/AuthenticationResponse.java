@@ -1,16 +1,14 @@
 package com.inetum.realdolmen.hubkitbackend.utils;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class AuthenticationResponse {
 
-    String token;
-    String errorMessage;
+    private String token;
+    private String errorMessage;
 }
