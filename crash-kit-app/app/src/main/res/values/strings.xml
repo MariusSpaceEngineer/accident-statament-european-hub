@@ -18,4 +18,9 @@
     <string name="home_share_insurance_card_description">Generate a QR-code which contains your insurance information</string>
     <string name="main_share_insurance_card_image_description">Person scanning QR-code with phone</string>
     <string name="home_new_statement_card_image_description">Photo of a black insurance statement</string>
+    <string name="email_required">Email is required!</string>
+    <string name="password_required">Password is required!</string>
+    <string name="network_error">A network error occurred. Please try again.</string>
+    <string name="error">Error</string>
+
 </resources>
