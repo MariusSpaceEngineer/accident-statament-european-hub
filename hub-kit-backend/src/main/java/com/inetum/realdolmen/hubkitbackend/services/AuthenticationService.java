@@ -1,14 +1,15 @@
 package com.inetum.realdolmen.hubkitbackend.services;
 
 import com.inetum.realdolmen.hubkitbackend.Roles;
+import com.inetum.realdolmen.hubkitbackend.exceptions.*;
 import com.inetum.realdolmen.hubkitbackend.models.PolicyHolder;
 import com.inetum.realdolmen.hubkitbackend.repositories.UserRepository;
-import com.inetum.realdolmen.hubkitbackend.utils.AuthenticationRequest;
-import com.inetum.realdolmen.hubkitbackend.utils.AuthenticationResponse;
+import com.inetum.realdolmen.hubkitbackend.utils.LoginRequest;
 import com.inetum.realdolmen.hubkitbackend.utils.PolicyHolderRegisterRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,14 +22,11 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(PolicyHolderRegisterRequest request) {
+    public String register(PolicyHolderRegisterRequest request) throws Exception {
 
-        if (repository.existsByEmail(request.getEmail())){
-            return AuthenticationResponse.builder()
-                    .errorMessage("User already exists")
-                    .build();
-        }
-        else {
+        if (repository.existsByEmail(request.getEmail())) {
+            throw new UserAlreadyExistsException("User already exists");
+        } else {
 
             var policyHolder = PolicyHolder.builder()
                     .email(request.getEmail())
@@ -42,26 +40,27 @@ public class AuthenticationService {
 
             repository.save(policyHolder);
 
-            var jwtToken = jwtService.generateToken(policyHolder);
-            return AuthenticationResponse.builder()
-                    .token(jwtToken)
-                    .build();
+            return jwtService.generateToken(policyHolder);
         }
     }
 
-    public AuthenticationResponse login(AuthenticationRequest request) {
-        //Throws an error if the user is not found
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                request.getEmail(),
-                request.getPassword())
-        );
-        var user = repository.findByEmail(request.getEmail())
-                .orElseThrow();
-
-        var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .build();
+    public String login(LoginRequest request) throws Exception {
+        try {
+            var user = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    request.getEmail(),
+                    request.getPassword())
+            );
+            return jwtService.generateToken((UserDetails) user.getPrincipal());
+        } catch (BadCredentialsException e) {
+            throw new InvalidCredentialsException("Invalid email or password");
+        } catch (DisabledException e) {
+            throw new UserDisabledException("User is disabled");
+        } catch (LockedException e) {
+            throw new UserLockedException("User account is locked");
+        } catch (AuthenticationException e) {
+            throw new AuthenticationFailedException("Authentication failed");
+        }
 
     }
+
 }
