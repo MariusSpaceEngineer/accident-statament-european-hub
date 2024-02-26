@@ -2,13 +2,15 @@ package com.inetum.realdolmen.hubkitbackend.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-@Data
-@NoArgsConstructor
 @SuperBuilder
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "policy_holders")
 public class PolicyHolder extends User {
