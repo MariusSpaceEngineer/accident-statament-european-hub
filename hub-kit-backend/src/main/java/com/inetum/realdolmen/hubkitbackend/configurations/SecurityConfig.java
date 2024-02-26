@@ -31,10 +31,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
                         req
-                                //TODO find out why the API gives 403 back when called by Android Emulator
                                 .requestMatchers(WHITE_LIST_URL).permitAll()
-                                .anyRequest().permitAll()
-                                //.authenticated()
+                                .anyRequest().authenticated()
                 )
                 //Does not maintain session on user: using JWT token for that
                 .sessionManagement(sessionManagement ->
