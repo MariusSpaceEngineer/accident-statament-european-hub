@@ -28,7 +28,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // TODO see if you can fetch the request url target, maybe so you can see what's wrong with the security filter
         final String authHeader = request.getHeader(AUTHORIZATION);
         final String jwtToken;
         final String userEmail;
