@@ -22,5 +22,6 @@
     <string name="password_required">Password is required!</string>
     <string name="network_error">A network error occurred. Please try again.</string>
     <string name="error">Error</string>
+    <string name="login_remember_checkbox">Remember Me</string>
 
 </resources>

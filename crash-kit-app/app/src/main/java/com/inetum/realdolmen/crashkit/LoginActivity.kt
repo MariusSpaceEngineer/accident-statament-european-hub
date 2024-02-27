@@ -2,6 +2,7 @@ package com.inetum.realdolmen.crashkit
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.CheckBox
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -18,11 +19,13 @@ import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 
+
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var loadingFragment: LoadingFragment
     private val client = OkHttpClient()
+    private lateinit var securePreference: SecurePreferences
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,14 +34,17 @@ class LoginActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
+        securePreference = SecurePreferences(this)
+
 
         val emailField = binding.etLoginEmail
         val passwordField = binding.etLoginPassword
-        var fields = mapOf(
+        val fields = mapOf(
             emailField to getString(R.string.email_required),
             passwordField to getString(R.string.password_required),
         )
 
+        val rememberCheckbox = binding.cbLoginRemember
         val loginButton = binding.btnLoginSubmit
 
         loadingFragment =
@@ -46,7 +52,7 @@ class LoginActivity : AppCompatActivity() {
 
         loginButton.setOnClickListener {
             if (areFieldsValid(fields)) {
-                performLogin(emailField, passwordField)
+                performLogin(emailField, passwordField, rememberCheckbox)
             }
         }
     }
@@ -62,7 +68,11 @@ class LoginActivity : AppCompatActivity() {
         return allFieldsValid
     }
 
-    private fun performLogin(emailField: TextInputEditText, passwordField: TextInputEditText) {
+    private fun performLogin(
+        emailField: TextInputEditText,
+        passwordField: TextInputEditText,
+        rememberLogin: CheckBox
+    ) {
         val jsonObject = createRequestBody(emailField, passwordField)
         val request = createRequest(jsonObject)
 
@@ -77,7 +87,7 @@ class LoginActivity : AppCompatActivity() {
             }
 
             override fun onResponse(call: Call, response: Response) {
-                handleResponse(response)
+                handleResponse(response, rememberLogin)
             }
         })
     }
@@ -101,17 +111,21 @@ class LoginActivity : AppCompatActivity() {
             .build()
     }
 
-    private fun handleResponse(response: Response) {
+    private fun handleResponse(response: Response, rememberLogin: CheckBox) {
         response.use {
+            val jsonObject = JSONObject(response.body!!.string())
             if (!response.isSuccessful) {
-                val jsonObject = JSONObject(response.body!!.string())
-                val message = jsonObject.getString("errorMessage")
+                val errorMessage = jsonObject.getString("errorMessage")
 
                 runOnUiThread {
-                    createSimpleDialog(getString(R.string.error), message)
+                    createSimpleDialog(getString(R.string.error), errorMessage)
                 }
 
             } else {
+                if (rememberLogin.isChecked) {
+                    val token = jsonObject.getString("token")
+                    securePreference.putString("jwt_token", token)
+                }
 
                 runOnUiThread {
                     loadingFragment.showLoadingFragment()
@@ -128,12 +142,6 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-
-    override fun onResume() {
-        super.onResume()
-        loadingFragment.hideLoadingFragment()
-    }
-
     private fun createSimpleDialog(title: String, message: String) {
         MaterialAlertDialogBuilder(this)
             .setTitle(title)
@@ -143,4 +151,11 @@ class LoginActivity : AppCompatActivity() {
             }
             .show()
     }
+
+    override fun onResume() {
+        super.onResume()
+        loadingFragment.hideLoadingFragment()
+    }
+
+
 }
