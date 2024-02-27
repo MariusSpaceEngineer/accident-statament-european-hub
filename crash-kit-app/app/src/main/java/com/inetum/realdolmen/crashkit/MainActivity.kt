@@ -7,20 +7,36 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import androidx.appcompat.app.AppCompatActivity
+import com.auth0.android.jwt.JWT
 import com.inetum.realdolmen.crashkit.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var loadingFragment: LoadingFragment
+    private lateinit var securePreferences: SecurePreferences
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
+        setContentView(binding.root)
 
-       loadingFragment = supportFragmentManager.findFragmentById(R.id.fr_main_loading) as LoadingFragment
+        securePreferences = SecurePreferences(this)
+
+        val jwtToken = securePreferences.getString("jwt_token")
+        if (jwtToken != null) {
+            val decodedToken = JWT(jwtToken)
+
+            if (!decodedToken.isExpired(10)) {
+                startActivity(Intent(this, HomeActivity::class.java))
+                finish()
+                return
+            }
+        }
+
+        // If the JWT token is null, expired, or invalid, initialize the login/register components
+        loadingFragment =
+            supportFragmentManager.findFragmentById(R.id.fr_main_loading) as LoadingFragment
 
         val spannableText = SpannableString("Save time and hassle after a crash")
         spannableText.setSpan(
