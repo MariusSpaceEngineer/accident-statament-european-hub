@@ -28,10 +28,12 @@ class MainActivity : AppCompatActivity() {
             val decodedToken = JWT(jwtToken)
 
             if (!decodedToken.isExpired(10)) {
-                securePreferences.removeString("jwt_token")
                 startActivity(Intent(this, HomeActivity::class.java))
                 finish()
                 return
+            }
+            else{
+                securePreferences.removeString("jwt_token")
             }
         }
 
