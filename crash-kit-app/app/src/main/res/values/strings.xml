@@ -23,5 +23,8 @@
     <string name="network_error">A network error occurred. Please try again.</string>
     <string name="error">Error</string>
     <string name="login_remember_checkbox">Remember Me</string>
+    <string name="profile_title">Profile</string>
+    <string name="profile_personal_card_title">Personal Information</string>
+    <string name="edit">Edit</string>
 
 </resources>
