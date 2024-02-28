@@ -122,10 +122,13 @@ class LoginActivity : AppCompatActivity() {
                 }
 
             } else {
-                if (rememberLogin.isChecked) {
+
+                //TODO: Add logic to prevent user from going to
+                // the profile fragment if he is a quest/not logged in
+                /*if (rememberLogin.isChecked) {*/
                     val token = jsonObject.getString("token")
                     securePreference.putString("jwt_token", token)
-                }
+                //}
 
                 runOnUiThread {
                     loadingFragment.showLoadingFragment()
