@@ -24,7 +24,7 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue
     private Integer id;
-    public String email;
+    private String email;
     private String password;
     @Enumerated(EnumType.STRING)
     private Roles role;
