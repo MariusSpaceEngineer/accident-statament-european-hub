@@ -1,9 +1,9 @@
 package com.inetum.realdolmen.crashkit
 
-import android.content.Context
 import android.os.Bundle
 import android.transition.ChangeTransform
 import android.transition.TransitionManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import com.inetum.realdolmen.crashkit.databinding.FragmentProfileBinding
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
@@ -21,9 +20,8 @@ class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
-    private val client = OkHttpClient()
-    private lateinit var securePreferences: SecurePreferences
-
+    private var client = CrashKitApp.httpClient
+    private val securePreferences = CrashKitApp.securePreferences
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,12 +32,6 @@ class ProfileFragment : Fragment() {
         val view = binding.root
 
         return view
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        securePreferences = SecurePreferences(context)
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -104,6 +96,13 @@ class ProfileFragment : Fragment() {
                 val firstName = jsonObject.getString("firstName")
                 val lastName = jsonObject.getString("lastName")
                 val email = jsonObject.getString("email")
+
+                // Check if the response was served from the cache or the network
+                if (response.networkResponse != null) {
+                    Log.i("OkHttp", "Response was served from the network.")
+                } else if (response.cacheResponse != null) {
+                    Log.i("OkHttp", "Response was served from the cache.")
+                }
 
                 activity?.runOnUiThread {
                     binding.tvProfilePersonalFirstNameValue.text = firstName
