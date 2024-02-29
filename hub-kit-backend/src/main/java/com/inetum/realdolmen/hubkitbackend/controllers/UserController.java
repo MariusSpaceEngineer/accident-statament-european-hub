@@ -5,12 +5,14 @@ import com.inetum.realdolmen.hubkitbackend.dto.UserProfileDTO;
 import com.inetum.realdolmen.hubkitbackend.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -28,7 +30,7 @@ public class UserController {
             Optional<UserProfileDTO> userProfile = service.fetchUserProfile(token);
 
             if (userProfile.isPresent()) {
-                return ResponseEntity.ok(userProfile.get());
+                return ResponseEntity.ok().cacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES)).body(userProfile.get());
             } else {
                 return ResponseEntity.notFound().build(); // User not found
             }
