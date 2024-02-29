@@ -53,22 +53,21 @@
                     android:textAllCaps="true"
                     android:textSize="25sp"
                     android:textStyle="bold"
-                    app:layout_constraintEnd_toStartOf="@+id/textView"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/textView"
+                    android:id="@+id/tv_profile_personal_card_edit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="36dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="60dp"
+                    android:gravity="center"
                     android:text="@string/edit"
                     android:textAllCaps="true"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    app:layout_constraintEnd_toStartOf="@+id/ib_profile_personal_card_button"
-                    app:layout_constraintStart_toEndOf="@id/tv_profile_personal_card_title"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageButton
@@ -79,92 +78,144 @@
                     android:layout_marginTop="36dp"
                     android:layout_marginEnd="15dp"
                     android:background="@color/primary300"
+                    android:importantForAccessibility="no"
                     android:src="@drawable/arrow_drop_down"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.923"
-                    app:layout_constraintStart_toEndOf="@+id/textView"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:importantForAccessibility="no" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-
-                    android:id="@+id/gl_profile_personal"
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:id="@+id/ll_profile_personal"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="21dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:orientation="horizontal"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="24dp"
+                    android:orientation="vertical"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_profile_personal_card_title">
 
-                    <TextView
-                        android:id="@+id/tv_profile_personal_first_name_label"
-                        android:layout_width="wrap_content"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/til_profile_personal_first_name_label"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/first_name"
-                        android:textSize="24sp"
-                        app:layout_constraintEnd_toStartOf="@+id/tv_profile_personal_first_name_value"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:layout_marginBottom="16dp"
+                        android:enabled="false"
+                        android:hint="@string/first_name"
+                        app:boxBackgroundColor="@color/input_field_background"
+                        app:boxStrokeColor="@color/primary800">
 
-                    <TextView
-                        android:id="@+id/tv_profile_personal_first_name_value"
-                        android:layout_width="0dp"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_profile_personal_first_name_value"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/input_hint" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/til_profile_personal_last_name_label"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="32dp"
-                        android:gravity="center"
-                        android:textSize="24sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/tv_profile_personal_first_name_label"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:layout_marginBottom="16dp"
+                        android:enabled="false"
+                        android:hint="@string/last_name"
+                        app:boxBackgroundColor="@color/input_field_background"
+                        app:boxStrokeColor="@color/primary800">
 
-                    <TextView
-                        android:id="@+id/tv_profile_personal_last_name_label"
-                        android:layout_width="wrap_content"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_profile_personal_last_name_value"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/input_hint" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/til_profile_personal_email_label"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/last_name"
-                        android:textSize="24sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tv_profile_personal_first_name_value" />
+                        android:layout_marginBottom="16dp"
+                        android:enabled="false"
+                        android:hint="@string/email"
+                        app:boxBackgroundColor="@color/input_field_background"
+                        app:boxStrokeColor="@color/primary800">
 
-                    <TextView
-                        android:id="@+id/tv_profile_personal_last_name_value"
-                        android:layout_width="0dp"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_profile_personal_email_value"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/input_hint" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/til_profile_personal_phone_label"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="32dp"
-                        android:gravity="center"
-                        android:textSize="24sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/tv_profile_personal_last_name_label"
-                        app:layout_constraintTop_toBottomOf="@id/tv_profile_personal_first_name_value" />
+                        android:layout_marginBottom="16dp"
+                        android:enabled="false"
+                        android:hint="Phone Number"
+                        app:boxBackgroundColor="@color/input_field_background"
+                        app:boxStrokeColor="@color/primary800">
 
-                    <TextView
-                        android:id="@+id/tv_profile_personal_email_label"
-                        android:layout_width="wrap_content"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_profile_personal_phone_value"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/input_hint" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/til_profile_personal_address_label"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/email"
-                        android:textSize="24sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tv_profile_personal_last_name_value" />
+                        android:layout_marginBottom="16dp"
+                        android:enabled="false"
+                        android:hint="Address"
+                        app:boxBackgroundColor="@color/input_field_background"
+                        app:boxStrokeColor="@color/primary800">
 
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_profile_personal_address_value"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/input_hint" />
 
-                    <TextView
-                        android:id="@+id/tv_profile_personal_email_value"
-                        android:layout_width="0dp"
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/til_profile_personal_postal_code_label"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="32dp"
-                        android:gravity="center"
-                        android:textSize="24sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/tv_profile_personal_email_label"
-                        app:layout_constraintTop_toBottomOf="@id/tv_profile_personal_last_name_value" />
+                        android:layout_marginBottom="16dp"
+                        android:enabled="false"
+                        android:hint="Postal Code"
+                        app:boxBackgroundColor="@color/input_field_background"
+                        app:boxStrokeColor="@color/primary800">
 
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_profile_personal_postal_code_value"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/input_hint" />
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Button
+                        android:id="@+id/btn_profile_personal_card_update"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="Update"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </com.google.android.material.card.MaterialCardView>
