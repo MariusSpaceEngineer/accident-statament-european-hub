@@ -18,8 +18,8 @@ public class InsuranceCertificate {
     private Integer id;
     private String policyNumber;
     private String greenCardNumber;
-    private LocalDate insuranceCertificateAvailabilityDate;
-    private LocalDate insuranceCertificateExpirationDate;
+    private LocalDate availabilityDate;
+    private LocalDate expirationDate;
     @ManyToOne
     @JoinColumn(name = "insurance_agency_id")
     private InsuranceAgency insuranceAgency;

@@ -82,8 +82,8 @@ public class DatabaseSeeder {
             var insuranceCertificate = InsuranceCertificate.builder()
                     .policyNumber("POL123456789")
                     .greenCardNumber("GCN987654321")
-                    .insuranceCertificateAvailabilityDate(LocalDate.now())
-                    .insuranceCertificateExpirationDate(LocalDate.of(2025, 2, 28))
+                    .availabilityDate(LocalDate.now())
+                    .expirationDate(LocalDate.of(2025, 2, 28))
                     .build();
 
             var insuranceAgency = insuranceAgencyRepository.findByName("Arces");
