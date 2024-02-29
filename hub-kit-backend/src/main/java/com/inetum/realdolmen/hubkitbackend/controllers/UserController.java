@@ -7,9 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +26,23 @@ public class UserController {
         String token = extractToken(request);
         if (token != null) {
             Optional<PolicyHolderDTO> userProfile = service.fetchPolicyHolderProfile(token);
+
+            if (userProfile.isPresent()) {
+                return ResponseEntity.ok().cacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES)).body(userProfile.get());
+            } else {
+                return ResponseEntity.notFound().build(); // User not found
+            }
+        } else {
+            return ResponseEntity.badRequest().build(); // Invalid token
+        }
+    }
+
+    @PutMapping("profile")
+    public ResponseEntity<PolicyHolderDTO> updatePolicyHolderProfile(HttpServletRequest request, @RequestBody PolicyHolderDTO policyHolderDTO){
+        String token = extractToken(request);
+
+        if (token != null) {
+            Optional<PolicyHolderDTO> userProfile = service.updatePolicyHolderPersonalInformation(token, policyHolderDTO);
 
             if (userProfile.isPresent()) {
                 return ResponseEntity.ok().cacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES)).body(userProfile.get());
