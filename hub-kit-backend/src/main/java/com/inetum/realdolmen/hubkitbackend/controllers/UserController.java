@@ -1,8 +1,8 @@
 package com.inetum.realdolmen.hubkitbackend.controllers;
 
 
-import com.inetum.realdolmen.hubkitbackend.dto.UserProfileDTO;
-import com.inetum.realdolmen.hubkitbackend.services.UserService;
+import com.inetum.realdolmen.hubkitbackend.dto.PolicyHolderDTO;
+import com.inetum.realdolmen.hubkitbackend.services.PolicyHolderService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.CacheControl;
@@ -19,15 +19,15 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService service;
+    private final PolicyHolderService service;
 
 
 
     @GetMapping("/profile")
-    public ResponseEntity<UserProfileDTO> getUserProfile(HttpServletRequest request) {
+    public ResponseEntity<PolicyHolderDTO> getPolicyHolderProfile(HttpServletRequest request) {
         String token = extractToken(request);
         if (token != null) {
-            Optional<UserProfileDTO> userProfile = service.fetchUserProfile(token);
+            Optional<PolicyHolderDTO> userProfile = service.fetchPolicyHolderProfile(token);
 
             if (userProfile.isPresent()) {
                 return ResponseEntity.ok().cacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES)).body(userProfile.get());
