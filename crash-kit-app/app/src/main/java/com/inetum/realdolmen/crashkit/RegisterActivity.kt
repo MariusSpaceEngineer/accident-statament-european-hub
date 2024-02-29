@@ -8,7 +8,6 @@ import com.inetum.realdolmen.crashkit.databinding.ActivityRegisterBinding
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
@@ -18,8 +17,8 @@ import java.io.IOException
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegisterBinding
-    private val client = OkHttpClient()
 
+    private val client = CrashKitApp.httpClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

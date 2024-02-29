@@ -11,7 +11,6 @@ import com.inetum.realdolmen.crashkit.databinding.ActivityLoginBinding
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -24,8 +23,9 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var loadingFragment: LoadingFragment
-    private val client = OkHttpClient()
-    private lateinit var securePreference: SecurePreferences
+
+    private val client = CrashKitApp.httpClient
+    private val securePreference = CrashKitApp.securePreferences
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,9 +33,6 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-
-        securePreference = SecurePreferences(this)
-
 
         val emailField = binding.etLoginEmail
         val passwordField = binding.etLoginPassword
@@ -126,8 +123,8 @@ class LoginActivity : AppCompatActivity() {
                 //TODO: Add logic to prevent user from going to
                 // the profile fragment if he is a quest/not logged in
                 /*if (rememberLogin.isChecked) {*/
-                    val token = jsonObject.getString("token")
-                    securePreference.putString("jwt_token", token)
+                val token = jsonObject.getString("token")
+                securePreference.putString("jwt_token", token)
                 //}
 
                 runOnUiThread {

@@ -13,15 +13,14 @@ import com.inetum.realdolmen.crashkit.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var loadingFragment: LoadingFragment
-    private lateinit var securePreferences: SecurePreferences
+
+    private val securePreferences = CrashKitApp.securePreferences
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        securePreferences = SecurePreferences(this)
 
         val jwtToken = securePreferences.getString("jwt_token")
         if (jwtToken != null) {
@@ -31,8 +30,7 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, HomeActivity::class.java))
                 finish()
                 return
-            }
-            else{
+            } else {
                 securePreferences.removeString("jwt_token")
             }
         }
