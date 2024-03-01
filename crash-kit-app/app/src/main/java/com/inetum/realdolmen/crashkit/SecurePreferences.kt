@@ -34,6 +34,13 @@ class SecurePreferences(context: Context) {
         )
     }
 
+    fun putJwtToken (value: String){
+        with(sharedPreferences.edit()){
+            putString("jwt_token", value)
+                .commit()
+        }
+    }
+
     fun putString(key: String, value: String) {
         with(sharedPreferences.edit()) {
             putString(key, value)
