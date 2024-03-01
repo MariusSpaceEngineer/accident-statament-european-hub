@@ -12,12 +12,12 @@
         tools:layout="@layout/fragment_new_statement" />
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.inetum.realdolmen.crashkit.ProfileFragment"
+        android:name="com.inetum.realdolmen.crashkit.fragments.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.inetum.realdolmen.crashkit.HomeFragment"
+        android:name="com.inetum.realdolmen.crashkit.fragments.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
 </navigation>

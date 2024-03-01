@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".activities.MainActivity">
 
     <ImageView
         android:id="@+id/img_main_background"
@@ -99,7 +99,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fr_main_loading"
-        android:name="com.inetum.realdolmen.crashkit.LoadingFragment"
+        android:name="com.inetum.realdolmen.crashkit.fragments.LoadingFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

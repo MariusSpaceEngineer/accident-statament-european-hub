@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegisterActivity">
+    tools:context=".activities.RegisterActivity">
 
     <ImageView
         android:layout_width="match_parent"
@@ -172,5 +172,10 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fr_register_loading"
+        android:name="com.inetum.realdolmen.crashkit.fragments.LoadingFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
