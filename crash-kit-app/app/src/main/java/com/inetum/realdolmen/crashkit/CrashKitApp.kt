@@ -1,13 +1,12 @@
 package com.inetum.realdolmen.crashkit
 
 import android.app.Application
-import okhttp3.Cache
-import okhttp3.OkHttpClient
+import com.inetum.realdolmen.crashkit.services.ApiService
 
 class CrashKitApp: Application() {
 
     companion object {
-        lateinit var httpClient: OkHttpClient
+        lateinit var apiService: ApiService
             private set
         lateinit var securePreferences: SecurePreferences
             private set
@@ -15,9 +14,9 @@ class CrashKitApp: Application() {
 
     override fun onCreate() {
         super.onCreate()
-        httpClient = OkHttpClient.Builder()
-            .cache(Cache(cacheDir, 10 * 1024 * 1024)) // 10 MiB
-            .build()
         securePreferences= SecurePreferences(this)
+        val okHttpClient = NetworkModule.provideOkHttpClient(securePreferences)
+        val retrofit = NetworkModule.provideRetrofit(okHttpClient)
+        apiService = NetworkModule.provideApiService(retrofit)
     }
 }
