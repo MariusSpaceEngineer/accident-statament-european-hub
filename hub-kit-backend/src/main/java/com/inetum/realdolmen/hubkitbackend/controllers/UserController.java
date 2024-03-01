@@ -1,7 +1,9 @@
 package com.inetum.realdolmen.hubkitbackend.controllers;
 
 
+import com.inetum.realdolmen.hubkitbackend.dto.InsuranceCertificateDTO;
 import com.inetum.realdolmen.hubkitbackend.dto.PolicyHolderDTO;
+import com.inetum.realdolmen.hubkitbackend.dto.PolicyHolderPersonalInformationDTO;
 import com.inetum.realdolmen.hubkitbackend.services.PolicyHolderService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +21,6 @@ public class UserController {
 
     private final PolicyHolderService service;
 
-
-
     @GetMapping("/profile")
     public ResponseEntity<PolicyHolderDTO> getPolicyHolderProfile(HttpServletRequest request) {
         String token = extractToken(request);
@@ -37,15 +37,15 @@ public class UserController {
         }
     }
 
-    @PutMapping("profile")
-    public ResponseEntity<PolicyHolderDTO> updatePolicyHolderProfile(HttpServletRequest request, @RequestBody PolicyHolderDTO policyHolderDTO){
+    @PutMapping("/profile/personal")
+    public ResponseEntity<PolicyHolderPersonalInformationDTO> updatePolicyHolderPersonalInformation(HttpServletRequest request, @RequestBody PolicyHolderPersonalInformationDTO policyHolderDTO) {
         String token = extractToken(request);
 
         if (token != null) {
-            Optional<PolicyHolderDTO> userProfile = service.updatePolicyHolderPersonalInformation(token, policyHolderDTO);
+            Optional<PolicyHolderPersonalInformationDTO> policyHolderPersonalInformationDTO = service.updatePolicyHolderPersonalInformation(token, policyHolderDTO);
 
-            if (userProfile.isPresent()) {
-                return ResponseEntity.ok().cacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES)).body(userProfile.get());
+            if (policyHolderPersonalInformationDTO.isPresent()) {
+                return ResponseEntity.ok().cacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES)).body(policyHolderPersonalInformationDTO.get());
             } else {
                 return ResponseEntity.notFound().build(); // User not found
             }
@@ -54,7 +54,22 @@ public class UserController {
         }
     }
 
+    @PutMapping("/profile/insurance")
+    public ResponseEntity<InsuranceCertificateDTO> updatePolicyHolderInsuranceInformation(HttpServletRequest request, @RequestBody InsuranceCertificateDTO insuranceCertificateDTO) {
+        String token = extractToken(request);
 
+        if (token != null) {
+            Optional<InsuranceCertificateDTO> insuranceCertificate = service.updateInsuranceCertificateInformation(token, insuranceCertificateDTO);
+
+            if (insuranceCertificate.isPresent()) {
+                return ResponseEntity.ok().cacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES)).body(insuranceCertificate.get());
+            } else {
+                return ResponseEntity.notFound().build(); // User not found
+            }
+        } else {
+            return ResponseEntity.badRequest().build(); // Invalid token
+        }
+    }
 
     private String extractToken(HttpServletRequest request) {
         // Extract the token from the authorization header
@@ -66,7 +81,6 @@ public class UserController {
             return null;
         }
     }
-
 }
 
 
