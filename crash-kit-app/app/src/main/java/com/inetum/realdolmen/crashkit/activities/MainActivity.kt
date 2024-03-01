@@ -1,4 +1,4 @@
-package com.inetum.realdolmen.crashkit
+package com.inetum.realdolmen.crashkit.activities
 
 import android.content.Intent
 import android.graphics.Color
@@ -8,6 +8,9 @@ import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import androidx.appcompat.app.AppCompatActivity
 import com.auth0.android.jwt.JWT
+import com.inetum.realdolmen.crashkit.CrashKitApp
+import com.inetum.realdolmen.crashkit.fragments.LoadingFragment
+import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
