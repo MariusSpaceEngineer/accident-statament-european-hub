@@ -1,3 +1,5 @@
+import com.android.build.api.dsl.Packaging
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -33,6 +35,15 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+    packaging {
+        resources.excludes.addAll(
+            listOf(
+                "META-INF/LICENSE.md",
+                "META-INF/LICENSE-notice.md",
+        )
+        )
+    }
 }
 
 dependencies {
@@ -49,7 +60,12 @@ dependencies {
     implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("androidx.test.ext:junit-ktx:1.1.5")
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation ("androidx.test:runner:1.5.2")
+    androidTestImplementation ("androidx.test:rules:1.5.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation ("io.mockk:mockk-android:1.13.10")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+
 }
