@@ -8,7 +8,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.inetum.realdolmen.crashkit.R
-import com.inetum.realdolmen.crashkit.SecurePreferences
+import com.inetum.realdolmen.crashkit.SecuredPreferences
 import com.inetum.realdolmen.crashkit.dto.LoginData
 import com.inetum.realdolmen.crashkit.dto.LoginResponse
 import com.inetum.realdolmen.crashkit.services.ApiService
@@ -43,12 +43,12 @@ class LoginActivityInstrumentedTest {
     private lateinit var apiService: ApiService
 
     @MockK
-    private lateinit var securePreferences: SecurePreferences
+    private lateinit var securedPreferences: SecuredPreferences
 
     @Before
     fun setUp() {
         apiService = mockkClass(ApiService::class)
-        securePreferences = mockkClass(SecurePreferences::class)
+        securedPreferences = mockkClass(SecuredPreferences::class)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -64,8 +64,8 @@ class LoginActivityInstrumentedTest {
         coEvery { apiService.login(LoginData(email, password)) } returns Response.success(
             loginResponse
         )
-        every { securePreferences.putJwtToken(any()) } just runs
-        every { securePreferences.getString("jwt_token") } returns loginResponse.token
+        every { securedPreferences.putJwtToken(any()) } just runs
+        every { securedPreferences.getString("jwt_token") } returns loginResponse.token
 
 
         onView(withId(R.id.et_login_email)).perform(typeText(email))
@@ -79,7 +79,7 @@ class LoginActivityInstrumentedTest {
         activityRule.scenario.onActivity { activity ->
 
             // Verify that the token is saved to SecurePreferences
-            val retrievedToken = securePreferences.getString("jwt_token")
+            val retrievedToken = securedPreferences.getString("jwt_token")
             assertEquals(token, retrievedToken)
         }
     }
