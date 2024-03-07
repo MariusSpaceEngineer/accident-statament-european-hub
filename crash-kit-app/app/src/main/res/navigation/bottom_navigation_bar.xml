@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/newStatementFragment"
-        android:name="com.inetum.realdolmen.crashkit.NewStatementFragment"
+        android:name="com.inetum.realdolmen.crashkit.fragments.NewStatementFragment"
         android:label="fragment_new_statement"
         tools:layout="@layout/fragment_new_statement" />
     <fragment
