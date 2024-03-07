@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/tertiary400">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/tertiary400"
+        tools:context=".fragments.VehicleAInsuranceNewStatementFragment">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_statement_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="80dp"
+                android:layout_marginBottom="16dp"
+                android:text="Accident Statement"
+                android:textAllCaps="true"
+                android:textColor="@color/title"
+                android:textSize="35sp"
+                android:textStyle="bold" />
+
+
+            <TextView
+                android:id="@+id/tv_statement_vehicle_a_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="Vehicle A"
+                android:textAllCaps="true"
+                android:textColor="@color/primary800"
+                android:textSize="35sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/border_outlined_blue"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Driver"
+                    android:textAllCaps="true"
+                    android:textColor="@color/primary800"
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="(see driving license)"
+                    android:textColor="@color/primary800"
+                    android:textSize="20sp"
+                    android:textStyle="italic" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="8dp"
+                    android:hint="Name"
+                    app:boxBackgroundColor="@color/input_field_background"
+                    app:boxStrokeColor="@color/primary800">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_statement_vehicle_a_driver_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/input_hint" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="8dp"
+                    android:hint="Frist Name"
+                    app:boxBackgroundColor="@color/input_field_background"
+                    app:boxStrokeColor="@color/primary800">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_statement_vehicle_a_driver_first_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/input_hint" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="8dp"
+                    android:hint="Date of Birth"
+                    app:boxBackgroundColor="@color/input_field_background"
+                    app:boxStrokeColor="@color/primary800">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_statement_vehicle_a_driver_date_of_birth"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/input_hint" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="8dp"
+                    android:hint="Address"
+                    app:boxBackgroundColor="@color/input_field_background"
+                    app:boxStrokeColor="@color/primary800">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_statement_vehicle_a_driver_address"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/input_hint" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="8dp"
+                    android:hint="Country"
+                    app:boxBackgroundColor="@color/input_field_background"
+                    app:boxStrokeColor="@color/primary800">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_statement_vehicle_a_driver_country"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/input_hint" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="8dp"
+                    android:hint="Phone Number"
+                    app:boxBackgroundColor="@color/input_field_background"
+                    app:boxStrokeColor="@color/primary800">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_statement_vehicle_a_driver_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/input_hint" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="8dp"
+                    android:hint="Email"
+                    app:boxBackgroundColor="@color/input_field_background"
+                    app:boxStrokeColor="@color/primary800">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_statement_vehicle_a_driver_driving_license_number"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/input_hint" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:hint="Driving License Number"
+                    app:boxBackgroundColor="@color/input_field_background"
+                    app:boxStrokeColor="@color/primary800">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_statement_vehicle_a_driver_driving_license_expiration_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/input_hint" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:hint="Driving License Expiration Date"
+                    app:boxBackgroundColor="@color/input_field_background"
+                    app:boxStrokeColor="@color/primary800">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_statement_vehicle_a_insurance_agency_phone_number"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/input_hint" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal"
+                android:paddingBottom="12dp">
+
+                <Button
+                    android:id="@+id/btn_statement_accident_previous"
+                    android:layout_width="190dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/rounded_main_button"
+                    android:paddingLeft="65dp"
+                    android:paddingRight="65dp"
+                    android:text="Previous" />
+
+                <Button
+                    android:id="@+id/btn_statement_accident_next"
+                    android:layout_width="190dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/rounded_main_button"
+                    android:paddingLeft="65dp"
+                    android:paddingRight="65dp"
+                    android:text="Next" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </FrameLayout>
+</ScrollView>
