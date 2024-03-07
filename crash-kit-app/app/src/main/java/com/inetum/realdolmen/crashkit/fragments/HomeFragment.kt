@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.inetum.realdolmen.crashkit.CrashKitApp
+import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
@@ -26,8 +28,12 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (CrashKitApp.securedPreferences.isGuest()){
-            binding.cvHomeQr.visibility= View.GONE
+        if (CrashKitApp.securedPreferences.isGuest()) {
+            binding.cvHomeQr.visibility = View.GONE
+        }
+
+        binding.cvHomeStatement.setOnClickListener {
+            findNavController().navigate(R.id.newStatementFragment)
         }
     }
 }
