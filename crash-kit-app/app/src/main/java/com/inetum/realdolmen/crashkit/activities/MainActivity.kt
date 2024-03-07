@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var loadingFragment: LoadingFragment
 
-    private val securePreferences = CrashKitApp.securePreferences
+    private val securedPreferences = CrashKitApp.securedPreferences
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,18 +25,21 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val jwtToken = securePreferences.getString("jwt_token")
-        if (jwtToken != null) {
-            val decodedToken = JWT(jwtToken)
+        if (securedPreferences.isLoginRemembered()) {
 
-            if (!decodedToken.isExpired(10)) {
-                startActivity(Intent(this, HomeActivity::class.java))
-                finish()
-                return
-            } else {
-                securePreferences.removeString("jwt_token")
+            val jwtToken = securedPreferences.getJwtToken()
+            if (jwtToken != null) {
+                val decodedToken = JWT(jwtToken)
+
+                if (!decodedToken.isExpired(10)) {
+                    startActivity(Intent(this, HomeActivity::class.java))
+                    finish()
+                    return
+                }
             }
         }
+        securedPreferences.deleteJwtToken()
+
 
         // If the JWT token is null, expired, or invalid, initialize the login/register components
         loadingFragment =
@@ -64,6 +67,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnMainGuestRedirect.setOnClickListener {
+            securedPreferences.loggedAsGuest()
             loadingFragment.showLoadingFragment()
             val intent = Intent(this, HomeActivity::class.java)
             startActivity(intent)
