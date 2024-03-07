@@ -29,7 +29,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var loadingFragment: LoadingFragment
 
     private val apiService = CrashKitApp.apiService
-    private val securePreference = CrashKitApp.securePreferences
+    private val securedPreferences = CrashKitApp.securedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,8 +85,10 @@ class LoginActivity : AppCompatActivity() {
                 loadingFragment.showLoadingFragment()
 
                 if (rememberLogin.isChecked) {
-                    securePreference.putJwtToken(loginResponse.token)
+                    securedPreferences.rememberLogin()
                 }
+                securedPreferences.putJwtToken(loginResponse.token)
+                securedPreferences.loggedAsUser()
 
                 Toast.makeText(
                     this@LoginActivity,
