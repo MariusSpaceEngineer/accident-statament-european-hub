@@ -7,7 +7,7 @@ import android.security.keystore.KeyProperties
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 
-class SecurePreferences(context: Context) {
+class SecuredPreferences(context: Context) {
 
     private val sharedPreferences: SharedPreferences
 
@@ -34,13 +34,6 @@ class SecurePreferences(context: Context) {
         )
     }
 
-    fun putJwtToken (value: String){
-        with(sharedPreferences.edit()){
-            putString("jwt_token", value)
-                .commit()
-        }
-    }
-
     fun putString(key: String, value: String) {
         with(sharedPreferences.edit()) {
             putString(key, value)
@@ -58,4 +51,52 @@ class SecurePreferences(context: Context) {
             apply()
         }
     }
+
+    fun getJwtToken(): String? {
+        return sharedPreferences.getString("jwt_token", null)
+    }
+
+    fun putJwtToken (value: String){
+        with(sharedPreferences.edit()){
+            putString("jwt_token", value)
+                .commit()
+        }
+    }
+
+    fun deleteJwtToken (){
+        with(sharedPreferences.edit()){
+            remove("jwt_token")
+                .apply()
+        }
+    }
+
+    fun rememberLogin(){
+        with(sharedPreferences.edit()){
+            putBoolean("remember", true)
+            apply()
+        }
+    }
+
+    fun isLoginRemembered(): Boolean {
+        return sharedPreferences.getBoolean("remember", false)
+    }
+
+    fun loggedAsGuest(){
+        with(sharedPreferences.edit()){
+            putBoolean("guest", true)
+            apply()
+        }
+    }
+
+    fun loggedAsUser(){
+        with(sharedPreferences.edit()){
+            putBoolean("guest", false)
+            apply()
+        }
+    }
+
+    fun isGuest(): Boolean {
+        return sharedPreferences.getBoolean("guest", false)
+    }
+
 }

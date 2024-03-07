@@ -9,11 +9,11 @@ object NetworkModule {
 
     private const val BASE_URL = "https://10.0.2.2:8080/api/v1/"
 
-    fun provideOkHttpClient(securePreferences: SecurePreferences): OkHttpClient {
+    fun provideOkHttpClient(securedPreferences: SecuredPreferences): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor { chain ->
                 val originalRequest = chain.request()
-                val jwtToken = securePreferences.getString("jwt_token")
+                val jwtToken = securedPreferences.getString("jwt_token")
                 val newRequest = if (jwtToken != null) {
                     originalRequest.newBuilder()
                         .header("Authorization", "Bearer $jwtToken")
