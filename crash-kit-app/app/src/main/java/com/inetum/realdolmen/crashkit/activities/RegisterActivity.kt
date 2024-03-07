@@ -30,6 +30,45 @@ class RegisterActivity : AppCompatActivity() {
     private val apiService = CrashKitApp.apiService
     private val securedPreference = CrashKitApp.securedPreferences
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityRegisterBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
+        val fieldFirstName = binding.etRegisterFirstName
+        val fieldLastName = binding.etRegisterLastName
+        val fieldEmail = binding.etRegisterEmail
+        val fieldPassword = binding.etRegisterPassword
+        val fields = mapOf(
+            binding.etRegisterFirstName to "First Name is required!",
+            binding.etRegisterLastName to "Last Name is required!",
+            binding.etRegisterEmail to "Email is required!",
+            binding.etRegisterPassword to "Password is required!"
+        )
+
+        loadingFragment =
+            supportFragmentManager.findFragmentById(R.id.fr_register_loading) as LoadingFragment
+
+        binding.btnRegisterSubmit.setOnClickListener {
+            if (fields.areFieldsValid()) {
+                if (binding.etRegisterPassword.text.toString() != binding.etRegisterConfirmPassword.text.toString()) {
+                    binding.etRegisterPassword.error = "Passwords are not the same!"
+                    binding.etRegisterConfirmPassword.error = "Passwords are not the same!"
+                } else {
+                    lifecycleScope.launch {
+                        performRegister(fieldFirstName, fieldLastName, fieldEmail, fieldPassword)
+                    }
+                }
+            }
+        }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadingFragment.hideLoadingFragment()
+    }
 
     private suspend fun performRegister(
         firstNameField: TextInputEditText, lastNameField: TextInputEditText,
@@ -76,45 +115,5 @@ class RegisterActivity : AppCompatActivity() {
             val errorMessage = errorResponse?.errorMessage ?: "Unknown error"
             this.createSimpleDialog(getString(R.string.error), errorMessage)
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityRegisterBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
-
-        val fieldFirstName = binding.etRegisterFirstName
-        val fieldLastName = binding.etRegisterLastName
-        val fieldEmail = binding.etRegisterEmail
-        val fieldPassword = binding.etRegisterPassword
-        val fields = mapOf(
-            binding.etRegisterFirstName to "First Name is required!",
-            binding.etRegisterLastName to "Last Name is required!",
-            binding.etRegisterEmail to "Email is required!",
-            binding.etRegisterPassword to "Password is required!"
-        )
-
-        loadingFragment =
-            supportFragmentManager.findFragmentById(R.id.fr_register_loading) as LoadingFragment
-
-        binding.btnRegisterSubmit.setOnClickListener {
-            if (fields.areFieldsValid()) {
-                if (binding.etRegisterPassword.text.toString() != binding.etRegisterConfirmPassword.text.toString()) {
-                    binding.etRegisterPassword.error = "Passwords are not the same!"
-                    binding.etRegisterConfirmPassword.error = "Passwords are not the same!"
-                } else {
-                    lifecycleScope.launch {
-                        performRegister(fieldFirstName, fieldLastName, fieldEmail, fieldPassword)
-                    }
-                }
-            }
-        }
-
-    }
-
-    override fun onResume() {
-        super.onResume()
-        loadingFragment.hideLoadingFragment()
     }
 }
