@@ -28,7 +28,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var loadingFragment: LoadingFragment
 
     private val apiService = CrashKitApp.apiService
-    private val securePreference = CrashKitApp.securePreferences
+    private val securedPreference = CrashKitApp.securedPreferences
 
 
     private suspend fun performRegister(
@@ -59,7 +59,8 @@ class RegisterActivity : AppCompatActivity() {
             if (registerResponse?.token != null) {
 
                 loadingFragment.showLoadingFragment()
-                securePreference.putJwtToken(registerResponse.token)
+                securedPreference.putJwtToken(registerResponse.token)
+                securedPreference.loggedAsUser()
 
                 Toast.makeText(
                     this@RegisterActivity,
