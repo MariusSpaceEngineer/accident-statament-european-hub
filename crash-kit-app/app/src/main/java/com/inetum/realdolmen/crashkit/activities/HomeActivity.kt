@@ -2,6 +2,7 @@ package com.inetum.realdolmen.crashkit.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -25,10 +26,36 @@ class HomeActivity : AppCompatActivity() {
 
         bottomNavigationView.setupWithNavController(navController)
 
-        if (securedPreferences.isGuest()){
+        if (securedPreferences.isGuest()) {
             val menu = binding.bottomNavigationView.menu
             menu.removeItem(R.id.profileFragment)
         }
 
+        setupNavigation(navController, binding)
     }
+
+    private fun setupNavigation(navController: NavController, binding: ActivityHomeBinding) {
+        binding.bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.homeFragment -> {
+                    navController.navigate(R.id.homeFragment)
+                    true
+                }
+
+                R.id.newStatementFragment -> {
+                    navController.navigate(R.id.newStatementFragment)
+                    true
+                }
+
+                R.id.profileFragment -> {
+                    navController.navigate(R.id.profileFragment)
+                    true
+                }
+
+                else -> false
+            }
+        }
+    }
+
 }
+
