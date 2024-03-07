@@ -71,7 +71,7 @@
                 android:layout_marginStart="25dp"
                 android:layout_marginEnd="25dp"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/half_rounded_main_button"
+                android:background="@drawable/bottom_rounded_corners_filled"
                 android:text="Track Location"
                 android:textSize="16sp" />
 
@@ -137,7 +137,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:background="@drawable/border_outlined"
+                android:background="@drawable/border_outlined_black"
                 android:orientation="vertical">
 
                 <com.google.android.material.textfield.TextInputLayout
