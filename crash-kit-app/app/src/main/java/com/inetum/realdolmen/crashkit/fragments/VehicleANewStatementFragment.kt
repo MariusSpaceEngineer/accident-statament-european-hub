@@ -1,15 +1,16 @@
 package com.inetum.realdolmen.crashkit.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.inetum.realdolmen.crashkit.R
-import com.inetum.realdolmen.crashkit.databinding.FragmentNewStatementBinding
+import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleANewStatementBinding
 
 class VehicleANewStatementFragment : Fragment() {
-    private var _binding: FragmentNewStatementBinding? = null
+    private var _binding: FragmentVehicleANewStatementBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -17,7 +18,30 @@ class VehicleANewStatementFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_vehicle_a_new_statement, container, false)
+        _binding = FragmentVehicleANewStatementBinding.inflate(inflater, container, false)
+        val view = binding.root
+
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.btnStatementAccidentPrevious.setOnClickListener {
+            val navController = findNavController()
+
+            navController.navigate(R.id.newStatementFragment)
+        }
+
+        binding.btnStatementAccidentNext.setOnClickListener {
+            val transaction = requireActivity().supportFragmentManager.beginTransaction()
+
+            transaction.replace(R.id.fragmentContainerView, VehicleAInsuranceNewStatementFragment())
+
+            transaction.addToBackStack(null)
+            transaction.commit()
+        }
+
     }
 
 }
