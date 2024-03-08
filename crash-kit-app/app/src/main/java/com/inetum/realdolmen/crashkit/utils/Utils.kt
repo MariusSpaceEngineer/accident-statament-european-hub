@@ -1,5 +1,7 @@
 package com.inetum.realdolmen.crashkit.utils
 import android.content.Context
+import android.util.Log
+import androidx.fragment.app.FragmentManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 
@@ -22,4 +24,13 @@ fun Map<TextInputEditText, String>.areFieldsValid(): Boolean {
         }
     }
     return allFieldsValid
+}
+
+fun FragmentManager.printBackStack() {
+    val count = this.backStackEntryCount
+    for (i in 0 until count) {
+        val entry: FragmentManager.BackStackEntry = this.getBackStackEntryAt(i)
+        Log.i("BackStack", "Entry at $i: ${entry.name}")
+    }
+    Log.i("BackStack", "BackStack count: $count")
 }
