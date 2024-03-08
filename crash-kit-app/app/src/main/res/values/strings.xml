@@ -20,6 +20,7 @@
     <string name="statement_vehicle_title">Vehicle</string>
     <string name="statement_motor_title">Motor</string>
     <string name="statement_driver_title">Driver</string>
+    <string name="statement_vehicle_b_title">Vehicle B</string>
 
     <!--    Labels-->
     <string name="label_email">Email</string>
