@@ -10,7 +10,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".fragments.VehicleACircumstancesNewStatementFragment">
+        tools:context=".fragments.statement.vehicle_a.VehicleACircumstancesNewStatementFragment">
 
         <LinearLayout
             android:layout_width="match_parent"
