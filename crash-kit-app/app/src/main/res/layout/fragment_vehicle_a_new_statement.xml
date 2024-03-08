@@ -9,7 +9,7 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@color/tertiary400"
         tools:context=".fragments.statement.vehicle_a.VehicleANewStatementFragment">
 
@@ -17,7 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_horizontal"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            tools:ignore="UselessParent">
 
             <TextView
                 android:id="@+id/tv_statement_title"
@@ -25,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="80dp"
                 android:layout_marginBottom="16dp"
-                android:text="Accident Statement"
+                android:text="@string/new_statement_title"
                 android:textAllCaps="true"
                 android:textColor="@color/title"
                 android:textSize="35sp"
@@ -37,7 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:text="Vehicle A"
+                android:text="@string/statement_vehicle_a_title"
                 android:textAllCaps="true"
                 android:textColor="@color/primary800"
                 android:textSize="35sp"
@@ -57,14 +58,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     android:background="@drawable/top_rounded_corners_filled"
-                    android:text="Import own Insurance information"
+                    android:text="@string/import_insurance_information_button"
                     android:textColor="@color/title" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:text="Policy Holder"
+                    android:text="@string/statement_policy_holder_title"
                     android:textAllCaps="true"
                     android:textColor="@color/primary800"
                     android:textSize="30sp"
@@ -74,7 +75,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
-                    android:text="(see insurance certificate)"
+                    android:text="@string/statement_insurance_description"
                     android:textColor="@color/primary800"
                     android:textSize="20sp"
                     android:textStyle="italic" />
@@ -85,7 +86,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="8dp"
-                    android:hint="Name"
+                    android:hint="@string/name"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -103,7 +104,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="8dp"
-                    android:hint="First Name"
+                    android:hint="@string/label_first_name"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -121,7 +122,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="8dp"
-                    android:hint="Address"
+                    android:hint="@string/label_address"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -139,7 +140,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="8dp"
-                    android:hint="Postal Code"
+                    android:hint="@string/label_postal_code"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -157,7 +158,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="8dp"
-                    android:hint="Phone Number"
+                    android:hint="@string/label_phone_number"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -175,7 +176,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="12dp"
-                    android:hint="Email"
+                    android:hint="@string/label_email"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -191,7 +192,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:text="Vehicle"
+                    android:text="@string/statement_vehicle_title"
                     android:textAllCaps="true"
                     android:textColor="@color/primary800"
                     android:textSize="30sp"
@@ -201,7 +202,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
-                    android:text="Motor"
+                    android:text="@string/statement_motor_title"
                     android:textColor="@color/primary800"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -212,7 +213,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="8dp"
-                    android:hint="Mark, Type"
+                    android:hint="@string/label_mark_type"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -230,7 +231,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="8dp"
-                    android:hint="Registration Number"
+                    android:hint="@string/label_registration_number"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -248,7 +249,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="12dp"
-                    android:hint="Country of Registration"
+                    android:hint="@string/label_country_of_registration"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -261,11 +262,11 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <Button
-                    android:id="@+id/btn_statment_vehicle_a_add_trailer"
+                    android:id="@+id/btn_statement_vehicle_a_add_trailer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bottom_rounded_corners_filled"
-                    android:text="Add Trailer"
+                    android:text="@string/add_trailer_button"
                     android:textColor="@color/title" />
 
             </LinearLayout>
@@ -283,11 +284,12 @@
                     android:layout_width="190dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
                     android:background="@drawable/rounded_main_button"
                     android:paddingLeft="65dp"
                     android:paddingRight="65dp"
-                    android:text="Previous" />
+                    android:text="@string/statement_back_button"
+                    tools:ignore="ButtonStyle" />
 
                 <Button
                     android:id="@+id/btn_statement_accident_next"
@@ -297,7 +299,8 @@
                     android:background="@drawable/rounded_main_button"
                     android:paddingLeft="65dp"
                     android:paddingRight="65dp"
-                    android:text="Next" />
+                    android:text="@string/statement_front_button"
+                    tools:ignore="ButtonStyle" />
 
             </LinearLayout>
 

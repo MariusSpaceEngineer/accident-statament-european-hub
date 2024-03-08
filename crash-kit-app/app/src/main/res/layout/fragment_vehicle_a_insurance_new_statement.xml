@@ -9,7 +9,7 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@color/tertiary400"
         tools:context=".fragments.statement.vehicle_a.VehicleAInsuranceNewStatementFragment">
 
@@ -17,7 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_horizontal"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            tools:ignore="UselessParent">
 
             <TextView
                 android:id="@+id/tv_statement_title"
@@ -25,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="80dp"
                 android:layout_marginBottom="16dp"
-                android:text="Accident Statement"
+                android:text="@string/new_statement_title"
                 android:textAllCaps="true"
                 android:textColor="@color/title"
                 android:textSize="35sp"
@@ -37,7 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:text="Vehicle A"
+                android:text="@string/statement_vehicle_a_title"
                 android:textAllCaps="true"
                 android:textColor="@color/primary800"
                 android:textSize="35sp"
@@ -55,9 +56,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
                     android:layout_marginTop="8dp"
-                    android:text="Insurance Company"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/statement_insurance_company_title"
                     android:textAllCaps="true"
                     android:textColor="@color/primary800"
                     android:textSize="30sp"
@@ -67,7 +68,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
-                    android:text="(see insurance certificate)"
+                    android:text="@string/statement_insurance_description"
                     android:textColor="@color/primary800"
                     android:textSize="20sp"
                     android:textStyle="italic" />
@@ -78,7 +79,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="8dp"
-                    android:hint="Name"
+                    android:hint="@string/name"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -96,7 +97,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="8dp"
-                    android:hint="Policy Number"
+                    android:hint="@string/label_policy_number"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -114,7 +115,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="8dp"
-                    android:hint="Green Card Number"
+                    android:hint="@string/label_green_card_number"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -132,7 +133,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="8dp"
-                    android:hint="Insurance Cert. Availability Date"
+                    android:hint="@string/label_insurance_cert_availability_date"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -150,7 +151,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="8dp"
-                    android:hint="Insurance Cert. Expiration Date"
+                    android:hint="@string/label_insurance_cert_expiration_date"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -166,7 +167,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:text="Insurance Agency"
+                    android:text="@string/statement_insurance_agency_title"
                     android:textAllCaps="true"
                     android:textColor="@color/primary800"
                     android:textSize="30sp"
@@ -179,7 +180,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="8dp"
-                    android:hint="Name"
+                    android:hint="@string/name"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -197,7 +198,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="8dp"
-                    android:hint="Address"
+                    android:hint="@string/label_address"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -215,7 +216,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="12dp"
-                    android:hint="Country"
+                    android:hint="@string/label_country"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -233,7 +234,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="12dp"
-                    android:hint="Phone Number"
+                    android:hint="@string/label_phone_number"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -244,13 +245,14 @@
                         android:textColor="@color/input_hint" />
 
                 </com.google.android.material.textfield.TextInputLayout>
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="12dp"
-                    android:hint="Email"
+                    android:hint="@string/label_email"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -266,7 +268,7 @@
                     android:id="@+id/cb_statement_damaged_covered"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Material Damage Covered"/>
+                    android:text="@string/material_damage_covered_checkbox" />
 
             </LinearLayout>
 
@@ -283,11 +285,12 @@
                     android:layout_width="190dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
                     android:background="@drawable/rounded_main_button"
                     android:paddingLeft="65dp"
                     android:paddingRight="65dp"
-                    android:text="Previous" />
+                    android:text="@string/statement_back_button"
+                    tools:ignore="ButtonStyle" />
 
                 <Button
                     android:id="@+id/btn_statement_accident_next"
@@ -297,7 +300,8 @@
                     android:background="@drawable/rounded_main_button"
                     android:paddingLeft="65dp"
                     android:paddingRight="65dp"
-                    android:text="Next" />
+                    android:text="@string/statement_front_button"
+                    tools:ignore="ButtonStyle" />
 
             </LinearLayout>
 

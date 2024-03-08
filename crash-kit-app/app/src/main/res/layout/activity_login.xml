@@ -44,7 +44,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="80dp"
-        android:text="@string/login"
+        android:text="@string/login_title"
         android:textAllCaps="true"
         android:textColor="@color/title"
         android:textSize="45sp"
@@ -83,7 +83,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:hint="@string/email"
+                android:hint="@string/label_email"
                 app:boxBackgroundColor="@color/input_field_background"
                 app:boxStrokeColor="@color/primary800">
 
@@ -99,7 +99,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:hint="@string/password"
+                android:hint="@string/label_password"
                 app:boxBackgroundColor="@color/input_field_background"
                 app:boxStrokeColor="@color/primary800"
 
@@ -127,7 +127,7 @@
                 android:layout_height="65dp"
                 android:layout_marginBottom="12dp"
                 android:background="@drawable/rounded_main_button"
-                android:text="@string/login"
+                android:text="@string/login_title"
                 android:textSize="24sp" />
 
         </LinearLayout>

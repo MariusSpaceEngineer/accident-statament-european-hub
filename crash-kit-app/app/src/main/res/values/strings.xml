@@ -1,30 +1,102 @@
 <resources>
+
+    <!--    Titles-->
     <string name="app_name">Crash Kit</string>
-    <string name="login">Login</string>
-    <string name="email">Email</string>
-    <string name="password">Password</string>
+    <string name="login_title">Login</string>
     <string name="main_title">crash kit</string>
-    <string name="main_description">Save time and hassle after a crash</string>
-    <string name="main_register_button">Register</string>
-    <string name="main_guest_button">Continue as guest</string>
-    <string name="first_name">First Name</string>
-    <string name="last_name">Last Name</string>
-    <string name="confirm_password">Confirm Password</string>
     <string name="register_title">Register</string>
     <string name="home_title">Welcome</string>
     <string name="home_new_statement_card_title">New statement</string>
-    <string name="home_new_statement_card_description">Create a new accident statement</string>
     <string name="home_share_insurance_card_title">Share insurance information</string>
+    <string name="profile_title">Profile</string>
+    <string name="profile_personal_card_title">Personal Information</string>
+    <string name="new_statement_title">Accident Statement</string>
+    <string name="statement_material_damage_title">Material Damage:</string>
+    <string name="statement_witness_title">Witness</string>
+    <string name="statement_vehicle_a_title">Vehicle A</string>
+    <string name="statement_insurance_company_title">Insurance Company</string>
+    <string name="statement_insurance_agency_title">Insurance Agency</string>
+    <string name="statement_policy_holder_title">Policy Holder</string>
+    <string name="statement_vehicle_title">Vehicle</string>
+    <string name="statement_motor_title">Motor</string>
+    <string name="statement_driver_title">Driver</string>
+
+    <!--    Labels-->
+    <string name="label_email">Email</string>
+    <string name="label_password">Password</string>
+    <string name="label_first_name">First Name</string>
+    <string name="label_last_name">Last Name</string>
+    <string name="label_confirm_password">Confirm Password</string>
+    <string name="label_date_of_accident">Date of Accident</string>
+    <string name="label_location">Location</string>
+    <string name="label_phone_number">Phone Number</string>
+    <string name="label_address">Address</string>
+    <string name="label_policy_number">Policy Number</string>
+    <string name="label_green_card_number">Green Card Number</string>
+    <string name="label_insurance_cert_availability_date">Insurance Cert. Availability Date</string>
+    <string name="label_insurance_cert_expiration_date">Insurance Cert. Expiration Date</string>
+    <string name="label_country">Country</string>
+    <string name="label_postal_code">Postal Code</string>
+    <string name="label_mark_type">Mark, Type</string>
+    <string name="label_registration_number">Registration Number</string>
+    <string name="label_country_of_registration">Country of Registration</string>
+    <string name="label_point_of_impact">Point of Impact</string>
+    <string name="label_photo">Photo</string>
+    <string name="label_remarks">Remarks</string>
+    <string name="label_visible_damage_description">Visible damage description</string>
+    <string name="label_date_of_birth">Date of Birth</string>
+    <string name="label_driving_license_number">Driving License Number</string>
+    <string name="label_driving_license_expiration_date">Driving License Expiration Date</string>
+    <string name="label_amount_of_crosses">Amount of Crosses:</string>
+
+    <!--    Buttons-->
+    <string name="main_register_button">Register</string>
+    <string name="main_guest_button">Continue as guest</string>
+    <string name="statement_track_location_button">Track Location</string>
+    <string name="statement_back_button">Previous</string>
+    <string name="statement_front_button">Next</string>
+    <string name="import_insurance_information_button">Import own Insurance information</string>
+    <string name="add_trailer_button">Add Trailer</string>
+
+    <!--    Descriptions-->
+    <string name="main_description">Save time and hassle after a crash</string>
+    <string name="home_new_statement_card_description">Create a new accident statement</string>
     <string name="home_share_insurance_card_description">Generate a QR-code which contains your insurance information</string>
     <string name="main_share_insurance_card_image_description">Person scanning QR-code with phone</string>
     <string name="home_new_statement_card_image_description">Photo of a black insurance statement</string>
-    <string name="email_required">Email is required!</string>
-    <string name="password_required">Password is required!</string>
-    <string name="network_error">A network error occurred. Please try again.</string>
-    <string name="error">Error</string>
-    <string name="login_remember_checkbox">Remember Me</string>
-    <string name="profile_title">Profile</string>
-    <string name="profile_personal_card_title">Personal Information</string>
-    <string name="edit">Edit</string>
+    <string name="statement_insurance_description">(see insurance certificate)</string>
+    <string name="statement_driver_description">(see driving license)</string>
 
+    <!--    Field Validation-->
+    <string name="warning_email_required">Email is required!</string>
+    <string name="warning_password_required">Password is required!</string>
+
+    <!--    Errors-->
+    <string name="error_network">A network error occurred. Please try again.</string>
+    <string name="error">Error</string>
+
+
+    <string name="login_remember_checkbox">Remember Me</string>
+    <string name="edit">Edit</string>
+    <string name="statement_material_damage_other_vehicles_checkbox">Other vehicles than vehicle A and B</string>
+    <string name="statement_material_damage_other_than_vehicles_checkbox">Objects other than vehicles</string>
+    <string name="name">Name</string>
+    <string name="material_damage_covered_checkbox">Material Damage Covered</string>
+    <string name="parked_stopped_checkbox">Parked/Stopped</string>
+    <string name="leaving_parking_place_opening_the_door_checkbox">Leaving a parking place/ opening the door</string>
+    <string name="entering_parking_place_checkbox">Entering a parking place</string>
+    <string name="emerging_car_park_private_ground_track_checkbox">Emerging from a car park, from private ground, from a track</string>
+    <string name="entering_car_park_private_ground_track_checkbox">Entering a car park, private ground, a track</string>
+    <string name="entering_roundabout_checkbox">Entering a roundabout</string>
+    <string name="circulating_roundabout_checkbox">Circulating a roundabout</string>
+    <string name="striking_rear_while_same_direction_same_lane_checkbox">Striking the rear of the other vehicle while going in the same direction and in the same lane</string>
+    <string name="going_same_direction_in_different_lane_checkbox">Going in the same direction but in a different lane</string>
+    <string name="changing_lanes_checkbox">Changing lanes</string>
+    <string name="overtaking_checkbox">Overtaking</string>
+    <string name="turning_right_checkbox">Turning to the right</string>
+    <string name="turning_left_checkbox">Turning to the left</string>
+    <string name="reversing_checkbox">Reversing</string>
+    <string name="encroaching_lane_reserved_circulation_opposite_direction_checkbox">Encroaching on a lane reserved for circulation in the opposite direction</string>
+    <string name="coming_the_right_road_junction_checkbox">Coming from the right (at road junction)</string>
+    <string name="not_observed_right_way_sign_red_light_checkbox">Had not observed a right of way sign or a red light</string>
 </resources>

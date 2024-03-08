@@ -75,7 +75,7 @@
             android:layout_height="65dp"
             android:layout_marginBottom="12dp"
             android:background="@drawable/rounded_main_button"
-            android:text="@string/login"
+            android:text="@string/login_title"
             android:textSize="24sp" />
 
         <Button

@@ -9,7 +9,7 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@color/tertiary400"
         tools:context=".fragments.statement.vehicle_a.VehicleAMiscellaneousNewStatementFragment">
 
@@ -17,7 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_horizontal"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            tools:ignore="UselessParent">
 
             <TextView
                 android:id="@+id/tv_statement_title"
@@ -25,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="80dp"
                 android:layout_marginBottom="16dp"
-                android:text="Accident Statement"
+                android:text="@string/new_statement_title"
                 android:textAllCaps="true"
                 android:textColor="@color/title"
                 android:textSize="35sp"
@@ -37,7 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:text="Vehicle A"
+                android:text="@string/statement_vehicle_a_title"
                 android:textAllCaps="true"
                 android:textColor="@color/primary800"
                 android:textSize="35sp"
@@ -57,23 +58,18 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
-                    android:text="Point of Impact"
+                    android:text="@string/label_point_of_impact"
                     android:textAllCaps="true"
                     android:textColor="@color/primary800"
                     android:textSize="28sp"
                     android:textStyle="bold" />
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/white"></FrameLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
-                    android:text="Photo"
+                    android:text="@string/label_photo"
                     android:textAllCaps="true"
                     android:textColor="@color/primary800"
                     android:textSize="28sp"
@@ -85,7 +81,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="12dp"
-                    android:hint="Remarks"
+                    android:hint="@string/label_remarks"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -103,7 +99,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="12dp"
-                    android:hint="Visible damage description"
+                    android:hint="@string/label_visible_damage_description"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -130,11 +126,12 @@
                     android:layout_width="190dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
                     android:background="@drawable/rounded_main_button"
                     android:paddingLeft="65dp"
                     android:paddingRight="65dp"
-                    android:text="Previous" />
+                    android:text="@string/statement_back_button"
+                    tools:ignore="ButtonStyle" />
 
                 <Button
                     android:id="@+id/btn_statement_accident_next"
@@ -144,7 +141,8 @@
                     android:background="@drawable/rounded_main_button"
                     android:paddingLeft="65dp"
                     android:paddingRight="65dp"
-                    android:text="Next" />
+                    android:text="@string/statement_front_button"
+                    tools:ignore="ButtonStyle" />
 
             </LinearLayout>
 

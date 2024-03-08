@@ -111,7 +111,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
                             android:enabled="false"
-                            android:hint="@string/first_name"
+                            android:hint="@string/label_first_name"
                             app:boxBackgroundColor="@color/input_field_background"
                             app:boxStrokeColor="@color/primary800">
 
@@ -129,7 +129,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
                             android:enabled="false"
-                            android:hint="@string/last_name"
+                            android:hint="@string/label_last_name"
                             app:boxBackgroundColor="@color/input_field_background"
                             app:boxStrokeColor="@color/primary800">
 
@@ -147,7 +147,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
                             android:enabled="false"
-                            android:hint="@string/email"
+                            android:hint="@string/label_email"
                             app:boxBackgroundColor="@color/input_field_background"
                             app:boxStrokeColor="@color/primary800">
 

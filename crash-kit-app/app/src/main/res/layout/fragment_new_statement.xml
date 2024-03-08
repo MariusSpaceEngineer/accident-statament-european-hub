@@ -15,7 +15,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_horizontal"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            tools:ignore="UselessParent">
 
             <TextView
                 android:id="@+id/tv_statement_title"
@@ -23,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="80dp"
                 android:layout_marginBottom="16dp"
-                android:text="Accident Statement"
+                android:text="@string/new_statement_title"
                 android:textAllCaps="true"
                 android:textColor="@color/title"
                 android:textSize="35sp"
@@ -35,7 +36,7 @@
                 android:layout_marginStart="25dp"
                 android:layout_marginEnd="25dp"
                 android:layout_marginBottom="8dp"
-                android:hint="Date of Accident"
+                android:hint="@string/label_date_of_accident"
                 app:boxBackgroundColor="@color/input_field_background"
                 app:boxStrokeColor="@color/primary800">
 
@@ -52,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="25dp"
                 android:layout_marginEnd="25dp"
-                android:hint="Location"
+                android:hint="@string/label_location"
                 app:boxBackgroundColor="@color/input_field_background"
                 app:boxStrokeColor="@color/primary800">
 
@@ -72,7 +73,7 @@
                 android:layout_marginEnd="25dp"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/bottom_rounded_corners_filled"
-                android:text="Track Location"
+                android:text="@string/statement_track_location_button"
                 android:textSize="16sp" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -89,7 +90,7 @@
                     android:background="@color/white"
                     android:backgroundTint="@color/title"
                     android:padding="5dp"
-                    android:text="Material Damage:"
+                    android:text="@string/statement_material_damage_title"
                     app:layout_constraintBottom_toTopOf="@id/fl_statement_accident_material_damage"
                     app:layout_constraintStart_toStartOf="@+id/fl_statement_accident_material_damage"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -110,12 +111,12 @@
                     <CheckBox
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Other vehicles than vehicle A and B" />
+                        android:text="@string/statement_material_damage_other_vehicles_checkbox" />
 
                     <CheckBox
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Objects other than vehicles" />
+                        android:text="@string/statement_material_damage_other_than_vehicles_checkbox" />
 
                 </LinearLayout>
 
@@ -126,7 +127,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Witness"
+                android:text="@string/statement_witness_title"
                 android:textAllCaps="true"
                 android:textColor="@color/title"
                 android:textSize="35sp"
@@ -147,7 +148,7 @@
                     android:layout_marginTop="15dp"
                     android:layout_marginEnd="25dp"
                     android:layout_marginBottom="8dp"
-                    android:hint="Name"
+                    android:hint="@string/name"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -165,7 +166,7 @@
                     android:layout_marginStart="25dp"
                     android:layout_marginEnd="25dp"
                     android:layout_marginBottom="8dp"
-                    android:hint="Phone Number"
+                    android:hint="@string/label_address"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -183,7 +184,7 @@
                     android:layout_marginStart="25dp"
                     android:layout_marginEnd="25dp"
                     android:layout_marginBottom="15dp"
-                    android:hint="Phone Number"
+                    android:hint="@string/label_phone_number"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -209,12 +210,13 @@
                     android:layout_width="190dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
                     android:background="@drawable/rounded_main_button"
                     android:enabled="false"
                     android:paddingLeft="65dp"
                     android:paddingRight="65dp"
-                    android:text="Previous" />
+                    android:text="@string/statement_back_button"
+                    tools:ignore="ButtonStyle" />
 
                 <Button
                     android:id="@+id/btn_statement_accident_next"
@@ -224,7 +226,8 @@
                     android:background="@drawable/rounded_main_button"
                     android:paddingLeft="65dp"
                     android:paddingRight="65dp"
-                    android:text="Next" />
+                    android:text="@string/statement_front_button"
+                    tools:ignore="ButtonStyle" />
 
             </LinearLayout>
 

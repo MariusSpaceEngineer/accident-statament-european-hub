@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -15,7 +14,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            tools:ignore="UselessParent">
 
             <TextView
                 android:id="@+id/tv_statement_title"
@@ -24,7 +24,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="80dp"
                 android:layout_marginBottom="16dp"
-                android:text="Accident Statement"
+                android:text="@string/new_statement_title"
                 android:textAllCaps="true"
                 android:textColor="@color/title"
                 android:textSize="35sp"
@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="16dp"
-                android:text="Vehicle A"
+                android:text="@string/statement_vehicle_a_title"
                 android:textAllCaps="true"
                 android:textColor="@color/primary800"
                 android:textSize="35sp"
@@ -59,7 +59,7 @@
                     android:id="@+id/cb_statement_circumstances_vehicle_a_parked_stopped"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Parked/Stopped"
+                    android:text="@string/parked_stopped_checkbox"
                     android:textAllCaps="true"
                     android:textStyle="bold" />
 
@@ -67,7 +67,7 @@
                     android:id="@+id/cb_statement_circumstances_vehicle_a_leaving_parking_opening_door"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Leaving a praking place/ opening the door"
+                    android:text="@string/leaving_parking_place_opening_the_door_checkbox"
                     android:textAllCaps="true"
                     android:textStyle="bold" />
 
@@ -75,7 +75,7 @@
                     android:id="@+id/cb_statement_circumstances_vehicle_a_leaving_parking"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Entering a parking place"
+                    android:text="@string/entering_parking_place_checkbox"
                     android:textAllCaps="true"
                     android:textStyle="bold" />
 
@@ -83,7 +83,7 @@
                     android:id="@+id/cb_statement_circumstances_vehicle_a_emerging_from_car_park_private_ground_track"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Emerging from a car park, from private groud, from a track"
+                    android:text="@string/emerging_car_park_private_ground_track_checkbox"
                     android:textAllCaps="true"
                     android:textStyle="bold" />
 
@@ -91,7 +91,7 @@
                     android:id="@+id/cb_statement_circumstances_vehicle_a_entering_car_park_private_ground_track"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Entering a car park, private ground, a track"
+                    android:text="@string/entering_car_park_private_ground_track_checkbox"
                     android:textAllCaps="true"
                     android:textStyle="bold" />
 
@@ -99,7 +99,7 @@
                     android:id="@+id/cb_statement_circumstances_vehicle_a_entering_roundabout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Enterning a roundabout"
+                    android:text="@string/entering_roundabout_checkbox"
                     android:textAllCaps="true"
                     android:textStyle="bold" />
 
@@ -107,7 +107,7 @@
                     android:id="@+id/cb_statement_circumstances_vehicle_a_circulating_roundabout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Ciculating a roundabout"
+                    android:text="@string/circulating_roundabout_checkbox"
                     android:textAllCaps="true"
                     android:textStyle="bold" />
 
@@ -115,7 +115,7 @@
                     android:id="@+id/cb_statement_circumstances_vehicle_a_striking_rear_same_direction_same_lane"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Striking the rear of the other vehicle while going in the same direction and in the same lane"
+                    android:text="@string/striking_rear_while_same_direction_same_lane_checkbox"
                     android:textAllCaps="true"
                     android:textStyle="bold" />
 
@@ -123,7 +123,7 @@
                     android:id="@+id/cb_statement_circumstances_vehicle_a_going_same_direction_different_lane"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Going in the same direction but in a different lane"
+                    android:text="@string/going_same_direction_in_different_lane_checkbox"
                     android:textAllCaps="true"
                     android:textStyle="bold" />
 
@@ -131,7 +131,7 @@
                     android:id="@+id/cb_statement_circumstances_vehicle_a_changing_lanes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Changing lanes"
+                    android:text="@string/changing_lanes_checkbox"
                     android:textAllCaps="true"
                     android:textStyle="bold" />
 
@@ -139,7 +139,7 @@
                     android:id="@+id/cb_statement_circumstances_vehicle_a_overtaking"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Overtaking"
+                    android:text="@string/overtaking_checkbox"
                     android:textAllCaps="true"
                     android:textStyle="bold" />
 
@@ -147,7 +147,7 @@
                     android:id="@+id/cb_statement_circumstances_vehicle_a_turning_right"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Turning to the right"
+                    android:text="@string/turning_right_checkbox"
                     android:textAllCaps="true"
                     android:textStyle="bold" />
 
@@ -155,7 +155,7 @@
                     android:id="@+id/cb_statement_circumstances_vehicle_a_turning_left"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Turning to the left"
+                    android:text="@string/turning_left_checkbox"
                     android:textAllCaps="true"
                     android:textStyle="bold" />
 
@@ -163,7 +163,7 @@
                     android:id="@+id/cb_statement_circumstances_vehicle_a_reversing"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Reversing"
+                    android:text="@string/reversing_checkbox"
                     android:textAllCaps="true"
                     android:textStyle="bold" />
 
@@ -171,7 +171,7 @@
                     android:id="@+id/cb_statement_circumstances_vehicle_a_encroaching_reserved_lane_for_opposite_direction"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Encroaching on a lane reserved for ciculation in the oppposite direction"
+                    android:text="@string/encroaching_lane_reserved_circulation_opposite_direction_checkbox"
                     android:textAllCaps="true"
                     android:textStyle="bold" />
 
@@ -179,7 +179,7 @@
                     android:id="@+id/cb_statement_circumstances_vehicle_a_coming_right_junction"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Coming from the right (at road junction)"
+                    android:text="@string/coming_the_right_road_junction_checkbox"
                     android:textAllCaps="true"
                     android:textStyle="bold" />
 
@@ -187,7 +187,7 @@
                     android:id="@+id/cb_statement_circumstances_vehicle_a_not_observed_sign_red_light"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Had not observed a right of way sign or a red light"
+                    android:text="@string/not_observed_right_way_sign_red_light_checkbox"
                     android:textAllCaps="true"
                     android:textStyle="bold" />
 
@@ -198,7 +198,7 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
-                    android:text="Amount of Crosses:"
+                    android:text="@string/label_amount_of_crosses"
                     android:textAllCaps="true"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -216,11 +216,11 @@
                     android:layout_width="190dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
                     android:background="@drawable/rounded_main_button"
                     android:paddingLeft="65dp"
                     android:paddingRight="65dp"
-                    android:text="Previous" />
+                    android:text="@string/statement_back_button" />
 
                 <Button
                     android:id="@+id/btn_statement_accident_next"
@@ -230,7 +230,7 @@
                     android:background="@drawable/rounded_main_button"
                     android:paddingLeft="65dp"
                     android:paddingRight="65dp"
-                    android:text="Next" />
+                    android:text="@string/statement_front_button" />
 
             </LinearLayout>
 

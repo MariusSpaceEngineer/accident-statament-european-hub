@@ -40,8 +40,8 @@ class LoginActivity : AppCompatActivity() {
         val emailField = binding.etLoginEmail
         val passwordField = binding.etLoginPassword
         val fields = mapOf(
-            emailField to getString(R.string.email_required),
-            passwordField to getString(R.string.password_required),
+            emailField to getString(R.string.warning_email_required),
+            passwordField to getString(R.string.warning_password_required),
         )
 
         val rememberCheckbox = binding.cbLoginRemember
