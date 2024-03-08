@@ -6,11 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.inetum.realdolmen.crashkit.R
-import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleAInsuranceNewStatementBinding
-import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleADriverNewStatementFragment
+import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleACircumstancesBinding
 
-class VehicleAInsuranceNewStatementFragment : Fragment() {
-    private var _binding: FragmentVehicleAInsuranceNewStatementBinding? = null
+class VehicleACircumstancesFragment : Fragment() {
+
+    private var _binding: FragmentVehicleACircumstancesBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -18,7 +18,7 @@ class VehicleAInsuranceNewStatementFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        _binding = FragmentVehicleAInsuranceNewStatementBinding.inflate(inflater, container, false)
+        _binding = FragmentVehicleACircumstancesBinding.inflate(inflater, container, false)
         val view = binding.root
 
         return view
@@ -28,15 +28,15 @@ class VehicleAInsuranceNewStatementFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.btnStatementAccidentPrevious.setOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack("VehicleAInsuranceFragment", 0)
+            requireActivity().supportFragmentManager.popBackStack("VehicleACircumstancesFragment", 0)
         }
 
         binding.btnStatementAccidentNext.setOnClickListener {
             val transaction = requireActivity().supportFragmentManager.beginTransaction()
 
-            transaction.replace(R.id.fragmentContainerView, VehicleADriverNewStatementFragment())
+            transaction.replace(R.id.fragmentContainerView, VehicleAMiscellaneousFragment())
 
-            transaction.addToBackStack("VehicleADriverFragment")
+            transaction.addToBackStack("VehicleAMiscellaneousFragment")
             transaction.commit()
         }
 

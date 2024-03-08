@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleANewStatementBinding
-import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleAInsuranceNewStatementFragment
 
 class VehicleANewStatementFragment : Fragment() {
     private var _binding: FragmentVehicleANewStatementBinding? = null
@@ -37,7 +36,7 @@ class VehicleANewStatementFragment : Fragment() {
         binding.btnStatementAccidentNext.setOnClickListener {
             val transaction = requireActivity().supportFragmentManager.beginTransaction()
 
-            transaction.replace(R.id.fragmentContainerView, VehicleAInsuranceNewStatementFragment())
+            transaction.replace(R.id.fragmentContainerView, VehicleAInsuranceFragment())
 
             transaction.addToBackStack("VehicleAInsuranceFragment")
             transaction.commit()

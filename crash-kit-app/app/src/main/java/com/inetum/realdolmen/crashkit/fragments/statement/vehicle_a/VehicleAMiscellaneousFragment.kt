@@ -6,14 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.inetum.realdolmen.crashkit.R
-import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleAMiscellaneousNewStatementBinding
-import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleADriverNewStatementFragment
+import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleAMiscellaneousBinding
 
 
-class VehicleAMiscellaneousNewStatementFragment : Fragment() {
+class VehicleAMiscellaneousFragment : Fragment() {
     class VehicleACircumstancesNewStatementFragment : Fragment() {
 
-        private var _binding: FragmentVehicleAMiscellaneousNewStatementBinding? = null
+        private var _binding: FragmentVehicleAMiscellaneousBinding? = null
         private val binding get() = _binding!!
 
         override fun onCreateView(
@@ -22,7 +21,7 @@ class VehicleAMiscellaneousNewStatementFragment : Fragment() {
         ): View? {
             // Inflate the layout for this fragment
             _binding =
-                FragmentVehicleAMiscellaneousNewStatementBinding.inflate(inflater, container, false)
+                FragmentVehicleAMiscellaneousBinding.inflate(inflater, container, false)
             val view = binding.root
 
             return view
@@ -43,7 +42,7 @@ class VehicleAMiscellaneousNewStatementFragment : Fragment() {
 
                 transaction.replace(
                     R.id.fragmentContainerView,
-                    VehicleADriverNewStatementFragment()
+                    VehicleADriverFragment()
                 )
 
                 transaction.addToBackStack("VehicleBInsuranceFragment")

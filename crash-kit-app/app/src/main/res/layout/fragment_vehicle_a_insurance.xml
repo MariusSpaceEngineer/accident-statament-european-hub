@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/tertiary400"
-        tools:context=".fragments.statement.vehicle_a.VehicleAInsuranceNewStatementFragment">
+        tools:context=".fragments.statement.vehicle_a.VehicleAInsuranceFragment">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -58,7 +58,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
-                    android:text="@string/statement_driver_title"
+                    android:text="@string/statement_insurance_company_title"
                     android:textAllCaps="true"
                     android:textColor="@color/primary800"
                     android:textSize="30sp"
@@ -68,7 +68,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
-                    android:text="@string/statement_driver_description"
+                    android:text="@string/statement_insurance_description"
                     android:textColor="@color/primary800"
                     android:textSize="20sp"
                     android:textStyle="italic" />
@@ -79,12 +79,12 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="8dp"
-                    android:hint="@string/label_last_name"
+                    android:hint="@string/name"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_a_driver_name"
+                        android:id="@+id/et_statement_vehicle_a_insurance_company_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -97,12 +97,12 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="8dp"
-                    android:hint="@string/label_first_name"
+                    android:hint="@string/label_policy_number"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_a_driver_first_name"
+                        android:id="@+id/et_statement_vehicle_a_insurance_company_policy_number"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -115,12 +115,77 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="8dp"
-                    android:hint="@string/label_date_of_birth"
+                    android:hint="@string/label_green_card_number"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_a_driver_date_of_birth"
+                        android:id="@+id/et_statement_vehicle_a_insurance_company_green_card_number"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/input_hint" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="8dp"
+                    android:hint="@string/label_insurance_cert_availability_date"
+                    app:boxBackgroundColor="@color/input_field_background"
+                    app:boxStrokeColor="@color/primary800">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_statement_vehicle_a_insurance_company_certificate_availability_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/input_hint" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="8dp"
+                    android:hint="@string/label_insurance_cert_expiration_date"
+                    app:boxBackgroundColor="@color/input_field_background"
+                    app:boxStrokeColor="@color/primary800">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_statement_vehicle_a_insurance_company_certificate_expiration_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/input_hint" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/statement_insurance_agency_title"
+                    android:textAllCaps="true"
+                    android:textColor="@color/primary800"
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="8dp"
+                    android:hint="@string/name"
+                    app:boxBackgroundColor="@color/input_field_background"
+                    app:boxStrokeColor="@color/primary800">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_statement_vehicle_a_insurance_agency_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -138,7 +203,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_a_driver_address"
+                        android:id="@+id/et_statement_vehicle_a_insurance_agency_address"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -150,13 +215,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginBottom="12dp"
                     android:hint="@string/label_country"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_a_driver_country"
+                        android:id="@+id/et_statement_vehicle_a_insurance_agency_country"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -168,62 +233,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginBottom="12dp"
                     android:hint="@string/label_phone_number"
-                    app:boxBackgroundColor="@color/input_field_background"
-                    app:boxStrokeColor="@color/primary800">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_a_driver_email"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/input_hint" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:layout_marginBottom="8dp"
-                    android:hint="@string/label_email"
-                    app:boxBackgroundColor="@color/input_field_background"
-                    app:boxStrokeColor="@color/primary800">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_a_driver_driving_license_number"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/input_hint" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:layout_marginBottom="12dp"
-                    android:hint="@string/label_driving_license_number"
-                    app:boxBackgroundColor="@color/input_field_background"
-                    app:boxStrokeColor="@color/primary800">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_a_driver_driving_license_expiration_date"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/input_hint" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:layout_marginBottom="12dp"
-                    android:hint="@string/label_driving_license_expiration_date"
                     app:boxBackgroundColor="@color/input_field_background"
                     app:boxStrokeColor="@color/primary800">
 
@@ -234,6 +245,30 @@
                         android:textColor="@color/input_hint" />
 
                 </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:hint="@string/label_email"
+                    app:boxBackgroundColor="@color/input_field_background"
+                    app:boxStrokeColor="@color/primary800">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_statement_vehicle_a_insurance_agency_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/input_hint" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <CheckBox
+                    android:id="@+id/cb_statement_damaged_covered"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/material_damage_covered_checkbox" />
 
             </LinearLayout>
 

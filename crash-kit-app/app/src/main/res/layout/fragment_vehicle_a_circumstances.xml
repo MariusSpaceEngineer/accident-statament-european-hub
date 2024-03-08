@@ -9,7 +9,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".fragments.statement.vehicle_a.VehicleACircumstancesNewStatementFragment">
+        tools:context=".fragments.statement.vehicle_a.VehicleACircumstancesFragment">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -220,7 +220,8 @@
                     android:background="@drawable/rounded_main_button"
                     android:paddingLeft="65dp"
                     android:paddingRight="65dp"
-                    android:text="@string/statement_back_button" />
+                    android:text="@string/statement_back_button"
+                    tools:ignore="ButtonStyle" />
 
                 <Button
                     android:id="@+id/btn_statement_accident_next"
@@ -230,7 +231,8 @@
                     android:background="@drawable/rounded_main_button"
                     android:paddingLeft="65dp"
                     android:paddingRight="65dp"
-                    android:text="@string/statement_front_button" />
+                    android:text="@string/statement_front_button"
+                    tools:ignore="ButtonStyle" />
 
             </LinearLayout>
 
