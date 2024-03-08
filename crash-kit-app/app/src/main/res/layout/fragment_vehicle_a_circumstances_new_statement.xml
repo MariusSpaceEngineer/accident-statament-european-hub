@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/tertiary400">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context=".fragments.VehicleACircumstancesNewStatementFragment">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_statement_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="80dp"
+                android:layout_marginBottom="16dp"
+                android:text="Accident Statement"
+                android:textAllCaps="true"
+                android:textColor="@color/title"
+                android:textSize="35sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_statement_vehicle_a_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp"
+                android:text="Vehicle A"
+                android:textAllCaps="true"
+                android:textColor="@color/primary800"
+                android:textSize="35sp"
+                android:textStyle="bold" />
+
+
+            <LinearLayout
+                android:id="@+id/fl_statement_accident_material_damage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/border_filled"
+                android:orientation="vertical"
+                android:paddingLeft="10dp"
+                android:paddingTop="12dp"
+                android:paddingRight="10dp">
+
+                <CheckBox
+                    android:id="@+id/cb_statement_circumstances_vehicle_a_parked_stopped"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Parked/Stopped"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/cb_statement_circumstances_vehicle_a_leaving_parking_opening_door"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Leaving a praking place/ opening the door"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/cb_statement_circumstances_vehicle_a_leaving_parking"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Entering a parking place"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/cb_statement_circumstances_vehicle_a_emerging_from_car_park_private_ground_track"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Emerging from a car park, from private groud, from a track"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/cb_statement_circumstances_vehicle_a_entering_car_park_private_ground_track"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Entering a car park, private ground, a track"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/cb_statement_circumstances_vehicle_a_entering_roundabout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Enterning a roundabout"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/cb_statement_circumstances_vehicle_a_circulating_roundabout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ciculating a roundabout"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/cb_statement_circumstances_vehicle_a_striking_rear_same_direction_same_lane"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Striking the rear of the other vehicle while going in the same direction and in the same lane"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/cb_statement_circumstances_vehicle_a_going_same_direction_different_lane"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Going in the same direction but in a different lane"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/cb_statement_circumstances_vehicle_a_changing_lanes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Changing lanes"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/cb_statement_circumstances_vehicle_a_overtaking"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Overtaking"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/cb_statement_circumstances_vehicle_a_turning_right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Turning to the right"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/cb_statement_circumstances_vehicle_a_turning_left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Turning to the left"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/cb_statement_circumstances_vehicle_a_reversing"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Reversing"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/cb_statement_circumstances_vehicle_a_encroaching_reserved_lane_for_opposite_direction"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Encroaching on a lane reserved for ciculation in the oppposite direction"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/cb_statement_circumstances_vehicle_a_coming_right_junction"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Coming from the right (at road junction)"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/cb_statement_circumstances_vehicle_a_not_observed_sign_red_light"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Had not observed a right of way sign or a red light"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_statement_circumstances_vehicle_a_total_crosses"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="Amount of Crosses:"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal"
+                android:paddingBottom="12dp">
+
+                <Button
+                    android:id="@+id/btn_statement_accident_previous"
+                    android:layout_width="190dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/rounded_main_button"
+                    android:paddingLeft="65dp"
+                    android:paddingRight="65dp"
+                    android:text="Previous" />
+
+                <Button
+                    android:id="@+id/btn_statement_accident_next"
+                    android:layout_width="190dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/rounded_main_button"
+                    android:paddingLeft="65dp"
+                    android:paddingRight="65dp"
+                    android:text="Next" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</ScrollView>
