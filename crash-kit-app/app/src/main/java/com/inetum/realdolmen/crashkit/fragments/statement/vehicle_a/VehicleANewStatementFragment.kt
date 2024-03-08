@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleANewStatementBinding
+import com.inetum.realdolmen.crashkit.utils.printBackStack
 
 class VehicleANewStatementFragment : Fragment() {
     private var _binding: FragmentVehicleANewStatementBinding? = null
@@ -27,19 +28,21 @@ class VehicleANewStatementFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnStatementAccidentPrevious.setOnClickListener {
-            val navController = findNavController()
+        requireActivity().supportFragmentManager.printBackStack()
 
-            navController.navigate(R.id.newStatementFragment)
+        binding.btnStatementAccidentPrevious.setOnClickListener {
+            findNavController().apply {
+                navigate(R.id.newStatementFragment)
+            }
         }
 
         binding.btnStatementAccidentNext.setOnClickListener {
-            val transaction = requireActivity().supportFragmentManager.beginTransaction()
-
-            transaction.replace(R.id.fragmentContainerView, VehicleAInsuranceFragment())
-
-            transaction.addToBackStack("VehicleAInsuranceFragment")
-            transaction.commit()
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.fragmentContainerView, VehicleAInsuranceFragment())
+                addToBackStack("vehicle_a_insurance_fragment")
+                setReorderingAllowed(true)
+                commit()
+            }
         }
 
     }

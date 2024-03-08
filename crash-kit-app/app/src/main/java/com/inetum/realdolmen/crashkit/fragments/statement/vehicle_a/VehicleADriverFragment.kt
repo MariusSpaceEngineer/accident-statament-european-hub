@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleADriverBinding
 
@@ -28,19 +29,24 @@ class VehicleADriverFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.btnStatementAccidentPrevious.setOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack("VehicleADriverFragment", 0)
+
+            requireActivity().supportFragmentManager.apply {
+                popBackStack("vehicle_a_driver_fragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+
+            }
         }
 
         binding.btnStatementAccidentNext.setOnClickListener {
-            val transaction = requireActivity().supportFragmentManager.beginTransaction()
 
-            transaction.replace(
-                R.id.fragmentContainerView,
-                VehicleACircumstancesFragment()
-            )
-
-            transaction.addToBackStack("VehicleACircumstancesFragment")
-            transaction.commit()
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(
+                    R.id.fragmentContainerView,
+                    VehicleACircumstancesFragment()
+                )
+                addToBackStack("vehicle_a_circumstances_fragment")
+                setReorderingAllowed(true)
+                commit()
+            }
         }
 
     }

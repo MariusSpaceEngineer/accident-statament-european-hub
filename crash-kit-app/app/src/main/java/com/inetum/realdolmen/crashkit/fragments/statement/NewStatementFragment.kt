@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentNewStatementBinding
 import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleANewStatementFragment
+import com.inetum.realdolmen.crashkit.utils.printBackStack
 
 class NewStatementFragment : Fragment() {
     private var _binding: FragmentNewStatementBinding? = null
@@ -27,13 +28,17 @@ class NewStatementFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        requireActivity().supportFragmentManager.printBackStack()
+
+
         binding.btnStatementAccidentNext.setOnClickListener {
-            val transaction = requireActivity().supportFragmentManager.beginTransaction()
 
-            transaction.replace(R.id.fragmentContainerView, VehicleANewStatementFragment())
-
-            transaction.addToBackStack(null)
-            transaction.commit()
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.fragmentContainerView, VehicleANewStatementFragment())
+                addToBackStack("vehicle_a_new_statement_fragment")
+                setReorderingAllowed(true)
+                commit()
+            }
         }
 
     }
