@@ -38,7 +38,7 @@ class VehicleANewStatementFragment : Fragment() {
 
             transaction.replace(R.id.fragmentContainerView, VehicleAInsuranceNewStatementFragment())
 
-            transaction.addToBackStack(null)
+            transaction.addToBackStack("VehicleAInsuranceFragment")
             transaction.commit()
         }
 
