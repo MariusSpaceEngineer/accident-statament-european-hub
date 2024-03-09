@@ -86,7 +86,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_a_driver_driving_license_expiration_date"
+                        android:id="@+id/et_statement_vehicle_a_driver_remarks"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -104,7 +104,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_a_insurance_agency_phone_number"
+                        android:id="@+id/et_statement_vehicle_a_damage_description"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />

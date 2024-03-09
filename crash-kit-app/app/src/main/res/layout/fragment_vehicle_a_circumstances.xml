@@ -72,7 +72,7 @@
                     android:textStyle="bold" />
 
                 <CheckBox
-                    android:id="@+id/cb_statement_circumstances_vehicle_a_leaving_parking"
+                    android:id="@+id/cb_statement_circumstances_vehicle_a_entering_parking"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/entering_parking_place_checkbox"

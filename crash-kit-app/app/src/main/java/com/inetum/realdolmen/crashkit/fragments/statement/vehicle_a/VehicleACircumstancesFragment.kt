@@ -6,6 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import com.inetum.realdolmen.crashkit.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleACircumstancesBinding
 import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_b.VehicleBNewStatementFragment
@@ -15,6 +18,13 @@ class VehicleACircumstancesFragment : Fragment() {
 
     private var _binding: FragmentVehicleACircumstancesBinding? = null
     private val binding get() = _binding!!
+    private lateinit var model: NewStatementViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        model = ViewModelProvider(requireActivity())[NewStatementViewModel::class.java]
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,6 +40,30 @@ class VehicleACircumstancesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        requireActivity().supportFragmentManager.printBackStack()
+
+        // Observe the statementData
+        model.statementData.observe(viewLifecycleOwner, Observer { statementData ->
+            // Update the UI here based on the new statementData
+            binding.cbStatementCircumstancesVehicleAParkedStopped.isChecked = statementData.vehicleAParkedStopped
+            binding.cbStatementCircumstancesVehicleALeavingParkingOpeningDoor.isChecked= statementData.vehicleALeavingParkingOpeningDoor
+            binding.cbStatementCircumstancesVehicleAEnteringParking.isChecked= statementData.vehicleAEnteringParking
+            binding.cbStatementCircumstancesVehicleAEmergingFromCarParkPrivateGroundTrack.isChecked= statementData.vehicleAEmergingParkPrivateGroundTrack
+            binding.cbStatementCircumstancesVehicleAEnteringCarParkPrivateGroundTrack.isChecked= statementData.vehicleAEnteringCarParkPrivateGroundTrack
+            binding.cbStatementCircumstancesVehicleAEnteringRoundabout.isChecked= statementData.vehicleAEnteringRoundabout
+            binding.cbStatementCircumstancesVehicleACirculatingRoundabout.isChecked= statementData.vehicleACirculatingRoundabout
+            binding.cbStatementCircumstancesVehicleAStrikingRearSameDirectionSameLane.isChecked= statementData.vehicleAStrikingRearSameDirectionLane
+            binding.cbStatementCircumstancesVehicleAGoingSameDirectionDifferentLane.isChecked= statementData.vehicleAGoingSameDirectionDifferentLane
+            binding.cbStatementCircumstancesVehicleAChangingLanes.isChecked=statementData.vehicleAChangingLane
+            binding.cbStatementCircumstancesVehicleAOvertaking.isChecked= statementData.vehicleAOvertaking
+            binding.cbStatementCircumstancesVehicleATurningRight.isChecked= statementData.vehicleATurningRight
+            binding.cbStatementCircumstancesVehicleATurningLeft.isChecked= statementData.vehicleATurningLeft
+            binding.cbStatementCircumstancesVehicleAReversing.isChecked= statementData.vehicleAReversing
+            binding.cbStatementCircumstancesVehicleAEncroachingReservedLaneForOppositeDirection.isChecked= statementData.vehicleAEncroachingLaneOppositeDirection
+            binding.cbStatementCircumstancesVehicleAComingRightJunction.isChecked= statementData.vehicleAComingRightJunction
+            binding.cbStatementCircumstancesVehicleANotObservedSignRedLight.isChecked= statementData.vehicleANotObservedSignRedLight
+        })
+
         binding.btnStatementAccidentPrevious.setOnClickListener {
 
             requireActivity().supportFragmentManager.apply {
@@ -38,6 +72,26 @@ class VehicleACircumstancesFragment : Fragment() {
         }
 
         binding.btnStatementAccidentNext.setOnClickListener {
+
+            model.statementData.value?.apply {
+                this.vehicleAParkedStopped=binding.cbStatementCircumstancesVehicleAParkedStopped.isChecked
+                this.vehicleALeavingParkingOpeningDoor=binding.cbStatementCircumstancesVehicleALeavingParkingOpeningDoor.isChecked
+                this.vehicleAEnteringParking=binding.cbStatementCircumstancesVehicleAEnteringParking.isChecked
+                this.vehicleAEmergingParkPrivateGroundTrack=binding.cbStatementCircumstancesVehicleAEmergingFromCarParkPrivateGroundTrack.isChecked
+                this.vehicleAEnteringCarParkPrivateGroundTrack=binding.cbStatementCircumstancesVehicleAEnteringCarParkPrivateGroundTrack.isChecked
+                this.vehicleAEnteringRoundabout=binding.cbStatementCircumstancesVehicleAEnteringRoundabout.isChecked
+                this.vehicleACirculatingRoundabout= binding.cbStatementCircumstancesVehicleACirculatingRoundabout.isChecked
+                this.vehicleAStrikingRearSameDirectionLane=binding.cbStatementCircumstancesVehicleAStrikingRearSameDirectionSameLane.isChecked
+                this.vehicleAGoingSameDirectionDifferentLane=binding.cbStatementCircumstancesVehicleAGoingSameDirectionDifferentLane.isChecked
+                this.vehicleAChangingLane=binding.cbStatementCircumstancesVehicleAChangingLanes.isChecked
+                this.vehicleAOvertaking=binding.cbStatementCircumstancesVehicleAOvertaking.isChecked
+                this.vehicleATurningRight=binding.cbStatementCircumstancesVehicleATurningRight.isChecked
+                this.vehicleATurningLeft=binding.cbStatementCircumstancesVehicleATurningLeft.isChecked
+                this.vehicleAReversing=binding.cbStatementCircumstancesVehicleAReversing.isChecked
+                this.vehicleAEncroachingLaneOppositeDirection=binding.cbStatementCircumstancesVehicleAEncroachingReservedLaneForOppositeDirection.isChecked
+                this.vehicleAComingRightJunction=binding.cbStatementCircumstancesVehicleAComingRightJunction.isChecked
+                this.vehicleANotObservedSignRedLight=binding.cbStatementCircumstancesVehicleANotObservedSignRedLight.isChecked
+            }
 
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(

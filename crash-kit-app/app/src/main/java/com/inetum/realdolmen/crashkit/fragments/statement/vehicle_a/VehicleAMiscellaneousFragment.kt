@@ -6,15 +6,26 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import com.inetum.realdolmen.crashkit.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleAMiscellaneousBinding
 import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_b.VehicleBNewStatementFragment
+import com.inetum.realdolmen.crashkit.utils.printBackStack
 
 
 class VehicleAMiscellaneousFragment : Fragment() {
 
     private var _binding: FragmentVehicleAMiscellaneousBinding? = null
     private val binding get() = _binding!!
+    private lateinit var model: NewStatementViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        model = ViewModelProvider(requireActivity())[NewStatementViewModel::class.java]
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,6 +42,15 @@ class VehicleAMiscellaneousFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        requireActivity().supportFragmentManager.printBackStack()
+
+        // Observe the statementData
+        model.statementData.observe(viewLifecycleOwner, Observer { statementData ->
+            // Update the UI here based on the new statementData
+            binding.etStatementVehicleADriverRemarks.setText(statementData.vehicleARemarks)
+            binding.etStatementVehicleADamageDescription.setText(statementData.vehicleADamageDescription)
+        })
+
         binding.btnStatementAccidentPrevious.setOnClickListener {
 
             requireActivity().supportFragmentManager.apply {
@@ -43,6 +63,12 @@ class VehicleAMiscellaneousFragment : Fragment() {
         }
 
         binding.btnStatementAccidentNext.setOnClickListener {
+
+            model.statementData.value?.apply {
+                this.vehicleARemarks = binding.etStatementVehicleADriverRemarks.text.toString()
+                this.vehicleADamageDescription =
+                    binding.etStatementVehicleADamageDescription.text.toString()
+            }
 
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(

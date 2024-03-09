@@ -41,7 +41,7 @@
                 app:boxStrokeColor="@color/primary800">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_login_email"
+                    android:id="@+id/et_statement_accident_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/input_hint" />
@@ -109,11 +109,13 @@
                     app:layout_constraintTop_toBottomOf="@+id/tv_statement_accident_material_damage">
 
                     <CheckBox
+                        android:id="@+id/cb_statement_accident_material_damage_other_vehicles"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/statement_material_damage_other_vehicles_checkbox" />
 
                     <CheckBox
+                        android:id="@+id/cb_statement_accident_material_damage_other_objects"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/statement_material_damage_other_than_vehicles_checkbox" />
