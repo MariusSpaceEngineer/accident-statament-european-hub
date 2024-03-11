@@ -3,7 +3,7 @@ package com.inetum.realdolmen.hubkitbackend.services;
 import com.inetum.realdolmen.hubkitbackend.dto.InsuranceCertificateDTO;
 import com.inetum.realdolmen.hubkitbackend.dto.PolicyHolderDTO;
 import com.inetum.realdolmen.hubkitbackend.dto.PolicyHolderPersonalInformationDTO;
-import com.inetum.realdolmen.hubkitbackend.mappers.InsuranceMapper;
+import com.inetum.realdolmen.hubkitbackend.mappers.InsuranceCertificateMapper;
 import com.inetum.realdolmen.hubkitbackend.mappers.PolicyHolderMapper;
 import com.inetum.realdolmen.hubkitbackend.mappers.PolicyHolderPersonalInformationMapper;
 import com.inetum.realdolmen.hubkitbackend.models.PolicyHolder;
@@ -21,7 +21,7 @@ public class PolicyHolderService {
     private final JwtService jwtService;
 
     private final PolicyHolderMapper policyHolderMapper;
-    private final InsuranceMapper insuranceMapper;
+    private final InsuranceCertificateMapper insuranceCertificateMapper;
     private final PolicyHolderPersonalInformationMapper personalInformationMapper;
 
     public Optional<PolicyHolderDTO> fetchPolicyHolderProfile(String token) {
@@ -42,6 +42,8 @@ public class PolicyHolderService {
             return Optional.empty(); // Return empty Optional in case of exceptions
         }
     }
+
+    //TODO: send PolicyHolder all fields back
 
     public Optional<PolicyHolderPersonalInformationDTO> updatePolicyHolderPersonalInformation(String token, PolicyHolderPersonalInformationDTO policyHolderDTO) {
         try {
@@ -74,10 +76,10 @@ public class PolicyHolderService {
             if (user.isPresent()) {
                 PolicyHolder policyHolder = (PolicyHolder) user.get();
 
-                policyHolder.setInsuranceCertificate(insuranceMapper.updateFromDTO(insuranceCertificateDTO, policyHolder.getInsuranceCertificate()));
+                policyHolder.setInsuranceCertificate(insuranceCertificateMapper.updateFromDTO(insuranceCertificateDTO, policyHolder.getInsuranceCertificate()));
 
                 repository.save(policyHolder);
-                InsuranceCertificateDTO result = insuranceMapper.toDTO(policyHolder.getInsuranceCertificate());
+                InsuranceCertificateDTO result = insuranceCertificateMapper.toDTO(policyHolder.getInsuranceCertificate());
 
                 return Optional.of(result);
 

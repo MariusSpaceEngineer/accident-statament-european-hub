@@ -7,7 +7,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
-public interface InsuranceMapper {
+public interface InsuranceCertificateMapper {
     InsuranceCertificateDTO toDTO(InsuranceCertificate insuranceCertificate);
 
     @Mapping(target = "id", ignore = true)
