@@ -2,6 +2,8 @@ package com.inetum.realdolmen.crashkit
 
 import android.app.Application
 import com.inetum.realdolmen.crashkit.services.ApiService
+import com.inetum.realdolmen.crashkit.utils.NetworkModule
+import com.inetum.realdolmen.crashkit.utils.SecuredPreferences
 
 class CrashKitApp: Application() {
 

@@ -8,7 +8,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.inetum.realdolmen.crashkit.R
-import com.inetum.realdolmen.crashkit.SecuredPreferences
+import com.inetum.realdolmen.crashkit.utils.SecuredPreferences
 import com.inetum.realdolmen.crashkit.dto.LoginData
 import com.inetum.realdolmen.crashkit.dto.LoginResponse
 import com.inetum.realdolmen.crashkit.services.ApiService
