@@ -1,4 +1,4 @@
-package com.inetum.realdolmen.crashkit
+package com.inetum.realdolmen.crashkit.utils
 
 import com.inetum.realdolmen.crashkit.services.ApiService
 import okhttp3.OkHttpClient

@@ -1,4 +1,4 @@
-package com.inetum.realdolmen.crashkit
+package com.inetum.realdolmen.crashkit.utils
 
 import android.content.Context
 import android.content.SharedPreferences
