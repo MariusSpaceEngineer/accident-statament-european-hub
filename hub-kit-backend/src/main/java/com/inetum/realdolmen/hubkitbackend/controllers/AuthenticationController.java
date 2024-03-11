@@ -20,11 +20,11 @@ public class AuthenticationController {
     public ResponseEntity<?> register(@RequestBody PolicyHolderRegisterRequest request) {
         try {
             var jwtToken = service.register(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body(SuccessResponse.builder().token(jwtToken).build());
+            return ResponseEntity.status(HttpStatus.CREATED).body(AuthenticationResponse.builder().token(jwtToken).build());
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(ErrorResponse.builder().errorMessage(e.getMessage()).build());
+                    .body(AuthenticationResponse.builder().errorMessage(e.getMessage()).build());
         }
     }
 
@@ -32,10 +32,10 @@ public class AuthenticationController {
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
             var jwtToken = service.login(request);
-            return ResponseEntity.ok(SuccessResponse.builder().token(jwtToken).build());
+            return ResponseEntity.ok(AuthenticationResponse.builder().token(jwtToken).build());
 
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(ErrorResponse.builder().errorMessage(e.getMessage()).build());
+            return ResponseEntity.badRequest().body(AuthenticationResponse.builder().errorMessage(e.getMessage()).build());
         }
 
     }
