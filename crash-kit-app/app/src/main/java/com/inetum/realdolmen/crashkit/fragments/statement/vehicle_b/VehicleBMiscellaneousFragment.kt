@@ -5,15 +5,31 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleBMiscellaneousBinding
-import com.inetum.realdolmen.crashkit.fragments.statement.AccidentSketchFragment
+import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleADriverFragment
+import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
+import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
+import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
+import com.inetum.realdolmen.crashkit.utils.printBackStack
 
-class VehicleBMiscellaneousFragment : Fragment() {
+class VehicleBMiscellaneousFragment : Fragment(), StatementDataHandler {
+    private lateinit var model: NewStatementViewModel
 
     private var _binding: FragmentVehicleBMiscellaneousBinding? = null
     private val binding get() = _binding!!
+
+    private val fragmentNavigationHelper by lazy {
+        FragmentNavigationHelper(requireActivity().supportFragmentManager)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        model = ViewModelProvider(requireActivity())[NewStatementViewModel::class.java]
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,28 +46,39 @@ class VehicleBMiscellaneousFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        requireActivity().supportFragmentManager.printBackStack()
+
+        updateUIFromViewModel(model)
+
         binding.btnStatementAccidentPrevious.setOnClickListener {
+            updateViewModelFromUI(model)
 
-            requireActivity().supportFragmentManager.apply {
-                popBackStack(
-                    "vehicle_b_miscellaneous_fragment",
-                    FragmentManager.POP_BACK_STACK_INCLUSIVE
-                )
-
-            }
+            fragmentNavigationHelper.popBackStackInclusive("vehicle_b_miscellaneous_fragment")
         }
 
         binding.btnStatementAccidentNext.setOnClickListener {
+            updateViewModelFromUI(model)
 
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(
-                    R.id.fragmentContainerView,
-                    AccidentSketchFragment()
-                )
-                addToBackStack("accident_sketch_fragment")
-                setReorderingAllowed(true)
-                commit()
-            }
+            fragmentNavigationHelper.navigateToFragment(
+                R.id.fragmentContainerView,
+                VehicleADriverFragment(),
+                "accident_sketch_fragment"
+            )
+        }
+    }
+
+    override fun updateUIFromViewModel(model: NewStatementViewModel) {
+        model.statementData.observe(viewLifecycleOwner, Observer { statementData ->
+            binding.etStatementVehicleBDriverRemarks.setText(statementData.vehicleBRemarks)
+            binding.etStatementVehicleBDamageDescription.setText(statementData.vehicleBDamageDescription)
+        })
+    }
+
+    override fun updateViewModelFromUI(model: NewStatementViewModel) {
+        model.statementData.value?.apply {
+            this.vehicleBRemarks = binding.etStatementVehicleBDriverRemarks.text.toString()
+            this.vehicleBDamageDescription =
+                binding.etStatementVehicleBDamageDescription.text.toString()
         }
     }
 
