@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleBMiscellaneousBinding
+import com.inetum.realdolmen.crashkit.fragments.statement.AccidentSketchFragment
 import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleADriverFragment
 import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
@@ -61,7 +62,7 @@ class VehicleBMiscellaneousFragment : Fragment(), StatementDataHandler {
 
             fragmentNavigationHelper.navigateToFragment(
                 R.id.fragmentContainerView,
-                VehicleADriverFragment(),
+                AccidentSketchFragment(),
                 "accident_sketch_fragment"
             )
         }

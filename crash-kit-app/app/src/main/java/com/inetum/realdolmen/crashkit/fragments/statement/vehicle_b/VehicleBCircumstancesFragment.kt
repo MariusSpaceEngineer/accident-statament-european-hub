@@ -62,7 +62,7 @@ class VehicleBCircumstancesFragment : Fragment(), StatementDataHandler {
 
             fragmentNavigationHelper.navigateToFragment(
                 R.id.fragmentContainerView,
-                VehicleADriverFragment(),
+                VehicleBMiscellaneousFragment(),
                 "vehicle_b_miscellaneous_fragment"
             )
         }
