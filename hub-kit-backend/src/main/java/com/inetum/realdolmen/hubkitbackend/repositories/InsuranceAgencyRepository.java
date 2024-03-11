@@ -7,5 +7,6 @@ import java.util.Optional;
 
 public interface InsuranceAgencyRepository extends JpaRepository<InsuranceAgency, Integer> {
     Optional<InsuranceAgency> findByName(String name);
+    Optional<InsuranceAgency> findByNameAndAddress(String name, String address);
 
 }
