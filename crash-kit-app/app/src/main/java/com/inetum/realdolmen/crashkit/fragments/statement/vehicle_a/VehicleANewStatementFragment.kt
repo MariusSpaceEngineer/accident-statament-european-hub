@@ -8,24 +8,28 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.inetum.realdolmen.crashkit.NewStatementViewModel
+import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.R
-import com.inetum.realdolmen.crashkit.StatementData
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleANewStatementBinding
+import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
+import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.printBackStack
 
-class VehicleANewStatementFragment : Fragment() {
+class VehicleANewStatementFragment : Fragment(), StatementDataHandler {
+    private lateinit var model: NewStatementViewModel
+
     private var _binding: FragmentVehicleANewStatementBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var model: NewStatementViewModel
+    private val fragmentNavigationHelper by lazy {
+        FragmentNavigationHelper(requireActivity().supportFragmentManager)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         model = ViewModelProvider(requireActivity())[NewStatementViewModel::class.java]
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,9 +47,29 @@ class VehicleANewStatementFragment : Fragment() {
 
         requireActivity().supportFragmentManager.printBackStack()
 
-        // Observe the statementData
+        updateUIFromViewModel(model)
+
+        binding.btnStatementAccidentPrevious.setOnClickListener {
+            updateViewModelFromUI(model)
+
+            findNavController().apply {
+                navigate(R.id.newStatementFragment)
+            }
+        }
+
+        binding.btnStatementAccidentNext.setOnClickListener {
+            updateViewModelFromUI(model)
+
+            fragmentNavigationHelper.navigateToFragment(
+                R.id.fragmentContainerView,
+                VehicleAInsuranceFragment(),
+                "vehicle_a_insurance_fragment"
+            )
+        }
+    }
+
+    override fun updateUIFromViewModel(model: NewStatementViewModel) {
         model.statementData.observe(viewLifecycleOwner, Observer { statementData ->
-            // Update the UI here based on the new statementData
             binding.etStatementPolicyHolderName.setText(statementData.policyHolderALastName)
             binding.etStatementPolicyHolderFirstName.setText(statementData.policyHolderAFirstName)
             binding.etStatementPolicyHolderAddress.setText(statementData.policyHolderAAddress)
@@ -55,30 +79,23 @@ class VehicleANewStatementFragment : Fragment() {
             binding.etStatementVehicleARegistrationNumber.setText(statementData.vehicleARegistrationNumber)
             binding.etStatementVehicleACountry.setText(statementData.vehicleACountryOfRegistration)
         })
+    }
 
-        binding.btnStatementAccidentPrevious.setOnClickListener {
-            findNavController().apply {
-                navigate(R.id.newStatementFragment)
-            }
+    override fun updateViewModelFromUI(model: NewStatementViewModel) {
+        model.statementData.value?.apply {
+            this.policyHolderALastName = binding.etStatementPolicyHolderName.text.toString()
+            this.policyHolderAFirstName =
+                binding.etStatementPolicyHolderFirstName.text.toString()
+            this.policyHolderAAddress = binding.etStatementPolicyHolderAddress.text.toString()
+            this.policyHolderAPhoneNumber =
+                binding.etStatementPolicyHolderPhoneNumber.text.toString()
+            this.policyHolderAEmail = binding.etStatementPolicyHolderEmail.text.toString()
+            this.vehicleAMarkType = binding.etStatementVehicleAMarkType.text.toString()
+            this.vehicleARegistrationNumber =
+                binding.etStatementVehicleARegistrationNumber.text.toString()
+            this.vehicleACountryOfRegistration =
+                binding.etStatementVehicleACountry.text.toString()
         }
-
-        binding.btnStatementAccidentNext.setOnClickListener {
-            model.statementData.value?.apply {
-                this.policyHolderALastName = binding.etStatementPolicyHolderName.text.toString()
-                this.policyHolderAFirstName = binding.etStatementPolicyHolderFirstName.text.toString()
-                this.policyHolderAAddress = binding.etStatementPolicyHolderAddress.text.toString()
-                this.policyHolderAPhoneNumber = binding.etStatementPolicyHolderPhoneNumber.text.toString()
-                this.policyHolderAEmail = binding.etStatementPolicyHolderEmail.text.toString()
-            }
-
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.fragmentContainerView, VehicleAInsuranceFragment())
-                addToBackStack("vehicle_a_insurance_fragment")
-                setReorderingAllowed(true)
-                commit()
-            }
-        }
-
     }
 
 }
