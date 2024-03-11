@@ -1,15 +1,18 @@
 package com.inetum.realdolmen.hubkitbackend.services;
 
 import com.inetum.realdolmen.hubkitbackend.dto.AccidentStatementDTO;
+import com.inetum.realdolmen.hubkitbackend.exceptions.AccidentStatementCreationFailed;
 import com.inetum.realdolmen.hubkitbackend.mappers.AccidentStatementMapper;
 import com.inetum.realdolmen.hubkitbackend.models.*;
 import com.inetum.realdolmen.hubkitbackend.repositories.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AccidentStatementService {
@@ -24,7 +27,7 @@ public class AccidentStatementService {
 
     private final AccidentStatementMapper accidentStatementMapper;
 
-    public String createAccidentStatement(AccidentStatementDTO accidentStatementDTO) {
+    public String createAccidentStatement(AccidentStatementDTO accidentStatementDTO) throws Exception {
         try {
             AccidentStatement accidentStatement = accidentStatementMapper.fromDTO(accidentStatementDTO);
 
@@ -100,14 +103,11 @@ public class AccidentStatementService {
             }
             accidentStatementRepository.save(accidentStatement);
 
-
             return "Accident Statement created";
         } catch (DataAccessException e) {
-            // Log the exception and return a meaningful message
-            // You can use any logger according to your application's logging strategy
 
-            System.err.println("Error creating Accident Statement: " + e.getMessage());
-            return "Error occurred while creating Accident Statement";
+            log.error("Error creating Accident Statement:", e);
+            throw new AccidentStatementCreationFailed("Error occurred while creating Accident Statement");
         }
     }
 
