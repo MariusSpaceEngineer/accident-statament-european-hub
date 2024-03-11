@@ -1,0 +1,38 @@
+package com.inetum.realdolmen.hubkitbackend.dto;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+@Getter
+@Setter
+@Builder
+public class AccidentStatementDTO {
+    private Integer id;
+    private LocalDate date;
+    private String location;
+    private Boolean injured;
+    private Boolean damageToOtherCars;
+    private Boolean damageToObjects;
+    //TODO: create circumstances class
+    //private Set<?> circumstances;
+    private Integer numberOfCircumstances;
+    private Byte sketchOfImage;
+    private Byte initialImpactVehicleA;
+    private Byte initialImpactVehicleB;
+    private String remarkVehicleA;
+    private String remarkVehicleB;
+    private String visibleDamageVehicleA;
+    private String visibleDamageVehicleB;
+    private Byte signatureVehicleA;
+    private Byte signatureVehicleB;
+    private List<DriverDTO> drivers;
+    private List<WitnessDTO> witnesses;
+    private List<InsuranceCertificateDTO> insuranceCertificates;
+    private List<MotorDTO> motors;
+    private List<TrailerDTO> trailers;
+}
