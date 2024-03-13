@@ -7,12 +7,19 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleAInsuranceBinding
 import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
+import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.printBackStack
+import java.beans.PropertyChangeListener
+import java.beans.PropertyChangeSupport
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 
 class VehicleAInsuranceFragment : Fragment(), StatementDataHandler {
@@ -24,6 +31,43 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler {
     private val fragmentNavigationHelper by lazy {
         FragmentNavigationHelper(requireActivity().supportFragmentManager)
     }
+
+    private val changeSupport = PropertyChangeSupport(this)
+
+    private var insuranceCertificateAvailabilityDate: LocalDate? = null
+        set(newValue) {
+            val oldValue = field
+            field = newValue
+
+            // Notify listeners about the change
+            changeSupport.firePropertyChange(
+                "insuranceCertificateAvailabilityDate",
+                oldValue,
+                newValue
+            )
+        }
+
+    private var insuranceCertificateExpirationDate: LocalDate? = null
+        set(newValue) {
+            val oldValue = field
+            field = newValue
+
+            // Notify listeners about the change
+            changeSupport.firePropertyChange(
+                "insuranceCertificateExpirationDate",
+                oldValue,
+                newValue
+            )
+        }
+
+    fun addDateChangeListener(listener: PropertyChangeListener) {
+        changeSupport.addPropertyChangeListener(listener)
+    }
+
+    private val insuranceCertificateDateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
+        .setTitleText("Select dates")
+        .build()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,6 +109,36 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler {
                 "vehicle_a_driver_fragment"
             )
         }
+
+        binding.btnDateTimePickerInsuranceCertificateAvailabilityDate.setOnClickListener {
+            insuranceCertificateDateRangePicker.show(
+                parentFragmentManager,
+                "insurance_certificate_date_picker"
+            )
+            insuranceCertificateDateRangePicker.addOnPositiveButtonClickListener { selection ->
+                insuranceCertificateAvailabilityDate = Instant.ofEpochMilli(selection.first).atZone(
+                    ZoneId.systemDefault()
+                ).toLocalDate()
+                insuranceCertificateExpirationDate = Instant.ofEpochMilli(selection.second).atZone(
+                    ZoneId.systemDefault()
+                ).toLocalDate()
+            }
+        }
+
+        addDateChangeListener {
+
+            binding.etStatementVehicleAInsuranceCompanyCertificateAvailabilityDate.setText(
+                insuranceCertificateAvailabilityDate?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+            )
+        }
+
+        addDateChangeListener {
+            binding.etDateTimePickerInsuranceCertificateExpirationDate.setText(
+                insuranceCertificateExpirationDate?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+
+            )
+        }
+
     }
 
     override fun updateUIFromViewModel(model: NewStatementViewModel) {
@@ -73,15 +147,24 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler {
             binding.etStatementVehicleAInsuranceCompanyPolicyNumber.setText(statementData.vehicleAInsuranceCompanyPolicyNumber)
             binding.etStatementVehicleAInsuranceCompanyGreenCardNumber.setText(statementData.vehicleAInsuranceCompanyGreenCardNumber)
             binding.etStatementVehicleAInsuranceCompanyCertificateAvailabilityDate.setText(
-                statementData.vehicleAInsuranceCertificateAvailabilityDate
+                statementData.vehicleAInsuranceCertificateAvailabilityDate?.format(
+                    DateTimeFormatter.ofPattern(
+                        "dd/MM/yyyy"
+                    )
+                )
             )
-            binding.etStatementVehicleAInsuranceCompanyCertificateExpirationDate.setText(
-                statementData.vehicleAInsuranceCertificateExpirationDate
+            binding.etDateTimePickerInsuranceCertificateExpirationDate.setText(
+                statementData.vehicleAInsuranceCertificateExpirationDate?.format(
+                    DateTimeFormatter.ofPattern(
+                        "dd/MM/yyyy"
+                    )
+                )
             )
             binding.etStatementVehicleAInsuranceAgencyName.setText(statementData.vehicleAInsuranceAgencyName)
             binding.etStatementVehicleAInsuranceAgencyAddress.setText(statementData.vehicleAInsuranceAgencyAddress)
             binding.etStatementVehicleAInsuranceAgencyCountry.setText(statementData.vehicleAInsuranceAgencyCountry)
             binding.etStatementVehicleAInsuranceAgencyPhoneNumber.setText(statementData.vehicleAInsuranceAgencyPhoneNumber)
+            binding.etStatementVehicleAInsuranceAgencyEmail.setText(statementData.vehicleAInsuranceAgencyEmail)
             binding.cbStatementDamagedCovered.isChecked =
                 statementData.vehicleAMaterialDamageCovered
         })
@@ -95,10 +178,8 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler {
                 binding.etStatementVehicleAInsuranceCompanyPolicyNumber.text.toString()
             this.vehicleAInsuranceCompanyGreenCardNumber =
                 binding.etStatementVehicleAInsuranceCompanyGreenCardNumber.text.toString()
-            this.vehicleAInsuranceCertificateAvailabilityDate =
-                binding.etStatementVehicleAInsuranceCompanyCertificateAvailabilityDate.text.toString()
-            this.vehicleAInsuranceCertificateExpirationDate =
-                binding.etStatementVehicleAInsuranceCompanyCertificateExpirationDate.text.toString()
+            this.vehicleAInsuranceCertificateAvailabilityDate = insuranceCertificateAvailabilityDate
+            this.vehicleAInsuranceCertificateExpirationDate = insuranceCertificateExpirationDate
             this.vehicleAInsuranceAgencyName =
                 binding.etStatementVehicleAInsuranceAgencyName.text.toString()
             this.vehicleAInsuranceAgencyAddress =
@@ -107,6 +188,8 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler {
                 binding.etStatementVehicleAInsuranceAgencyCountry.text.toString()
             this.vehicleAInsuranceAgencyPhoneNumber =
                 binding.etStatementVehicleAInsuranceAgencyPhoneNumber.text.toString()
+            this.vehicleAInsuranceAgencyEmail =
+                binding.etStatementVehicleAInsuranceAgencyEmail.text.toString()
             this.vehicleAMaterialDamageCovered = binding.cbStatementDamagedCovered.isChecked
         }
     }
