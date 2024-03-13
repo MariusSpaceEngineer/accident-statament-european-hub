@@ -21,6 +21,7 @@ public class SecurityConfig {
     //Urls accessible without being authorized
     private static final String[] WHITE_LIST_URL = {
             "/api/v1/auth/**",
+            "/api/v1/statement/**"
     };
     private final JwtAuthFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
