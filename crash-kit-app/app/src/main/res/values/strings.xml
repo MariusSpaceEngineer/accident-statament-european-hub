@@ -11,7 +11,7 @@
     <string name="profile_title">Profile</string>
     <string name="profile_personal_card_title">Personal Information</string>
     <string name="new_statement_title">Accident Statement</string>
-    <string name="statement_material_damage_title">Material Damage:</string>
+    <string name="statement_material_damage_title">Material Damage</string>
     <string name="statement_witness_title">Witness</string>
     <string name="statement_vehicle_a_title">Vehicle A</string>
     <string name="statement_insurance_company_title">Insurance Company</string>
@@ -49,6 +49,7 @@
     <string name="label_driving_license_number">Driving License Number</string>
     <string name="label_driving_license_expiration_date">Driving License Expiration Date</string>
     <string name="label_amount_of_crosses">Amount of Crosses:</string>
+    <string name="label_pick_date">Pick Date</string>
 
     <!--    Buttons-->
     <string name="main_register_button">Register</string>
