@@ -7,11 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentNewStatementBinding
 import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleANewStatementFragment
 import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
+import com.inetum.realdolmen.crashkit.utils.DateTimePicker
+import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.printBackStack
 
@@ -20,6 +21,10 @@ class NewStatementFragment : Fragment(), StatementDataHandler {
 
     private var _binding: FragmentNewStatementBinding? = null
     private val binding get() = _binding!!
+
+    private val dateTimePicker by lazy {
+        DateTimePicker(requireContext())
+    }
 
     private val fragmentNavigationHelper by lazy {
         FragmentNavigationHelper(requireActivity().supportFragmentManager)
@@ -57,13 +62,30 @@ class NewStatementFragment : Fragment(), StatementDataHandler {
                 "vehicle_a_new_statement_fragment"
             )
         }
+
+        binding.btnDateTimePicker.setOnClickListener {
+            dateTimePicker.pickDateTime()
+        }
+
+        dateTimePicker.addDateChangeListener {
+            binding.etStatementAccidentDate.setText(
+                dateTimePicker.getFormattedDateTime(
+                    dateTimePicker.dateTime
+                )
+            )
+        }
     }
 
     override fun updateUIFromViewModel(model: NewStatementViewModel) {
         model.statementData.observe(viewLifecycleOwner, Observer { statementData ->
             // Update the UI here based on the new statementData
-            binding.etStatementAccidentDate.setText(statementData.dateOfAccident)
+            binding.etStatementAccidentDate.setText(
+                dateTimePicker.getFormattedDateTime(
+                    statementData.dateOfAccident
+                )
+            )
             binding.etStatementAccidentLocation.setText(statementData.accidentLocation)
+            binding.cbStatementAccidentInjured.isChecked = statementData.injured
             binding.cbStatementAccidentMaterialDamageOtherVehicles.isChecked =
                 statementData.materialDamageToOtherVehicles
             binding.cbStatementAccidentMaterialDamageOtherObjects.isChecked =
@@ -76,8 +98,9 @@ class NewStatementFragment : Fragment(), StatementDataHandler {
 
     override fun updateViewModelFromUI(model: NewStatementViewModel) {
         model.statementData.value?.apply {
-            this.dateOfAccident = binding.etStatementAccidentDate.text.toString()
+            this.dateOfAccident = dateTimePicker.dateTime
             this.accidentLocation = binding.etStatementAccidentLocation.text.toString()
+            this.injured = binding.cbStatementAccidentInjured.isChecked
             this.materialDamageToOtherVehicles =
                 binding.cbStatementAccidentMaterialDamageOtherVehicles.isChecked
             this.materialDamageToObjects =

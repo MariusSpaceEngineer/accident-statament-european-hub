@@ -42,11 +42,24 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_statement_accident_date"
+                    android:enabled="false"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/input_hint" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/btn_date_time_picker"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="-15dp"
+                android:layout_marginEnd="25dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/bottom_rounded_corners_filled"
+                android:text="@string/label_pick_date"
+                android:textSize="16sp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -75,6 +88,14 @@
                 android:background="@drawable/bottom_rounded_corners_filled"
                 android:text="@string/statement_track_location_button"
                 android:textSize="16sp" />
+
+            <CheckBox
+                android:id="@+id/cb_statement_accident_injured"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="25dp"
+                android:layout_marginEnd="25dp"
+                android:text="Injured" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
