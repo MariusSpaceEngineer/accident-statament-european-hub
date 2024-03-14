@@ -2,6 +2,8 @@ package com.inetum.realdolmen.crashkit.utils
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 class NewStatementViewModel : ViewModel() {
     val statementData: MutableLiveData<StatementData> by lazy {
@@ -10,8 +12,9 @@ class NewStatementViewModel : ViewModel() {
 }
 
 data class StatementData(
-    var dateOfAccident: String = "",
+    var dateOfAccident: LocalDateTime? = null,
     var accidentLocation: String = "",
+    var injured: Boolean = false,
     var materialDamageToOtherVehicles: Boolean = false,
     var materialDamageToObjects: Boolean = false,
     var witnessName: String = "",
@@ -20,6 +23,7 @@ data class StatementData(
     var policyHolderALastName: String = "",
     var policyHolderAFirstName: String = "",
     var policyHolderAAddress: String = "",
+    var policyHolderAPostalCode: String = "",
     var policyHolderAPhoneNumber: String = "",
     var policyHolderAEmail: String = "",
     var vehicleAMarkType: String = "",
@@ -28,8 +32,8 @@ data class StatementData(
     var vehicleAInsuranceCompanyName: String = "",
     var vehicleAInsuranceCompanyPolicyNumber: String = "",
     var vehicleAInsuranceCompanyGreenCardNumber: String = "",
-    var vehicleAInsuranceCertificateAvailabilityDate: String = "",
-    var vehicleAInsuranceCertificateExpirationDate: String = "",
+    var vehicleAInsuranceCertificateAvailabilityDate: LocalDate? = null,
+    var vehicleAInsuranceCertificateExpirationDate: LocalDate? = null,
     var vehicleAInsuranceAgencyName: String = "",
     var vehicleAInsuranceAgencyAddress: String = "",
     var vehicleAInsuranceAgencyCountry: String = "",
@@ -38,13 +42,13 @@ data class StatementData(
     var vehicleAMaterialDamageCovered: Boolean = false,
     var vehicleADriverLastName: String = "",
     var vehicleADriverFirstName: String = "",
-    var vehicleADriverDateOfBirth: String = "",
+    var vehicleADriverDateOfBirth: LocalDate? = null,
     var vehicleADriverAddress: String = "",
     var vehicleADriverCountry: String = "",
     var vehicleADriverPhoneNumber: String = "",
     var vehicleADriverEmail: String = "",
     var vehicleADriverDrivingLicenseNr: String = "",
-    var vehicleADriverDrivingLicenseExpirationDate: String = "",
+    var vehicleADriverDrivingLicenseExpirationDate: LocalDate? = null,
     var vehicleAParkedStopped: Boolean = false,
     var vehicleALeavingParkingOpeningDoor: Boolean = false,
     var vehicleAEnteringParking: Boolean = false,
@@ -67,6 +71,7 @@ data class StatementData(
     var policyHolderBLastName: String = "",
     var policyHolderBFirstName: String = "",
     var policyHolderBAddress: String = "",
+    var policyHolderBPostalCode: String = "",
     var policyHolderBPhoneNumber: String = "",
     var policyHolderBEmail: String = "",
     var vehicleBMarkType: String = "",
@@ -75,8 +80,8 @@ data class StatementData(
     var vehicleBInsuranceCompanyName: String = "",
     var vehicleBInsuranceCompanyPolicyNumber: String = "",
     var vehicleBInsuranceCompanyGreenCardNumber: String = "",
-    var vehicleBInsuranceCertificateAvailabilityDate: String = "",
-    var vehicleBInsuranceCertificateExpirationDate: String = "",
+    var vehicleBInsuranceCertificateAvailabilityDate: LocalDate? = null,
+    var vehicleBInsuranceCertificateExpirationDate: LocalDate? = null,
     var vehicleBInsuranceAgencyName: String = "",
     var vehicleBInsuranceAgencyAddress: String = "",
     var vehicleBInsuranceAgencyCountry: String = "",
@@ -85,13 +90,13 @@ data class StatementData(
     var vehicleBMaterialDamageCovered: Boolean = false,
     var vehicleBDriverLastName: String = "",
     var vehicleBDriverFirstName: String = "",
-    var vehicleBDriverDateOfBirth: String = "",
+    var vehicleBDriverDateOfBirth: LocalDate? = null,
     var vehicleBDriverAddress: String = "",
     var vehicleBDriverCountry: String = "",
     var vehicleBDriverPhoneNumber: String = "",
     var vehicleBDriverEmail: String = "",
     var vehicleBDriverDrivingLicenseNr: String = "",
-    var vehicleBDriverDrivingLicenseExpirationDate: String = "",
+    var vehicleBDriverDrivingLicenseExpirationDate: LocalDate? = null,
     var vehicleBParkedStopped: Boolean = false,
     var vehicleBLeavingParkingOpeningDoor: Boolean = false,
     var vehicleBEnteringParking: Boolean = false,
