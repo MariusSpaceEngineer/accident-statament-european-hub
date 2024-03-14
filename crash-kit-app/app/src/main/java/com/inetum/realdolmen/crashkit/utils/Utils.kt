@@ -1,9 +1,13 @@
 package com.inetum.realdolmen.crashkit.utils
+
 import android.content.Context
 import android.util.Log
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 fun Context.createSimpleDialog(title: String, message: String) {
     MaterialAlertDialogBuilder(this)
@@ -34,3 +38,23 @@ fun FragmentManager.printBackStack() {
     }
     Log.i("BackStack", "BackStack count: $count")
 }
+
+fun LocalDate.toIsoString(): String {
+    return this.format(DateTimeFormatter.ISO_LOCAL_DATE)
+}
+
+fun LocalDateTime.toIsoString(): String {
+    return this.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+}
+
+fun LocalDate.to24Format(): String {
+    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    return this.format(formatter)
+}
+
+fun LocalDateTime.to24Format(): String {
+    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
+    return this.format(formatter)
+}
+
+
