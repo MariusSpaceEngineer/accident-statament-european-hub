@@ -24,7 +24,7 @@ public class AccidentStatementService {
     private final InsuranceCertificateRepository insuranceCertificateRepository;
     private final InsuranceAgencyRepository insuranceAgencyRepository;
     private final InsuranceCompanyRepository insuranceCompanyRepository;
-
+    private final PolicyHolderRepository policyHolderRepository;
     private final AccidentStatementMapper accidentStatementMapper;
 
 
@@ -116,7 +116,9 @@ public class AccidentStatementService {
                     } else {
                         insuranceCompanyRepository.save(policyHolder.getInsuranceCertificate().getInsuranceCompany());
                     }
+                    insuranceCertificateRepository.save(policyHolder.getInsuranceCertificate());
                 }
+                policyHolderRepository.save(policyHolder);
             }
             accidentStatementRepository.save(accidentStatement);
 
