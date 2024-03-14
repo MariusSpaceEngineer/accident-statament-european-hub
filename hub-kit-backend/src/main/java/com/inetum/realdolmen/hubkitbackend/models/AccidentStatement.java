@@ -44,7 +44,7 @@ public class AccidentStatement {
     @ManyToMany
     private List<Motor> motors;
     @ManyToMany
-    private List<InsuranceCertificate> insuranceCertificates;
+    private List<PolicyHolder> policyHolders;
     @ManyToMany
     private List<Trailer> trailers;
 }

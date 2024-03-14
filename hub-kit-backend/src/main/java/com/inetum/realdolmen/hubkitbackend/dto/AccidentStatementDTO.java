@@ -5,9 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+
 @Getter
 @Setter
 @Builder
@@ -32,7 +31,7 @@ public class AccidentStatementDTO {
     private Byte signatureVehicleB;
     private List<DriverDTO> drivers;
     private List<WitnessDTO> witnesses;
-    private List<InsuranceCertificateDTO> insuranceCertificates;
+    private List<PolicyHolderDTO> policyHolders;
     private List<MotorDTO> motors;
     private List<TrailerDTO> trailers;
 }

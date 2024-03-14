@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring", uses = {DriverMapper.class, WitnessMapper.class,
-        MotorMapper.class, InsuranceCertificateMapper.class, TrailerMapper.class})
+        MotorMapper.class, PolicyHolderMapper.class, TrailerMapper.class})
 public interface AccidentStatementMapper {
     @Mapping(target = "id", ignore = true)
     AccidentStatement fromDTO(AccidentStatementDTO accidentStatementDTO);
