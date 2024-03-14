@@ -9,6 +9,9 @@ class NewStatementViewModel : ViewModel() {
     val statementData: MutableLiveData<StatementData> by lazy {
         MutableLiveData<StatementData>(StatementData())
     }
+    val statementDataErrors: MutableLiveData<StatementDataErrors> by lazy {
+        MutableLiveData<StatementDataErrors>(StatementDataErrors())
+    }
 }
 
 data class StatementData(
@@ -116,4 +119,11 @@ data class StatementData(
     var vehicleBNotObservedSignRedLight: Boolean = false,
     var vehicleBRemarks: String = "",
     var vehicleBDamageDescription: String = ""
+)
+
+data class StatementDataErrors(
+    var fieldRequired: String = "Field is required",
+    var noDigitsAllowed: String = "No digits allowed",
+    var fieldNeedsCharacters: String= "Field needs certain characters:",
+    var futureDate: String= "Date is in the future"
 )
