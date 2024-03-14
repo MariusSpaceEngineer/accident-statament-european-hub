@@ -14,12 +14,12 @@ import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.printBackStack
+import com.inetum.realdolmen.crashkit.utils.to24Format
 import java.beans.PropertyChangeListener
 import java.beans.PropertyChangeSupport
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 
 class VehicleAInsuranceFragment : Fragment(), StatementDataHandler {
@@ -60,10 +60,6 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler {
             )
         }
 
-    fun addDateChangeListener(listener: PropertyChangeListener) {
-        changeSupport.addPropertyChangeListener(listener)
-    }
-
     private val insuranceCertificateDateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
         .setTitleText("Select dates")
         .build()
@@ -74,7 +70,6 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler {
 
         model = ViewModelProvider(requireActivity())[NewStatementViewModel::class.java]
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -128,17 +123,16 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler {
         addDateChangeListener {
 
             binding.etStatementVehicleAInsuranceCompanyCertificateAvailabilityDate.setText(
-                insuranceCertificateAvailabilityDate?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                (insuranceCertificateAvailabilityDate?.to24Format() ?: "")
             )
         }
 
         addDateChangeListener {
-            binding.etDateTimePickerInsuranceCertificateExpirationDate.setText(
-                insuranceCertificateExpirationDate?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+            binding.etStatementVehicleAInsuranceCompanyCertificateExpirationDate.setText(
+                (insuranceCertificateExpirationDate?.to24Format() ?: "")
 
             )
         }
-
     }
 
     override fun updateUIFromViewModel(model: NewStatementViewModel) {
@@ -147,18 +141,10 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler {
             binding.etStatementVehicleAInsuranceCompanyPolicyNumber.setText(statementData.vehicleAInsuranceCompanyPolicyNumber)
             binding.etStatementVehicleAInsuranceCompanyGreenCardNumber.setText(statementData.vehicleAInsuranceCompanyGreenCardNumber)
             binding.etStatementVehicleAInsuranceCompanyCertificateAvailabilityDate.setText(
-                statementData.vehicleAInsuranceCertificateAvailabilityDate?.format(
-                    DateTimeFormatter.ofPattern(
-                        "dd/MM/yyyy"
-                    )
-                )
+                statementData.vehicleAInsuranceCertificateAvailabilityDate?.to24Format() ?: ""
             )
-            binding.etDateTimePickerInsuranceCertificateExpirationDate.setText(
-                statementData.vehicleAInsuranceCertificateExpirationDate?.format(
-                    DateTimeFormatter.ofPattern(
-                        "dd/MM/yyyy"
-                    )
-                )
+            binding.etStatementVehicleAInsuranceCompanyCertificateExpirationDate.setText(
+                statementData.vehicleAInsuranceCertificateExpirationDate?.to24Format() ?: ""
             )
             binding.etStatementVehicleAInsuranceAgencyName.setText(statementData.vehicleAInsuranceAgencyName)
             binding.etStatementVehicleAInsuranceAgencyAddress.setText(statementData.vehicleAInsuranceAgencyAddress)
@@ -194,4 +180,7 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler {
         }
     }
 
+    private fun addDateChangeListener(listener: PropertyChangeListener) {
+        changeSupport.addPropertyChangeListener(listener)
+    }
 }
