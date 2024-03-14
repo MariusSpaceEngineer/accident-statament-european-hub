@@ -66,4 +66,12 @@ fun String.toLocalDateTime(): LocalDateTime? {
     }
 }
 
+fun String.toLocalDate(): LocalDate? {
+    return try {
+        LocalDate.parse(this, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+    } catch (e: DateTimeParseException) {
+        null
+    }
+}
+
 
