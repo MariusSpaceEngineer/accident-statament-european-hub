@@ -124,6 +124,8 @@ data class StatementData(
 data class StatementDataErrors(
     var fieldRequired: String = "Field is required",
     var noDigitsAllowed: String = "No digits allowed",
+    var noLettersAllowed: String = "No letters allowed",
     var fieldNeedsCharacters: String= "Field needs certain characters:",
-    var futureDate: String= "Date is in the future"
+    var futureDate: String= "Date is in the future",
+    var invalidEmail: String= "Invalid email"
 )
