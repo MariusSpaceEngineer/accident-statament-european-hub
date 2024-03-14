@@ -4,24 +4,35 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentNewStatementBinding
 import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleANewStatementFragment
+import com.inetum.realdolmen.crashkit.helpers.FormHelper
 import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
 import com.inetum.realdolmen.crashkit.utils.DateTimePicker
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
+import com.inetum.realdolmen.crashkit.utils.StatementDataErrors
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
+import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.printBackStack
 import com.inetum.realdolmen.crashkit.utils.to24Format
+import com.inetum.realdolmen.crashkit.utils.toLocalDateTime
+import java.time.LocalDateTime
 
-class NewStatementFragment : Fragment(), StatementDataHandler {
+class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigure {
     private lateinit var model: NewStatementViewModel
 
     private var _binding: FragmentNewStatementBinding? = null
     private val binding get() = _binding!!
+
+    private var fields: List<TextView> = listOf()
+    private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = listOf()
+    private var formHelper: FormHelper = FormHelper(fields)
 
     private val fragmentNavigationHelper by lazy {
         FragmentNavigationHelper(requireActivity().supportFragmentManager)
@@ -50,18 +61,28 @@ class NewStatementFragment : Fragment(), StatementDataHandler {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().supportFragmentManager.printBackStack()
+        val statementDataErrors = model.statementDataErrors.value!!
+
+        setupValidation(statementDataErrors, fields, validationRules, formHelper)
 
         updateUIFromViewModel(model)
 
+        requireActivity().supportFragmentManager.printBackStack()
+
         binding.btnStatementAccidentNext.setOnClickListener {
+            formHelper.clearErrors()
+
             updateViewModelFromUI(model)
 
-            fragmentNavigationHelper.navigateToFragment(
-                R.id.fragmentContainerView,
-                VehicleANewStatementFragment(),
-                "vehicle_a_new_statement_fragment"
-            )
+            formHelper.validateFields(validationRules)
+            if (fields.none { it.error != null }) {
+                // If no errors, navigate to the next fragment
+                fragmentNavigationHelper.navigateToFragment(
+                    R.id.fragmentContainerView,
+                    VehicleANewStatementFragment(),
+                    "vehicle_a_new_statement_fragment"
+                )
+            }
         }
 
         binding.btnDateTimePicker.setOnClickListener {
@@ -107,4 +128,60 @@ class NewStatementFragment : Fragment(), StatementDataHandler {
             this.witnessPhoneNumber = binding.etStatementWitnessPhone.text.toString()
         }
     }
+
+    override fun setupValidation(
+        errors: StatementDataErrors,
+        fields: List<TextView>,
+        validationRules: List<Triple<TextView, (String?) -> Boolean, String>>,
+        formHelper: FormHelper
+    ) {
+        this.fields = listOf(
+            binding.etStatementAccidentDate,
+            binding.etStatementAccidentLocation,
+            binding.cbStatementAccidentMaterialDamageOtherVehicles,
+            binding.cbStatementAccidentMaterialDamageOtherObjects,
+            binding.etStatementWitnessName,
+            binding.etStatementWitnessAddress,
+            binding.etStatementWitnessPhone
+        )
+
+        this.validationRules = listOf<Triple<EditText, (String?) -> Boolean, String>>(
+            Triple(
+                binding.etStatementAccidentDate,
+                { value -> value.isNullOrEmpty() },
+                errors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementAccidentDate, { value ->
+                    value?.toLocalDateTime()?.isAfter(LocalDateTime.now()) ?: false
+                }, errors.futureDate
+            ),
+            Triple(
+                binding.etStatementAccidentLocation,
+                { value -> value.isNullOrEmpty() },
+                errors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementWitnessName,
+                { value -> value.isNullOrEmpty() },
+                errors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementWitnessName,
+                { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
+                errors.noDigitsAllowed
+            ),
+            Triple(
+                binding.etStatementWitnessAddress,
+                { value -> value.isNullOrEmpty() },
+                errors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementWitnessPhone,
+                { value -> value.isNullOrEmpty() },
+                errors.fieldRequired
+            ),
+        )
+    }
+
 }
