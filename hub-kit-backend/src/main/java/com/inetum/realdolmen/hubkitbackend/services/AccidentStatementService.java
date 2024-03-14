@@ -51,23 +51,29 @@ public class AccidentStatementService {
                 }
             }
 
-            for (Motor motor : accidentStatement.getMotors()) {
-                var existingMotor = motorRepository.findByLicensePlate(motor.getLicensePlate());
-                if (existingMotor.isPresent()) {
-                    var index = accidentStatement.getMotors().indexOf(motor);
-                    accidentStatement.getMotors().set(index, existingMotor.get());
-                } else {
-                    motorRepository.save(motor);
+            if (accidentStatement.getMotors() != null) {
+
+                for (Motor motor : accidentStatement.getMotors()) {
+                    var existingMotor = motorRepository.findByLicensePlate(motor.getLicensePlate());
+                    if (existingMotor.isPresent()) {
+                        var index = accidentStatement.getMotors().indexOf(motor);
+                        accidentStatement.getMotors().set(index, existingMotor.get());
+                    } else {
+                        motorRepository.save(motor);
+                    }
                 }
             }
 
-            for (Trailer trailer : accidentStatement.getTrailers()) {
-                var existingTrailer = trailerRepository.findByLicensePlate(trailer.getLicensePlate());
-                if (existingTrailer.isPresent()) {
-                    var index = accidentStatement.getTrailers().indexOf(trailer);
-                    accidentStatement.getTrailers().set(index, existingTrailer.get());
-                } else {
-                    trailerRepository.save(trailer);
+            if (accidentStatement.getTrailers() != null) {
+
+                for (Trailer trailer : accidentStatement.getTrailers()) {
+                    var existingTrailer = trailerRepository.findByLicensePlate(trailer.getLicensePlate());
+                    if (existingTrailer.isPresent()) {
+                        var index = accidentStatement.getTrailers().indexOf(trailer);
+                        accidentStatement.getTrailers().set(index, existingTrailer.get());
+                    } else {
+                        trailerRepository.save(trailer);
+                    }
                 }
             }
 
