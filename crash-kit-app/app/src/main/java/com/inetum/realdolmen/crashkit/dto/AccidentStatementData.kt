@@ -20,7 +20,7 @@ data class AccidentStatementData(
     val signatureVehicleB: String? = null,
     val drivers: List<DriverDTO>? = null,
     val witnesses: List<WitnessDTO>? = null,
-    val insuranceCertificate: List<InsuranceCertificate>? = null,
+    val insuranceCertificates: List<InsuranceCertificate>? = null,
     val motors: List<MotorDTO>? = null,
     val trailers: List<TrailerDTO>? = null
 )
