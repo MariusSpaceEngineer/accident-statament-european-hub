@@ -8,6 +8,7 @@ import com.google.android.material.textfield.TextInputEditText
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 fun Context.createSimpleDialog(title: String, message: String) {
     MaterialAlertDialogBuilder(this)
@@ -55,6 +56,14 @@ fun LocalDate.to24Format(): String {
 fun LocalDateTime.to24Format(): String {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
     return this.format(formatter)
+}
+
+fun String.toLocalDateTime(): LocalDateTime? {
+    return try {
+        LocalDateTime.parse(this, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+    } catch (e: DateTimeParseException) {
+        null
+    }
 }
 
 
