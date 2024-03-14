@@ -157,7 +157,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_date_time_picker_insurance_certificate_expiration_date"
+                        android:id="@+id/et_statement_vehicle_a_insurance_company_certificate_expiration_date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:enabled="false"

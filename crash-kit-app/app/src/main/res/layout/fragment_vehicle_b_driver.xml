@@ -123,9 +123,22 @@
                         android:id="@+id/et_statement_vehicle_b_driver_date_of_birth"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:enabled="false"
                         android:textColor="@color/input_hint" />
 
                 </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/btn_date_of_birth_date_picker"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="-15dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/bottom_rounded_corners_filled"
+                    android:text="@string/label_pick_date"
+                    android:textSize="16sp" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
@@ -174,7 +187,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_b_driver_email"
+                        android:id="@+id/et_statement_vehicle_b_driver_phone_number"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -192,7 +205,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_b_driver_driving_license_number"
+                        android:id="@+id/et_statement_vehicle_b_driver_email"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -210,7 +223,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_b_driver_driving_license_expiration_date"
+                        android:id="@+id/et_statement_vehicle_b_driver_driving_license_number"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -228,12 +241,24 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_b_insurance_agency_phone_number"
+                        android:id="@+id/et_statement_vehicle_b_driving_license_expiration_date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
 
                 </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/btn_driving_license_expiration_date_picker"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="-15dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/bottom_rounded_corners_filled"
+                    android:text="@string/label_pick_date"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
