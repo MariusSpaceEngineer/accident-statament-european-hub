@@ -4,28 +4,38 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleBDriverBinding
+import com.inetum.realdolmen.crashkit.helpers.FormHelper
 import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
+import com.inetum.realdolmen.crashkit.utils.StatementDataErrors
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
+import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.printBackStack
 import com.inetum.realdolmen.crashkit.utils.to24Format
+import com.inetum.realdolmen.crashkit.utils.toLocalDate
 import java.beans.PropertyChangeSupport
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 
 
-class VehicleBDriverFragment : Fragment(), StatementDataHandler {
+class VehicleBDriverFragment : Fragment(), StatementDataHandler, ValidationConfigure {
     private lateinit var model: NewStatementViewModel
 
     private var _binding: FragmentVehicleBDriverBinding? = null
     private val binding get() = _binding!!
+
+    private var fields: List<TextView> = listOf()
+    private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = listOf()
+    private var formHelper: FormHelper = FormHelper(fields)
 
     private val fragmentNavigationHelper by lazy {
         FragmentNavigationHelper(requireActivity().supportFragmentManager)
@@ -87,6 +97,10 @@ class VehicleBDriverFragment : Fragment(), StatementDataHandler {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val statementDataErrors = model.statementDataErrors.value!!
+
+        setupValidation(statementDataErrors, fields, validationRules, formHelper)
+
         requireActivity().supportFragmentManager.printBackStack()
 
         updateUIFromViewModel(model)
@@ -98,13 +112,18 @@ class VehicleBDriverFragment : Fragment(), StatementDataHandler {
         }
 
         binding.btnStatementAccidentNext.setOnClickListener {
+            formHelper.clearErrors()
+
             updateViewModelFromUI(model)
 
-            fragmentNavigationHelper.navigateToFragment(
-                R.id.fragmentContainerView,
-                VehicleBCircumstancesFragment(),
-                "vehicle_b_circumstances_fragment"
-            )
+            formHelper.validateFields(validationRules)
+            if (fields.none { it.error != null }) {
+                fragmentNavigationHelper.navigateToFragment(
+                    R.id.fragmentContainerView,
+                    VehicleBCircumstancesFragment(),
+                    "vehicle_b_circumstances_fragment"
+                )
+            }
         }
 
         datePicker.addOnPositiveButtonClickListener { selection ->
@@ -116,6 +135,7 @@ class VehicleBDriverFragment : Fragment(), StatementDataHandler {
                     binding.etStatementVehicleBDrivingLicenseExpirationDate.setText(
                         (drivingLicenseExpirationDate?.to24Format() ?: "")
                     )
+                    binding.etStatementVehicleBDrivingLicenseExpirationDate.error = null
                 }
 
                 "date_of_birth_date_picker" -> {
@@ -123,6 +143,7 @@ class VehicleBDriverFragment : Fragment(), StatementDataHandler {
                     binding.etStatementVehicleBDriverDateOfBirth.setText(
                         (driverDateOfBirth?.to24Format() ?: "")
                     )
+                    binding.etStatementVehicleBDriverDateOfBirth.error = null
                 }
             }
         }
@@ -176,5 +197,108 @@ class VehicleBDriverFragment : Fragment(), StatementDataHandler {
             this.vehicleBDriverDrivingLicenseExpirationDate = drivingLicenseExpirationDate
 
         }
+    }
+
+    override fun setupValidation(
+        statementDataErrors: StatementDataErrors,
+        fields: List<TextView>,
+        validationRules: List<Triple<TextView, (String?) -> Boolean, String>>,
+        formHelper: FormHelper
+    ) {
+        this.fields = listOf(
+            binding.etStatementVehicleBDriverName,
+            binding.etStatementVehicleBDriverFirstName,
+            binding.etStatementVehicleBDriverDateOfBirth,
+            binding.etStatementVehicleBDriverAddress,
+            binding.etStatementVehicleBDriverCountry,
+            binding.etStatementVehicleBDriverPhoneNumber,
+            binding.etStatementVehicleBDriverEmail,
+            binding.etStatementVehicleBDriverDrivingLicenseNumber,
+            binding.etStatementVehicleBDrivingLicenseExpirationDate
+        )
+
+
+        this.validationRules = listOf<Triple<EditText, (String?) -> Boolean, String>>(
+            Triple(
+                binding.etStatementVehicleBDriverName,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementVehicleBDriverName,
+                { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
+                statementDataErrors.noDigitsAllowed
+            ),
+            Triple(
+                binding.etStatementVehicleBDriverFirstName,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementVehicleBDriverFirstName,
+                { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
+                statementDataErrors.noDigitsAllowed
+            ),
+
+            Triple(
+                binding.etStatementVehicleBDriverDateOfBirth,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementVehicleBDriverDateOfBirth, { value ->
+                    value?.toLocalDate()?.isAfter(LocalDate.now()) ?: false
+                }, statementDataErrors.futureDate
+            ),
+            Triple(
+                binding.etStatementVehicleBDriverAddress,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementVehicleBDriverCountry,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementVehicleBDriverCountry,
+                { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
+                statementDataErrors.noDigitsAllowed
+            ),
+            Triple(
+                binding.etStatementVehicleBDriverPhoneNumber,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementVehicleBDriverEmail,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementVehicleBDriverEmail,
+                { value ->
+                    !value.isNullOrEmpty() && !android.util.Patterns.EMAIL_ADDRESS.matcher(
+                        value
+                    ).matches()
+                },
+                statementDataErrors.invalidEmail
+            ),
+            Triple(
+                binding.etStatementVehicleBDriverDrivingLicenseNumber,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementVehicleBDrivingLicenseExpirationDate,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementVehicleBDrivingLicenseExpirationDate, { value ->
+                    value?.toLocalDate()?.isBefore(LocalDate.now()) ?: false
+                }, statementDataErrors.pastDate
+            ),
+        )
     }
 }

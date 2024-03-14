@@ -4,21 +4,30 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleBNewStatementBinding
+import com.inetum.realdolmen.crashkit.helpers.FormHelper
 import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
+import com.inetum.realdolmen.crashkit.utils.StatementDataErrors
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
+import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.printBackStack
 
-class VehicleBNewStatementFragment : Fragment(), StatementDataHandler {
+class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigure {
     private lateinit var model: NewStatementViewModel
 
     private var _binding: FragmentVehicleBNewStatementBinding? = null
     private val binding get() = _binding!!
+
+    private var fields: List<TextView> = listOf()
+    private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = listOf()
+    private var formHelper: FormHelper = FormHelper(fields)
 
     private val fragmentNavigationHelper by lazy {
         FragmentNavigationHelper(requireActivity().supportFragmentManager)
@@ -45,6 +54,10 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val statementDataErrors = model.statementDataErrors.value!!
+
+        setupValidation(statementDataErrors, fields, validationRules, formHelper)
+
         requireActivity().supportFragmentManager.printBackStack()
 
         updateUIFromViewModel(model)
@@ -56,13 +69,19 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler {
         }
 
         binding.btnStatementAccidentNext.setOnClickListener {
+            formHelper.clearErrors()
+
             updateViewModelFromUI(model)
 
-            fragmentNavigationHelper.navigateToFragment(
-                R.id.fragmentContainerView,
-                VehicleBInsuranceFragment(),
-                "vehicle_b_insurance_fragment"
-            )
+            formHelper.validateFields(validationRules)
+
+            if (fields.none { it.error != null }) {
+                fragmentNavigationHelper.navigateToFragment(
+                    R.id.fragmentContainerView,
+                    VehicleBInsuranceFragment(),
+                    "vehicle_b_insurance_fragment"
+                )
+            }
         }
     }
 
@@ -86,7 +105,7 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler {
             this.policyHolderBFirstName =
                 binding.etStatementPolicyHolderFirstName.text.toString()
             this.policyHolderBAddress = binding.etStatementPolicyHolderAddress.text.toString()
-            this.policyHolderBPostalCode= binding.etStatementPolicyHolderPostalCode.text.toString()
+            this.policyHolderBPostalCode = binding.etStatementPolicyHolderPostalCode.text.toString()
             this.policyHolderBPhoneNumber =
                 binding.etStatementPolicyHolderPhoneNumber.text.toString()
             this.policyHolderBEmail = binding.etStatementPolicyHolderEmail.text.toString()
@@ -96,6 +115,98 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler {
             this.vehicleBCountryOfRegistration =
                 binding.etStatementVehicleBCountry.text.toString()
         }
+    }
+
+    override fun setupValidation(
+        statementDataErrors: StatementDataErrors,
+        fields: List<TextView>,
+        validationRules: List<Triple<TextView, (String?) -> Boolean, String>>,
+        formHelper: FormHelper
+    ) {
+        this.fields = listOf(
+            binding.etStatementPolicyHolderName,
+            binding.etStatementPolicyHolderFirstName,
+            binding.etStatementPolicyHolderAddress,
+            binding.etStatementPolicyHolderPostalCode,
+            binding.etStatementPolicyHolderPhoneNumber,
+            binding.etStatementPolicyHolderEmail,
+            binding.etStatementVehicleBMarkType,
+            binding.etStatementVehicleBRegistrationNumber,
+            binding.etStatementVehicleBCountry
+        )
+
+
+        this.validationRules = listOf<Triple<EditText, (String?) -> Boolean, String>>(
+            Triple(
+                binding.etStatementPolicyHolderName,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementPolicyHolderName,
+                { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
+                statementDataErrors.noDigitsAllowed
+            ),
+            Triple(
+                binding.etStatementPolicyHolderFirstName,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementPolicyHolderFirstName,
+                { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
+                statementDataErrors.noDigitsAllowed
+            ),
+            Triple(
+                binding.etStatementPolicyHolderAddress,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementPolicyHolderPostalCode,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementPolicyHolderPhoneNumber,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementVehicleBMarkType,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementVehicleBCountry,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementVehicleBCountry,
+                { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
+                statementDataErrors.noDigitsAllowed
+            ),
+            Triple(
+                binding.etStatementVehicleBRegistrationNumber,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementPolicyHolderEmail,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementPolicyHolderEmail,
+                { value ->
+                    !value.isNullOrEmpty() && !android.util.Patterns.EMAIL_ADDRESS.matcher(
+                        value
+                    ).matches()
+                },
+                statementDataErrors.invalidEmail
+            )
+        )
     }
 
 }
