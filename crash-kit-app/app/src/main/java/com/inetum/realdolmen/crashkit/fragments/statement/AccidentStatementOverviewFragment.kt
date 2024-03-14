@@ -23,6 +23,7 @@ import com.inetum.realdolmen.crashkit.dto.InsuranceAgency
 import com.inetum.realdolmen.crashkit.dto.InsuranceCertificate
 import com.inetum.realdolmen.crashkit.dto.InsuranceCompany
 import com.inetum.realdolmen.crashkit.dto.MotorDTO
+import com.inetum.realdolmen.crashkit.dto.PolicyHolderDTO
 import com.inetum.realdolmen.crashkit.dto.RequestResponse
 import com.inetum.realdolmen.crashkit.dto.WitnessDTO
 import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleACircumstancesFragment
@@ -253,6 +254,7 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
 
         val motors = listOf<MotorDTO>(motorA, motorB)
 
+
         val insuranceCompanyVehicleA =
             InsuranceCompany(null, statementData?.vehicleAInsuranceCompanyName)
 
@@ -273,6 +275,16 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             statementData?.vehicleAInsuranceCertificateExpirationDate?.toIsoString(),
             insuranceAgencyVehicleA,
             insuranceCompanyVehicleA
+        )
+
+        val policyHolderVehicleA = PolicyHolderDTO(
+            statementData?.policyHolderAFirstName,
+            statementData?.policyHolderALastName,
+            statementData?.policyHolderAEmail,
+            statementData?.policyHolderAPhoneNumber,
+            statementData?.policyHolderAAddress,
+            statementData?.policyHolderAPostalCode,
+            insuranceCertificateVehicleA
         )
 
         val insuranceCompanyVehicleB =
@@ -297,8 +309,18 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             insuranceCompanyVehicleB
         )
 
-        val insuranceCertificates =
-            listOf<InsuranceCertificate>(insuranceCertificateVehicleA, insuranceCertificateVehicleB)
+        val policyHolderVehicleB = PolicyHolderDTO(
+            statementData?.policyHolderBFirstName,
+            statementData?.policyHolderBLastName,
+            statementData?.policyHolderBEmail,
+            statementData?.policyHolderBPhoneNumber,
+            statementData?.policyHolderBAddress,
+            statementData?.policyHolderBPostalCode,
+            insuranceCertificateVehicleB
+        )
+
+        val policyHolders = listOf<PolicyHolderDTO>(policyHolderVehicleA, policyHolderVehicleB)
+
 
         val accidentStatement = AccidentStatementData(
             statementData?.dateOfAccident?.toIsoString(),
@@ -318,7 +340,7 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             null,
             drivers,
             witnesses,
-            insuranceCertificates,
+            policyHolders,
             motors,
             null
         )
