@@ -15,6 +15,7 @@ import com.inetum.realdolmen.crashkit.utils.DateTimePicker
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.printBackStack
+import com.inetum.realdolmen.crashkit.utils.to24Format
 
 class NewStatementFragment : Fragment(), StatementDataHandler {
     private lateinit var model: NewStatementViewModel
@@ -22,12 +23,12 @@ class NewStatementFragment : Fragment(), StatementDataHandler {
     private var _binding: FragmentNewStatementBinding? = null
     private val binding get() = _binding!!
 
-    private val dateTimePicker by lazy {
-        DateTimePicker(requireContext())
-    }
-
     private val fragmentNavigationHelper by lazy {
         FragmentNavigationHelper(requireActivity().supportFragmentManager)
+    }
+
+    private val dateTimePicker by lazy {
+        DateTimePicker(requireContext())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,9 +70,7 @@ class NewStatementFragment : Fragment(), StatementDataHandler {
 
         dateTimePicker.addDateChangeListener {
             binding.etStatementAccidentDate.setText(
-                dateTimePicker.getFormattedDateTime(
-                    dateTimePicker.dateTime
-                )
+                (dateTimePicker.dateTime?.to24Format() ?: "")
             )
         }
     }
@@ -80,9 +79,7 @@ class NewStatementFragment : Fragment(), StatementDataHandler {
         model.statementData.observe(viewLifecycleOwner, Observer { statementData ->
             // Update the UI here based on the new statementData
             binding.etStatementAccidentDate.setText(
-                dateTimePicker.getFormattedDateTime(
-                    statementData.dateOfAccident
-                )
+                (statementData.dateOfAccident?.to24Format() ?: "")
             )
             binding.etStatementAccidentLocation.setText(statementData.accidentLocation)
             binding.cbStatementAccidentInjured.isChecked = statementData.injured
