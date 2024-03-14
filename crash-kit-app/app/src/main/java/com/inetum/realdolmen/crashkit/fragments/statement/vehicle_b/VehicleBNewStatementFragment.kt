@@ -71,6 +71,7 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler {
             binding.etStatementPolicyHolderName.setText(statementData.policyHolderBLastName)
             binding.etStatementPolicyHolderFirstName.setText(statementData.policyHolderBFirstName)
             binding.etStatementPolicyHolderAddress.setText(statementData.policyHolderBAddress)
+            binding.etStatementPolicyHolderPostalCode.setText(statementData.policyHolderBPostalCode)
             binding.etStatementPolicyHolderPhoneNumber.setText(statementData.policyHolderBPhoneNumber)
             binding.etStatementPolicyHolderEmail.setText(statementData.policyHolderBEmail)
             binding.etStatementVehicleBMarkType.setText(statementData.vehicleBMarkType)
@@ -85,6 +86,7 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler {
             this.policyHolderBFirstName =
                 binding.etStatementPolicyHolderFirstName.text.toString()
             this.policyHolderBAddress = binding.etStatementPolicyHolderAddress.text.toString()
+            this.policyHolderBPostalCode= binding.etStatementPolicyHolderPostalCode.text.toString()
             this.policyHolderBPhoneNumber =
                 binding.etStatementPolicyHolderPhoneNumber.text.toString()
             this.policyHolderBEmail = binding.etStatementPolicyHolderEmail.text.toString()
