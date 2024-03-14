@@ -1,20 +1,27 @@
 package com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleAInsuranceBinding
+import com.inetum.realdolmen.crashkit.helpers.FormHelper
 import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
+import com.inetum.realdolmen.crashkit.utils.StatementDataErrors
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
+import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.printBackStack
 import com.inetum.realdolmen.crashkit.utils.to24Format
+import com.inetum.realdolmen.crashkit.utils.toLocalDate
 import java.beans.PropertyChangeListener
 import java.beans.PropertyChangeSupport
 import java.time.Instant
@@ -22,11 +29,15 @@ import java.time.LocalDate
 import java.time.ZoneId
 
 
-class VehicleAInsuranceFragment : Fragment(), StatementDataHandler {
+class VehicleAInsuranceFragment : Fragment(), StatementDataHandler, ValidationConfigure {
     private lateinit var model: NewStatementViewModel
 
     private var _binding: FragmentVehicleAInsuranceBinding? = null
     private val binding get() = _binding!!
+
+    private var fields: List<TextView> = listOf()
+    private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = listOf()
+    private var formHelper: FormHelper = FormHelper(fields)
 
     private val fragmentNavigationHelper by lazy {
         FragmentNavigationHelper(requireActivity().supportFragmentManager)
@@ -85,6 +96,10 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val statementDataErrors = model.statementDataErrors.value!!
+
+        setupValidation(statementDataErrors, fields, validationRules, formHelper)
+
         requireActivity().supportFragmentManager.printBackStack()
 
         updateUIFromViewModel(model)
@@ -96,13 +111,21 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler {
         }
 
         binding.btnStatementAccidentNext.setOnClickListener {
+            formHelper.clearErrors()
+
             updateViewModelFromUI(model)
 
-            fragmentNavigationHelper.navigateToFragment(
-                R.id.fragmentContainerView,
-                VehicleADriverFragment(),
-                "vehicle_a_driver_fragment"
-            )
+            formHelper.validateFields(validationRules)
+
+            if (fields.none { it.error != null }) {
+                // If no errors, navigate to the next fragment
+                fragmentNavigationHelper.navigateToFragment(
+                    R.id.fragmentContainerView,
+                    VehicleADriverFragment(),
+                    "vehicle_a_driver_fragment"
+                )
+            }
+
         }
 
         binding.btnDateTimePickerInsuranceCertificateAvailabilityDate.setOnClickListener {
@@ -125,6 +148,7 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler {
             binding.etStatementVehicleAInsuranceCompanyCertificateAvailabilityDate.setText(
                 (insuranceCertificateAvailabilityDate?.to24Format() ?: "")
             )
+            binding.etStatementVehicleAInsuranceCompanyCertificateAvailabilityDate.error=null
         }
 
         addDateChangeListener {
@@ -132,6 +156,7 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler {
                 (insuranceCertificateExpirationDate?.to24Format() ?: "")
 
             )
+            binding.etStatementVehicleAInsuranceCompanyCertificateExpirationDate.error= null
         }
     }
 
@@ -141,8 +166,8 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler {
             binding.etStatementVehicleAInsuranceCompanyPolicyNumber.setText(statementData.vehicleAInsuranceCompanyPolicyNumber)
             binding.etStatementVehicleAInsuranceCompanyGreenCardNumber.setText(statementData.vehicleAInsuranceCompanyGreenCardNumber)
             binding.etStatementVehicleAInsuranceCompanyCertificateAvailabilityDate.setText(
-                statementData.vehicleAInsuranceCertificateAvailabilityDate?.to24Format() ?: ""
-            )
+                    statementData.vehicleAInsuranceCertificateAvailabilityDate?.to24Format() ?: ""
+                    )
             binding.etStatementVehicleAInsuranceCompanyCertificateExpirationDate.setText(
                 statementData.vehicleAInsuranceCertificateExpirationDate?.to24Format() ?: ""
             )
@@ -182,5 +207,113 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler {
 
     private fun addDateChangeListener(listener: PropertyChangeListener) {
         changeSupport.addPropertyChangeListener(listener)
+    }
+
+    override fun setupValidation(
+        statementDataErrors: StatementDataErrors,
+        fields: List<TextView>,
+        validationRules: List<Triple<TextView, (String?) -> Boolean, String>>,
+        formHelper: FormHelper
+    ) {
+        this.fields = listOf(
+            binding.etStatementVehicleAInsuranceCompanyName,
+            binding.etStatementVehicleAInsuranceCompanyPolicyNumber,
+            binding.etStatementVehicleAInsuranceCompanyGreenCardNumber,
+            binding.etStatementVehicleAInsuranceCompanyCertificateAvailabilityDate,
+            binding.etStatementVehicleAInsuranceCompanyCertificateExpirationDate,
+            binding.etStatementVehicleAInsuranceAgencyName,
+            binding.etStatementVehicleAInsuranceAgencyAddress,
+            binding.etStatementVehicleAInsuranceAgencyCountry,
+            binding.etStatementVehicleAInsuranceAgencyPhoneNumber,
+            binding.etStatementVehicleAInsuranceAgencyEmail,
+            binding.cbStatementDamagedCovered
+        )
+
+        this.validationRules = listOf<Triple<EditText, (String?) -> Boolean, String>>(
+            Triple(
+                binding.etStatementVehicleAInsuranceCompanyName,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementVehicleAInsuranceCompanyName,
+                { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
+                statementDataErrors.noDigitsAllowed
+            ),
+            Triple(
+                binding.etStatementVehicleAInsuranceCompanyPolicyNumber,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementVehicleAInsuranceCompanyGreenCardNumber,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementVehicleAInsuranceCompanyCertificateAvailabilityDate,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementVehicleAInsuranceCompanyCertificateAvailabilityDate, { value ->
+                    value?.toLocalDate()?.isAfter(LocalDate.now()) ?: false
+                }, statementDataErrors.futureDate
+            ),
+            Triple(
+                binding.etStatementVehicleAInsuranceCompanyCertificateExpirationDate,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementVehicleAInsuranceAgencyName,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementVehicleAInsuranceAgencyName,
+                { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
+                statementDataErrors.noDigitsAllowed
+            ),
+            Triple(
+                binding.etStatementVehicleAInsuranceAgencyAddress,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementVehicleAInsuranceAgencyCountry,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementVehicleAInsuranceAgencyCountry,
+                { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
+                statementDataErrors.noDigitsAllowed
+            ),
+            Triple(
+                binding.etStatementVehicleAInsuranceAgencyPhoneNumber,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementVehicleAInsuranceAgencyPhoneNumber,
+                { value -> !value.isNullOrEmpty() && value.any { it.isLetter() } },
+                statementDataErrors.noLettersAllowed
+            ),
+            Triple(
+                binding.etStatementVehicleAInsuranceAgencyEmail,
+                { value -> value.isNullOrEmpty() },
+                statementDataErrors.fieldRequired
+            ),
+            Triple(
+                binding.etStatementVehicleAInsuranceAgencyEmail,
+                { value ->
+                    !value.isNullOrEmpty() && !android.util.Patterns.EMAIL_ADDRESS.matcher(
+                        value
+                    ).matches()
+                },
+                statementDataErrors.invalidEmail
+            )
+        )
     }
 }

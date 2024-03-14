@@ -1,6 +1,7 @@
 package com.inetum.realdolmen.crashkit.fragments.statement
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -75,6 +76,12 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
             updateViewModelFromUI(model)
 
             formHelper.validateFields(validationRules)
+
+            fields.forEach { field ->
+                if (field.error != null) {
+                    Log.e("FieldError", "Error in field: ${field}, error: ${field.error}")
+                }
+            }
             if (fields.none { it.error != null }) {
                 // If no errors, navigate to the next fragment
                 fragmentNavigationHelper.navigateToFragment(
@@ -93,6 +100,7 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
             binding.etStatementAccidentDate.setText(
                 (dateTimePicker.dateTime?.to24Format() ?: "")
             )
+            binding.etStatementAccidentDate.error= null
         }
     }
 
