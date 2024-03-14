@@ -2,12 +2,12 @@ package com.inetum.realdolmen.hubkitbackend.services;
 
 import com.inetum.realdolmen.hubkitbackend.dto.AccidentStatementDTO;
 import com.inetum.realdolmen.hubkitbackend.exceptions.AccidentStatementCreationFailed;
+import com.inetum.realdolmen.hubkitbackend.exceptions.MissingPropertyException;
 import com.inetum.realdolmen.hubkitbackend.mappers.AccidentStatementMapper;
 import com.inetum.realdolmen.hubkitbackend.models.*;
 import com.inetum.realdolmen.hubkitbackend.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -27,11 +27,19 @@ public class AccidentStatementService {
 
     private final AccidentStatementMapper accidentStatementMapper;
 
+
     public String createAccidentStatement(AccidentStatementDTO accidentStatementDTO) throws Exception {
         try {
+            if (accidentStatementDTO == null) {
+                throw new MissingPropertyException("AccidentStatementDTO cannot be null");
+            }
+
             AccidentStatement accidentStatement = accidentStatementMapper.fromDTO(accidentStatementDTO);
 
             for (Driver driver : accidentStatement.getDrivers()) {
+                if (driver.getDrivingLicenseNr() == null || driver.getDrivingLicenseNr().isEmpty()) {
+                    throw new MissingPropertyException("Driver's driving license number cannot be null");
+                }
                 var existingDriver = driverRepository.findByDrivingLicenseNr(driver.getDrivingLicenseNr());
                 if (existingDriver.isPresent()) {
                     var index = accidentStatement.getDrivers().indexOf(driver);
@@ -42,6 +50,9 @@ public class AccidentStatementService {
             }
 
             for (Witness witness : accidentStatement.getWitnesses()) {
+                if (witness.getName() == null || witness.getName().isEmpty() || witness.getAddress() == null || witness.getAddress().isEmpty()) {
+                    throw new MissingPropertyException("Witness's name and address cannot be null");
+                }
                 var existingWitness = witnessRepository.findByNameAndAddress(witness.getName(), witness.getAddress());
                 if (existingWitness.isPresent()) {
                     accidentStatement.getWitnesses().remove(witness);
@@ -52,8 +63,10 @@ public class AccidentStatementService {
             }
 
             if (accidentStatement.getMotors() != null) {
-
                 for (Motor motor : accidentStatement.getMotors()) {
+                    if (motor.getLicensePlate() == null || motor.getLicensePlate().isEmpty()) {
+                        throw new MissingPropertyException("Motor's license plate cannot be null");
+                    }
                     var existingMotor = motorRepository.findByLicensePlate(motor.getLicensePlate());
                     if (existingMotor.isPresent()) {
                         var index = accidentStatement.getMotors().indexOf(motor);
@@ -65,8 +78,10 @@ public class AccidentStatementService {
             }
 
             if (accidentStatement.getTrailers() != null) {
-
                 for (Trailer trailer : accidentStatement.getTrailers()) {
+                    if (trailer.getLicensePlate() == null || trailer.getLicensePlate().isEmpty()) {
+                        throw new MissingPropertyException("Trailer's license plate cannot be null");
+                    }
                     var existingTrailer = trailerRepository.findByLicensePlate(trailer.getLicensePlate());
                     if (existingTrailer.isPresent()) {
                         var index = accidentStatement.getTrailers().indexOf(trailer);
@@ -77,40 +92,37 @@ public class AccidentStatementService {
                 }
             }
 
-            for (InsuranceCertificate insuranceCertificate : accidentStatement.getInsuranceCertificates()) {
-                var existingCertificate = insuranceCertificateRepository.findByGreenCardNumberAndPolicyNumber(insuranceCertificate.getGreenCardNumber(), insuranceCertificate.getPolicyNumber());
-
-                if (existingCertificate.isPresent()) {
-                    var index = accidentStatement.getInsuranceCertificates().indexOf(insuranceCertificate);
-                    accidentStatement.getInsuranceCertificates().set(index, existingCertificate.get());
-                } else {
-
+            for (PolicyHolder policyHolder : accidentStatement.getPolicyHolders()) {
+                if (policyHolder.getInsuranceCertificate().getGreenCardNumber() == null || policyHolder.getInsuranceCertificate().getPolicyNumber() == null) {
+                    throw new MissingPropertyException("PolicyHolder's green card number and policy number cannot be null");
+                }
+                var existingCertificate = insuranceCertificateRepository.findByGreenCardNumberAndPolicyNumber(policyHolder.getInsuranceCertificate().getGreenCardNumber(), policyHolder.getInsuranceCertificate().getPolicyNumber());
+                if (existingCertificate.isEmpty()) {
                     var existingInsuranceAgency = insuranceAgencyRepository.findByNameAndAddress(
-                            insuranceCertificate.getInsuranceAgency().getName(),
-                            insuranceCertificate.getInsuranceAgency().getAddress());
+                            policyHolder.getInsuranceCertificate().getInsuranceAgency().getName(),
+                            policyHolder.getInsuranceCertificate().getInsuranceAgency().getAddress());
 
                     var existingInsuranceCompany = insuranceCompanyRepository.findByName(
-                            insuranceCertificate.getInsuranceCompany().getName());
+                            policyHolder.getInsuranceCertificate().getInsuranceCompany().getName());
 
                     if (existingInsuranceAgency.isPresent()) {
-                        insuranceCertificate.setInsuranceAgency(existingInsuranceAgency.get());
+                        policyHolder.getInsuranceCertificate().setInsuranceAgency(existingInsuranceAgency.get());
                     } else {
-                        insuranceAgencyRepository.save(insuranceCertificate.getInsuranceAgency());
+                        insuranceAgencyRepository.save(policyHolder.getInsuranceCertificate().getInsuranceAgency());
                     }
 
                     if (existingInsuranceCompany.isPresent()) {
-                        insuranceCertificate.setInsuranceCompany(existingInsuranceCompany.get());
+                        policyHolder.getInsuranceCertificate().setInsuranceCompany(existingInsuranceCompany.get());
                     } else {
-                        insuranceCompanyRepository.save(insuranceCertificate.getInsuranceCompany());
+                        insuranceCompanyRepository.save(policyHolder.getInsuranceCertificate().getInsuranceCompany());
                     }
-
-                    insuranceCertificateRepository.save(insuranceCertificate);
                 }
             }
             accidentStatementRepository.save(accidentStatement);
 
             return "Accident Statement created";
-        } catch (DataAccessException e) {
+
+        } catch (Exception e) {
 
             log.error("Error creating Accident Statement:", e);
             throw new AccidentStatementCreationFailed("Error occurred while creating Accident Statement");
