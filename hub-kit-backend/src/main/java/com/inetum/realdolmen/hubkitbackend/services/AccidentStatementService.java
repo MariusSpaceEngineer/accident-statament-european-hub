@@ -93,7 +93,7 @@ public class AccidentStatementService {
             }
 
             for (PolicyHolder policyHolder : accidentStatement.getPolicyHolders()) {
-                if (policyHolder.getInsuranceCertificate().getGreenCardNumber() == null || policyHolder.getInsuranceCertificate().getPolicyNumber() == null) {
+                if (policyHolder.getInsuranceCertificate().getGreenCardNumber() == null || policyHolder.getInsuranceCertificate().getGreenCardNumber().isEmpty() || policyHolder.getInsuranceCertificate().getPolicyNumber() == null || policyHolder.getInsuranceCertificate().getPolicyNumber().isEmpty()) {
                     throw new MissingPropertyException("PolicyHolder's green card number and policy number cannot be null");
                 }
                 var existingCertificate = insuranceCertificateRepository.findByGreenCardNumberAndPolicyNumber(policyHolder.getInsuranceCertificate().getGreenCardNumber(), policyHolder.getInsuranceCertificate().getPolicyNumber());
