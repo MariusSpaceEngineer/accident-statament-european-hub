@@ -16,7 +16,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class NewStatementFragmentTest {
+class NewStatementFragmentInstrumentedUITest {
 
     private lateinit var device: UiDevice
     private var originalWindowAnimationScale: String = ""
@@ -48,7 +48,7 @@ class NewStatementFragmentTest {
     }
 
     @Test
-    fun testUIElements() {
+    fun testNewStatementUIElements() {
         // Launch the fragment in a test container
         val scenario =
             launchFragmentInContainer<NewStatementFragment>(themeResId = R.style.Theme_CrashKit)
