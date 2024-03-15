@@ -55,8 +55,7 @@ class VehicleDriverFragmentInstrumentedUITest {
     @Test
     fun testVehicleDriverUIElements() {
         // Launch the fragment in a test container
-        val scenario =
-            launchFragmentInContainer<VehicleADriverFragment>(themeResId = R.style.Theme_CrashKit)
+        launchFragmentInContainer<VehicleADriverFragment>(themeResId = R.style.Theme_CrashKit)
 
         // Check to see if the fields are displayed on the screen
         onView(withId(R.id.et_statement_vehicle_a_driver_name))

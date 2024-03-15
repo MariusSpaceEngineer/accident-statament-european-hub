@@ -10,7 +10,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.inetum.realdolmen.crashkit.R
-import com.inetum.realdolmen.crashkit.fragments.statement.NewStatementFragment
 import org.hamcrest.Matchers.not
 import org.junit.After
 import org.junit.Before
@@ -52,8 +51,7 @@ class NewStatementFragmentInstrumentedUITest {
     @Test
     fun testNewStatementUIElements() {
         // Launch the fragment in a test container
-        val scenario =
-            launchFragmentInContainer<NewStatementFragment>(themeResId = R.style.Theme_CrashKit)
+        launchFragmentInContainer<NewStatementFragment>(themeResId = R.style.Theme_CrashKit)
 
         // Perform UI interactions and assertions
         onView(withId(R.id.et_statement_accident_date)).check(matches(isDisplayed()))
@@ -97,7 +95,7 @@ class NewStatementFragmentInstrumentedUITest {
         onView(withId(R.id.cb_statement_accident_injured)).perform(ViewActions.click())
         onView(withId(R.id.cb_statement_accident_material_damage_other_vehicles)).perform(
             ViewActions.click()
-        );
+        )
         onView(withId(R.id.cb_statement_accident_material_damage_other_objects)).perform(
             ViewActions.click()
         )
@@ -121,12 +119,12 @@ class NewStatementFragmentInstrumentedUITest {
             matches(
                 isChecked()
             )
-        );
+        )
         onView(withId(R.id.cb_statement_accident_material_damage_other_objects)).check(
             matches(
                 isNotChecked()
             )
-        );
+        )
 
         // Check the entered text
         onView(withId(R.id.et_statement_accident_location)).check(matches(withText("Test Location")))

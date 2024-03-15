@@ -54,8 +54,7 @@ class VehicleNewStatementFragmentInstrumentedUITest {
     @Test
     fun testVehicleNewStatementUIElements() {
         // Launch the fragment in a test container
-        val scenario =
-            launchFragmentInContainer<VehicleANewStatementFragment>(themeResId = R.style.Theme_CrashKit)
+        launchFragmentInContainer<VehicleANewStatementFragment>(themeResId = R.style.Theme_CrashKit)
 
         // Check to see if the fields are displayed on the screen
         onView(withId(R.id.et_statement_policy_holder_name))

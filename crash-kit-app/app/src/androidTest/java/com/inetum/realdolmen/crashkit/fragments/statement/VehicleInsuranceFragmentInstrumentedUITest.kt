@@ -56,8 +56,7 @@ class VehicleInsuranceFragmentInstrumentedUITest {
     @Test
     fun testVehicleInsuranceUIElements() {
         // Launch the fragment in a test container
-        val scenario =
-            launchFragmentInContainer<VehicleAInsuranceFragment>(themeResId = R.style.Theme_CrashKit)
+        launchFragmentInContainer<VehicleAInsuranceFragment>(themeResId = R.style.Theme_CrashKit)
 
         // Check to see if the fields are displayed on the screen
         onView(withId(R.id.et_statement_vehicle_a_insurance_company_name))
