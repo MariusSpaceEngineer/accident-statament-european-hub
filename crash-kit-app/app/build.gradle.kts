@@ -1,5 +1,3 @@
-import com.android.build.api.dsl.Packaging
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -61,11 +59,20 @@ dependencies {
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("androidx.test.ext:junit-ktx:1.1.5")
-    testImplementation("junit:junit:4.13.2")
+    implementation("androidx.test.uiautomator:uiautomator:2.3.0")
+    // For unit testing
+    testImplementation ("junit:junit:4.13.2")
+    testImplementation ("io.mockk:mockk-android:1.13.10") // Mocking library for Kotlin
+    testImplementation ("androidx.arch.core:core-testing:2.2.0") // For LiveData testing
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1") // For testing coroutines
+    //For instrumented tests
     androidTestImplementation ("androidx.test:runner:1.5.2")
     androidTestImplementation ("androidx.test:rules:1.5.0")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1") //For testing UI
     androidTestImplementation ("io.mockk:mockk-android:1.13.10")
     androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+    androidTestImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 
+    debugImplementation ("androidx.fragment:fragment-testing:1.6.2") //For fragment testing
 }
