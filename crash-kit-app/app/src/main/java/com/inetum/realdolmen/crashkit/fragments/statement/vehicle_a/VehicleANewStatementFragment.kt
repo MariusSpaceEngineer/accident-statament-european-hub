@@ -1,30 +1,44 @@
 package com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.inetum.realdolmen.crashkit.CrashKitApp
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleANewStatementBinding
+import com.inetum.realdolmen.crashkit.dto.PolicyHolderResponse
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
 import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataErrors
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
+import com.inetum.realdolmen.crashkit.utils.createSimpleDialog
 import com.inetum.realdolmen.crashkit.utils.printBackStack
+import com.inetum.realdolmen.crashkit.utils.toLocalDate
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.Response
 
 class VehicleANewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigure {
     private lateinit var model: NewStatementViewModel
 
     private var _binding: FragmentVehicleANewStatementBinding? = null
     private val binding get() = _binding!!
+
+    private val apiService = CrashKitApp.apiService
+    private val securedPreferences = CrashKitApp.securedPreferences
 
     private var fields: List<TextView> = listOf()
     private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = listOf()
@@ -51,6 +65,27 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
         return view
     }
 
+    private fun handlePolicyHolderProfileResponse(response: Response<PolicyHolderResponse>) {
+        Log.i("Request", "Request code: ${response.code()}")
+        if (response.isSuccessful) {
+            val personalInformationResponse = response.body()
+            if (personalInformationResponse != null) {
+                bindPolicyHolderInformationToUI(binding, personalInformationResponse)
+                importInsuranceInformation(model, personalInformationResponse)
+            }
+            Toast.makeText(
+                requireContext(),
+                "Import successful",
+                Toast.LENGTH_LONG
+            )
+                .show()
+        } else {
+
+            val errorMessage = "Error while fetching insurance information"
+            requireContext().createSimpleDialog(getString(R.string.error), errorMessage)
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -61,6 +96,20 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
         requireActivity().supportFragmentManager.printBackStack()
 
         updateUIFromViewModel(model)
+
+        //Disable button if user is not logged in
+        if (!securedPreferences.isGuest()) {
+            binding.btnStatementVehicleAImportInsuranceInformation.isEnabled = true
+        }
+
+        binding.btnStatementVehicleAImportInsuranceInformation.setOnClickListener {
+            CoroutineScope(Dispatchers.IO).launch {
+                val response = apiService.getPolicyHolderProfileInformation()
+                withContext(Dispatchers.Main) {
+                    handlePolicyHolderProfileResponse(response)
+                }
+            }
+        }
 
         binding.btnStatementAccidentPrevious.setOnClickListener {
             updateViewModelFromUI(model)
@@ -211,4 +260,43 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
         )
     }
 
+    private fun bindPolicyHolderInformationToUI(
+        binding: FragmentVehicleANewStatementBinding,
+        response: PolicyHolderResponse
+    ) {
+        binding.etStatementPolicyHolderName.setText(response.lastName)
+        binding.etStatementPolicyHolderFirstName.setText(response.firstName)
+        binding.etStatementPolicyHolderAddress.setText(response.address)
+        binding.etStatementPolicyHolderPostalCode.setText(response.postalCode)
+        binding.etStatementPolicyHolderPhoneNumber.setText(response.phoneNumber)
+        binding.etStatementPolicyHolderEmail.setText(response.email)
+    }
+
+    private fun importInsuranceInformation(
+        model: NewStatementViewModel,
+        response: PolicyHolderResponse
+    ) {
+        model.statementData.value?.apply {
+            this.vehicleAInsuranceCompanyName =
+                response.insuranceCertificate?.insuranceCompany?.name.toString()
+            this.vehicleAInsuranceCompanyPolicyNumber =
+                response.insuranceCertificate?.policyNumber.toString()
+            this.vehicleAInsuranceCompanyGreenCardNumber =
+                response.insuranceCertificate?.greenCardNumber.toString()
+            this.vehicleAInsuranceCertificateAvailabilityDate =
+                response.insuranceCertificate?.availabilityDate?.toLocalDate()
+            this.vehicleAInsuranceCertificateExpirationDate =
+                response.insuranceCertificate?.expirationDate?.toLocalDate()
+            this.vehicleAInsuranceAgencyName =
+                response.insuranceCertificate?.insuranceAgency?.name.toString()
+            this.vehicleAInsuranceAgencyAddress =
+                response.insuranceCertificate?.insuranceAgency?.address.toString()
+            this.vehicleAInsuranceAgencyCountry =
+                response.insuranceCertificate?.insuranceAgency?.country.toString()
+            this.vehicleAInsuranceAgencyPhoneNumber =
+                response.insuranceCertificate?.insuranceAgency?.phoneNumber.toString()
+            this.vehicleAInsuranceAgencyEmail =
+                response.insuranceCertificate?.insuranceAgency?.email.toString()
+        }
+    }
 }
