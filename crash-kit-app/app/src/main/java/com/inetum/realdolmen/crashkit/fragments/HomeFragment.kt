@@ -9,10 +9,15 @@ import androidx.navigation.fragment.findNavController
 import com.inetum.realdolmen.crashkit.CrashKitApp
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentHomeBinding
+import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+
+    private val fragmentNavigationHelper by lazy {
+        FragmentNavigationHelper(requireActivity().supportFragmentManager)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,6 +39,14 @@ class HomeFragment : Fragment() {
 
         binding.cvHomeStatement.setOnClickListener {
             findNavController().navigate(R.id.newStatementFragment)
+        }
+
+        binding.cvHomeQr.setOnClickListener {
+            fragmentNavigationHelper.navigateToFragment(
+                R.id.fragmentContainerView,
+                ShareInsuranceInformationFragment(),
+                "share_insurance_fragment"
+            )
         }
     }
 }
