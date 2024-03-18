@@ -54,11 +54,12 @@
                 android:orientation="vertical">
 
                 <Button
+                    android:id="@+id/btn_statement_vehicle_b_import_insurance_information"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     android:background="@drawable/top_rounded_corners_filled"
-                    android:text="@string/import_insurance_information_button"
+                    android:text="Import other driver insurance information"
                     android:textColor="@color/title" />
 
                 <TextView
