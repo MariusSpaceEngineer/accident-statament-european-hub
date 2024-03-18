@@ -60,6 +60,8 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("androidx.test.ext:junit-ktx:1.1.5")
     implementation("androidx.test.uiautomator:uiautomator:2.3.0")
+    implementation ("com.journeyapps:zxing-android-embedded:4.1.0")
+
     // For unit testing
     testImplementation ("junit:junit:4.13.2")
     testImplementation ("io.mockk:mockk-android:1.13.10") // Mocking library for Kotlin
