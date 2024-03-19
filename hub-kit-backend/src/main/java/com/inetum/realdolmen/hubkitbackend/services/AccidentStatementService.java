@@ -117,8 +117,15 @@ public class AccidentStatementService {
                         insuranceCompanyRepository.save(policyHolder.getInsuranceCertificate().getInsuranceCompany());
                     }
                     insuranceCertificateRepository.save(policyHolder.getInsuranceCertificate());
+                    policyHolderRepository.save(policyHolder);
+
+                } else {
+                    var existingPolicyHolder = policyHolderRepository.findByInsuranceCertificate(existingCertificate.get());
+                    if (existingPolicyHolder.isPresent()) {
+                        var index = accidentStatement.getPolicyHolders().indexOf(policyHolder);
+                        accidentStatement.getPolicyHolders().set(index, existingPolicyHolder.get());
+                    }
                 }
-                policyHolderRepository.save(policyHolder);
             }
             accidentStatementRepository.save(accidentStatement);
 
@@ -130,15 +137,5 @@ public class AccidentStatementService {
             throw new AccidentStatementCreationFailed("Error occurred while creating Accident Statement");
         }
     }
-
-    private <K, V> K getKey(Map<K, V> map, V value) {
-        for (Map.Entry<K, V> entry : map.entrySet()) {
-            if (entry.getValue().equals(value)) {
-                return entry.getKey();
-            }
-        }
-        return null;
-    }
-
 
 }
