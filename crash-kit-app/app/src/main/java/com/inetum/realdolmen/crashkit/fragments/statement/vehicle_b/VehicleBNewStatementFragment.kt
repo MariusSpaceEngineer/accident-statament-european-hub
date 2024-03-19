@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import com.google.zxing.integration.android.IntentIntegrator
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleBNewStatementBinding
@@ -66,17 +67,18 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, Validatio
         )
         if (scanResult != null) {
             if (scanResult.contents == null) {
-                Log.d("MyFragment", "Cancelled scan")
                 Toast.makeText(requireContext(), "Cancelled", Toast.LENGTH_LONG).show()
             } else {
                 val json = scanResult.contents
                 val gson = Gson()
-                val policyHolderResponse = gson.fromJson(json, PolicyHolderResponse::class.java)
-                Log.d("MyFragment", "Scanned")
-                Log.d("Scan", policyHolderResponse.toString())
+                try {
+                    val policyHolderResponse = gson.fromJson(json, PolicyHolderResponse::class.java)
 
-                bindPolicyHolderInformationToUI(binding, policyHolderResponse)
-                importInsuranceInformation(model, policyHolderResponse)
+                    bindPolicyHolderInformationToUI(binding, policyHolderResponse)
+                    importInsuranceInformation(model, policyHolderResponse)
+                } catch (e: JsonSyntaxException) {
+                    Log.e("VehicleBNewStatementFragment", "Failed to parse JSON", e)
+                }
             }
         }
     }
