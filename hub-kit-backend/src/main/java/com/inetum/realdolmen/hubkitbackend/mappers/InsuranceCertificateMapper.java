@@ -14,5 +14,10 @@ public interface InsuranceCertificateMapper {
     @Mapping(target = "insuranceCompany.id", ignore = true)
     @Mapping(target = "insuranceAgency.id", ignore = true)
     InsuranceCertificate updateFromDTO(InsuranceCertificateDTO insuranceCertificateDTO, @MappingTarget InsuranceCertificate insuranceCertificate);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "insuranceCompany.id", ignore = true)
+    @Mapping(target = "insuranceAgency.id", ignore = true)
+    InsuranceCertificate fromDTO(InsuranceCertificateDTO insuranceCertificateDTO);
 }
 
