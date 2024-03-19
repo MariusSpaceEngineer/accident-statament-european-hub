@@ -1,7 +1,5 @@
 package com.inetum.realdolmen.crashkit.dto
 
-import java.time.LocalDate
-
 data class AccidentStatementData(
     val date: String? = null,
     val location: String? = null,
@@ -12,7 +10,9 @@ data class AccidentStatementData(
     val sketchOfImage: Byte? = null,
     val initialImpactVehicleA: Byte? = null,
     val initialImpactVehicleB: Byte? = null,
+    val vehicleAAccidentImage: ByteArray? = null,
     val remarkVehicleA: String? = null,
+    val vehicleBAccidentImage: ByteArray? = null,
     val remarkVehicleB: String? = null,
     val visibleDamageVehicleA: String? = null,
     val visibleDamageVehicleB: String? = null,
