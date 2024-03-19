@@ -42,6 +42,7 @@ import com.inetum.realdolmen.crashkit.utils.StatementData
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.printBackStack
 import com.inetum.realdolmen.crashkit.utils.to24Format
+import com.inetum.realdolmen.crashkit.utils.toByteArray
 import com.inetum.realdolmen.crashkit.utils.toIsoString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -332,7 +333,9 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             null,
             null,
             null,
+            statementData?.vehicleAAccidentPhoto?.toByteArray(),
             statementData?.vehicleARemarks,
+            statementData?.vehicleBAccidentPhoto?.toByteArray(),
             statementData?.vehicleBRemarks,
             statementData?.vehicleADamageDescription,
             statementData?.vehicleBDamageDescription,
