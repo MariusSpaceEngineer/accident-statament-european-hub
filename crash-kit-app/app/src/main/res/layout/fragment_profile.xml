@@ -14,8 +14,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            >
+            android:layout_height="match_parent">
 
             <TextView
                 android:id="@+id/tv_profile_title"
@@ -95,11 +94,11 @@
                         android:id="@+id/ll_profile_personal"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:visibility="gone"
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="24dp"
                         android:orientation="vertical"
+                        android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -292,7 +291,6 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
-                        android:visibility="gone"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="24dp"
                         android:orientation="vertical"
@@ -380,6 +378,7 @@
                                 android:id="@+id/et_profile_insurance_company_insurance_availability_date_value"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:clickable="false"
                                 android:textColor="@color/input_hint" />
 
                         </com.google.android.material.textfield.TextInputLayout>
@@ -388,7 +387,6 @@
                             android:id="@+id/til_profile_insurance_company_insurance_expiration_date_label"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="16dp"
                             android:enabled="false"
                             android:hint="Insurance Cert. Expiration Date"
                             app:boxBackgroundColor="@color/input_field_background"
@@ -398,9 +396,20 @@
                                 android:id="@+id/et_profile_insurance_company_insurance_expiration_date_value"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:clickable="false"
                                 android:textColor="@color/input_hint" />
 
                         </com.google.android.material.textfield.TextInputLayout>
+
+                        <Button
+                            android:id="@+id/btn_profile_date_time_picker_insurance_certificate_dates"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="0dp"
+                            android:layout_marginBottom="16dp"
+                            android:background="@drawable/bottom_rounded_corners_filled"
+                            android:text="@string/label_pick_date"
+                            android:textSize="16sp" />
 
                         <TextView
                             android:layout_width="match_parent"

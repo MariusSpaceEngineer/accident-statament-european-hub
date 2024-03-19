@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.textfield.TextInputEditText
 import com.inetum.realdolmen.crashkit.CrashKitApp
 import com.inetum.realdolmen.crashkit.R
@@ -27,11 +28,19 @@ import com.inetum.realdolmen.crashkit.dto.PolicyHolderPersonalInformationRespons
 import com.inetum.realdolmen.crashkit.dto.PolicyHolderResponse
 import com.inetum.realdolmen.crashkit.utils.areFieldsValid
 import com.inetum.realdolmen.crashkit.utils.createSimpleDialog
+import com.inetum.realdolmen.crashkit.utils.to24Format
+import com.inetum.realdolmen.crashkit.utils.toIsoString
+import com.inetum.realdolmen.crashkit.utils.toLocalDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
+import java.beans.PropertyChangeListener
+import java.beans.PropertyChangeSupport
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 
 class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
@@ -39,8 +48,51 @@ class ProfileFragment : Fragment() {
 
     private val apiService = CrashKitApp.apiService
 
+    private val changeSupport = PropertyChangeSupport(this)
+
     private var personalCardEditing = false
     private var insuranceCardEditing = false
+        set(value) {
+            val oldValue = field
+            field = value
+
+            // Notify listeners about the change
+            changeSupport.firePropertyChange(
+                "insuranceCardEditing",
+                oldValue,
+                value
+            )
+        }
+
+    private var insuranceCertificateAvailabilityDate: LocalDate? = null
+        set(newValue) {
+            val oldValue = field
+            field = newValue
+
+            // Notify listeners about the change
+            changeSupport.firePropertyChange(
+                "insuranceCertificateAvailabilityDate",
+                oldValue,
+                newValue
+            )
+        }
+
+    private var insuranceCertificateExpirationDate: LocalDate? = null
+        set(newValue) {
+            val oldValue = field
+            field = newValue
+
+            // Notify listeners about the change
+            changeSupport.firePropertyChange(
+                "insuranceCertificateExpirationDate",
+                oldValue,
+                newValue
+            )
+        }
+
+    private val insuranceCertificateDateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
+        .setTitleText("Select dates")
+        .build()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -121,6 +173,41 @@ class ProfileFragment : Fragment() {
             }
         }
 
+        binding.btnProfileDateTimePickerInsuranceCertificateDates.setOnClickListener {
+            insuranceCertificateDateRangePicker.show(
+                parentFragmentManager,
+                "insurance_certificate_date_picker"
+            )
+            insuranceCertificateDateRangePicker.addOnPositiveButtonClickListener { selection ->
+                insuranceCertificateAvailabilityDate = Instant.ofEpochMilli(selection.first).atZone(
+                    ZoneId.systemDefault()
+                ).toLocalDate()
+                insuranceCertificateExpirationDate = Instant.ofEpochMilli(selection.second).atZone(
+                    ZoneId.systemDefault()
+                ).toLocalDate()
+            }
+
+            addChangeListener{
+                binding.btnProfileDateTimePickerInsuranceCertificateDates.isEnabled = insuranceCardEditing
+            }
+
+            addChangeListener {
+
+                binding.etProfileInsuranceCompanyInsuranceAvailabilityDateValue.setText(
+                    (insuranceCertificateAvailabilityDate?.to24Format() ?: "")
+                )
+                binding.etProfileInsuranceCompanyInsuranceAvailabilityDateValue.error = null
+            }
+
+            addChangeListener {
+                binding.etProfileInsuranceCompanyInsuranceExpirationDateValue.setText(
+                    (insuranceCertificateExpirationDate?.to24Format() ?: "")
+
+                )
+                binding.etProfileInsuranceCompanyInsuranceExpirationDateValue.error = null
+            }
+        }
+
         //Insurance information card
         val fieldInsuranceCompanyName = binding.etProfileInsuranceCompanyNameValue
         val fieldPolicyNumber = binding.etProfileInsuranceCompanyPolicyNumberValue
@@ -142,6 +229,7 @@ class ProfileFragment : Fragment() {
             binding.etProfileInsuranceCompanyInsuranceExpirationDateValue to "Date is required!",
             binding.etProfileInsuranceAgencyNameValue to "Agency Name is required!",
             binding.etProfileInsuranceAgencyEmailValue to "Agency Email is required",
+            binding.etProfileInsuranceAgencyPhoneNumberValue to "Phone Number is required!",
             binding.etProfileInsuranceAgencyAddressValue to "Agency address is required!",
             binding.etProfileInsuranceAgencyCountryValue to "Agency Country is required!"
         )
@@ -175,17 +263,22 @@ class ProfileFragment : Fragment() {
                         fieldInsuranceCompanyName,
                         fieldPolicyNumber,
                         fieldGreenCardNumber,
-                        fieldInsuranceCertAvailabilityDate,
-                        fieldInsuranceCertExpirationDate,
                         fieldInsuranceAgencyName,
                         fieldInsuranceAgencyEmail,
+                        fieldInsuranceCertAvailabilityDate,
+                        fieldInsuranceCertExpirationDate,
                         fieldInsuranceAgencyPhoneNumber,
                         fieldInsuranceAgencyAddress,
-                        fieldInsuranceAgencyCountry, insuranceInformationFields
+                        fieldInsuranceAgencyCountry,
+                        insuranceInformationFields
                     )
                 }
             }
         }
+    }
+
+    private fun addChangeListener(listener: PropertyChangeListener) {
+        changeSupport.addPropertyChangeListener(listener)
     }
 
     private fun toggleCardFields(
@@ -260,10 +353,10 @@ class ProfileFragment : Fragment() {
         fieldInsuranceCompanyName: TextInputEditText,
         fieldPolicyNumber: TextInputEditText,
         fieldGreenCardNumber: TextInputEditText,
-        fieldInsuranceCertAvailabilityDate: TextInputEditText,
-        fieldInsuranceCertExpirationDate: TextInputEditText,
         fieldInsuranceAgencyName: TextInputEditText,
         fieldInsuranceAgencyEmail: TextInputEditText,
+        fieldInsuranceCertAvailabilityDate: TextInputEditText,
+        fieldInsuranceCertExpirationDate: TextInputEditText,
         fieldInsuranceAgencyPhoneNumber: TextInputEditText,
         fieldInsuranceAgencyAddress: TextInputEditText,
         fieldInsuranceAgencyCountry: TextInputEditText,
@@ -285,8 +378,8 @@ class ProfileFragment : Fragment() {
             null,
             fieldPolicyNumber.text.toString(),
             fieldGreenCardNumber.text.toString(),
-            fieldInsuranceCertAvailabilityDate.text.toString(),
-            fieldInsuranceCertExpirationDate.text.toString(),
+            fieldInsuranceCertAvailabilityDate.text.toString().toLocalDate()?.toIsoString(),
+            fieldInsuranceCertExpirationDate.text.toString().toLocalDate()?.toIsoString(),
             insuranceAgency,
             insuranceCompany
         )
