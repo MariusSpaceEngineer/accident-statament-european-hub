@@ -1,5 +1,6 @@
 package com.inetum.realdolmen.crashkit.utils
 
+import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import java.time.LocalDate
@@ -69,6 +70,7 @@ data class StatementData(
     var vehicleAEncroachingLaneOppositeDirection: Boolean = false,
     var vehicleAComingRightJunction: Boolean = false,
     var vehicleANotObservedSignRedLight: Boolean = false,
+    var vehicleAAccidentPhoto: Bitmap? = null,
     var vehicleARemarks: String = "",
     var vehicleADamageDescription: String = "",
     var policyHolderBLastName: String = "",
@@ -117,6 +119,7 @@ data class StatementData(
     var vehicleBEncroachingLaneOppositeDirection: Boolean = false,
     var vehicleBComingRightJunction: Boolean = false,
     var vehicleBNotObservedSignRedLight: Boolean = false,
+    var vehicleBAccidentPhoto: Bitmap? = null,
     var vehicleBRemarks: String = "",
     var vehicleBDamageDescription: String = ""
 )
@@ -125,8 +128,8 @@ data class StatementDataErrors(
     var fieldRequired: String = "Field is required",
     var noDigitsAllowed: String = "No digits allowed",
     var noLettersAllowed: String = "No letters allowed",
-    var fieldNeedsCharacters: String= "Field needs certain characters:",
-    var futureDate: String= "Date is in the future",
-    var pastDate: String= "Date is in the past",
-    var invalidEmail: String= "Invalid email"
+    var fieldNeedsCharacters: String = "Field needs certain characters:",
+    var futureDate: String = "Date is in the future",
+    var pastDate: String = "Date is in the past",
+    var invalidEmail: String = "Invalid email"
 )
