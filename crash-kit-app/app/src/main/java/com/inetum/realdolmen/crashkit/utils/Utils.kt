@@ -1,10 +1,12 @@
 package com.inetum.realdolmen.crashkit.utils
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
+import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -73,5 +75,24 @@ fun String.toLocalDate(): LocalDate? {
         null
     }
 }
+
+fun Bitmap.toByteArray(): ByteArray {
+    val maxSize = 65535
+    var quality = 100
+    var byteArray: ByteArray
+
+    do {
+        val outputStream = ByteArrayOutputStream()
+        this.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
+        byteArray = outputStream.toByteArray()
+
+        // Reduce the quality for the next iteration (if needed)
+        quality -= 10
+    } while (byteArray.size > maxSize && quality > 0)
+
+    return byteArray
+}
+
+
 
 
