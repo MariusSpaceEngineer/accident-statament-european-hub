@@ -9,6 +9,8 @@ import org.mapstruct.Mapping;
         MotorMapper.class, PolicyHolderMapper.class, TrailerMapper.class})
 public interface AccidentStatementMapper {
     @Mapping(target = "id", ignore = true)
+    @Mapping(source = "vehicleAAccidentImage", target = "vehicleAAccidentImage")
+    @Mapping(source = "vehicleBAccidentImage", target = "vehicleBAccidentImage")
     AccidentStatement fromDTO(AccidentStatementDTO accidentStatementDTO);
 
     AccidentStatementDTO toDTO(AccidentStatement accidentStatement);
