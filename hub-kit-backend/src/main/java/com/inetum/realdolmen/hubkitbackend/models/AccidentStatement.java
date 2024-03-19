@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Builder
 @AllArgsConstructor
@@ -31,7 +28,13 @@ public class AccidentStatement {
     private Byte sketchOfImage;
     private Byte initialImpactVehicleA;
     private Byte initialImpactVehicleB;
+    @Lob
+    @Column(name = "vehicle_a_accident_image", columnDefinition="BLOB")
+    private byte[] vehicleAAccidentImage;
     private String remarkVehicleA;
+    @Lob
+    @Column(name = "vehicle_b_accident_image", columnDefinition="BLOB")
+    private byte[] vehicleBAccidentImage;
     private String remarkVehicleB;
     private String visibleDamageVehicleA;
     private String visibleDamageVehicleB;
