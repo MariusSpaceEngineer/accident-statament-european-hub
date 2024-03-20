@@ -278,11 +278,17 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, Validatio
         response: PolicyHolderResponse
     ) {
         binding.etStatementPolicyHolderName.setText(response.lastName)
+        binding.etStatementPolicyHolderName.error= null
         binding.etStatementPolicyHolderFirstName.setText(response.firstName)
+        binding.etStatementPolicyHolderFirstName.error= null
         binding.etStatementPolicyHolderAddress.setText(response.address)
+        binding.etStatementPolicyHolderAddress.error= null
         binding.etStatementPolicyHolderPostalCode.setText(response.postalCode)
+        binding.etStatementPolicyHolderPostalCode.error= null
         binding.etStatementPolicyHolderPhoneNumber.setText(response.phoneNumber)
+        binding.etStatementPolicyHolderPhoneNumber.error= null
         binding.etStatementPolicyHolderEmail.setText(response.email)
+        binding.etStatementPolicyHolderEmail.error= null
     }
 
     private fun importInsuranceInformation(
