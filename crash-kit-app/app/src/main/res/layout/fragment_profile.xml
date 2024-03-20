@@ -369,7 +369,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
-                            android:enabled="false"
                             android:hint="Insurance Cert. Availability Date"
                             app:boxBackgroundColor="@color/input_field_background"
                             app:boxStrokeColor="@color/primary800">
@@ -378,7 +377,7 @@
                                 android:id="@+id/et_profile_insurance_company_insurance_availability_date_value"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:clickable="false"
+                                android:enabled="false"
                                 android:textColor="@color/input_hint" />
 
                         </com.google.android.material.textfield.TextInputLayout>
@@ -387,7 +386,6 @@
                             android:id="@+id/til_profile_insurance_company_insurance_expiration_date_label"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:enabled="false"
                             android:hint="Insurance Cert. Expiration Date"
                             app:boxBackgroundColor="@color/input_field_background"
                             app:boxStrokeColor="@color/primary800">
@@ -396,7 +394,7 @@
                                 android:id="@+id/et_profile_insurance_company_insurance_expiration_date_value"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:clickable="false"
+                                android:enabled="false"
                                 android:textColor="@color/input_hint" />
 
                         </com.google.android.material.textfield.TextInputLayout>

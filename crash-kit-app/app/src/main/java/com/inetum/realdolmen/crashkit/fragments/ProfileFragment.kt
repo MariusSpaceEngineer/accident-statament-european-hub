@@ -187,8 +187,9 @@ class ProfileFragment : Fragment() {
                 ).toLocalDate()
             }
 
-            addChangeListener{
-                binding.btnProfileDateTimePickerInsuranceCertificateDates.isEnabled = insuranceCardEditing
+            addChangeListener {
+                binding.btnProfileDateTimePickerInsuranceCertificateDates.isEnabled =
+                    insuranceCardEditing
             }
 
             addChangeListener {
@@ -345,7 +346,14 @@ class ProfileFragment : Fragment() {
 
     private fun setFieldState(fields: Map<TextInputEditText, String>, isEnabled: Boolean) {
         for (field in fields) {
-            field.key.isEnabled = isEnabled
+            if (field.key == view?.findViewById<TextInputEditText>(R.id.et_profile_insurance_company_insurance_availability_date_value) || field.key == view?.findViewById<TextInputEditText>(
+                    R.id.et_profile_insurance_company_insurance_expiration_date_value
+                )
+            ) {
+                continue
+            } else {
+                field.key.isEnabled = isEnabled
+            }
         }
     }
 
