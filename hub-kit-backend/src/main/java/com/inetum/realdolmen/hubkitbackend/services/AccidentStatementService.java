@@ -17,6 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AccidentStatementService {
     private final AccidentStatementRepository accidentStatementRepository;
+    private final AccidentImageRepository accidentImageRepository;
     private final DriverRepository driverRepository;
     private final WitnessRepository witnessRepository;
     private final MotorRepository motorRepository;
@@ -35,6 +36,13 @@ public class AccidentStatementService {
             }
 
             AccidentStatement accidentStatement = accidentStatementMapper.fromDTO(accidentStatementDTO);
+
+            if (!accidentStatement.getVehicleAAccidentImages().isEmpty()) {
+                accidentImageRepository.saveAll(accidentStatement.getVehicleAAccidentImages());
+            }
+            if (!accidentStatement.getVehicleBAccidentImages().isEmpty()){
+            accidentImageRepository.saveAll(accidentStatement.getVehicleBAccidentImages());
+            }
 
             for (Driver driver : accidentStatement.getDrivers()) {
                 if (driver.getDrivingLicenseNr() == null || driver.getDrivingLicenseNr().isEmpty()) {
