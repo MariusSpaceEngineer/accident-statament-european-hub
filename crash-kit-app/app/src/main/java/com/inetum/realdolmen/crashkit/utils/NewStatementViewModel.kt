@@ -70,7 +70,7 @@ data class StatementData(
     var vehicleAEncroachingLaneOppositeDirection: Boolean = false,
     var vehicleAComingRightJunction: Boolean = false,
     var vehicleANotObservedSignRedLight: Boolean = false,
-    var vehicleAAccidentPhoto: Bitmap? = null,
+    var vehicleAAccidentPhotos: MutableList<Bitmap>? = null,
     var vehicleARemarks: String = "",
     var vehicleADamageDescription: String = "",
     var policyHolderBLastName: String = "",
@@ -119,7 +119,7 @@ data class StatementData(
     var vehicleBEncroachingLaneOppositeDirection: Boolean = false,
     var vehicleBComingRightJunction: Boolean = false,
     var vehicleBNotObservedSignRedLight: Boolean = false,
-    var vehicleBAccidentPhoto: Bitmap? = null,
+    var vehicleBAccidentPhotos: MutableList<Bitmap>? = null,
     var vehicleBRemarks: String = "",
     var vehicleBDamageDescription: String = ""
 )
