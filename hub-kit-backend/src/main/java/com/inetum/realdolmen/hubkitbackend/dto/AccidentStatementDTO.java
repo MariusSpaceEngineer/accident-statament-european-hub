@@ -23,9 +23,9 @@ public class AccidentStatementDTO {
     private Byte sketchOfImage;
     private Byte initialImpactVehicleA;
     private Byte initialImpactVehicleB;
-    private byte[] vehicleAAccidentImage;
+    private List<AccidentImageDTO> vehicleAAccidentImages;
     private String remarkVehicleA;
-    private byte[] vehicleBAccidentImage;
+    private List<AccidentImageDTO> vehicleBAccidentImages;
     private String remarkVehicleB;
     private String visibleDamageVehicleA;
     private String visibleDamageVehicleB;

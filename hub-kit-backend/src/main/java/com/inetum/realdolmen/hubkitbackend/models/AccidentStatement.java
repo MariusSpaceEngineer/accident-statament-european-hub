@@ -28,13 +28,11 @@ public class AccidentStatement {
     private Byte sketchOfImage;
     private Byte initialImpactVehicleA;
     private Byte initialImpactVehicleB;
-    @Lob
-    @Column(name = "vehicle_a_accident_image", columnDefinition="BLOB")
-    private byte[] vehicleAAccidentImage;
+    @OneToMany
+    private List<AccidentImage> vehicleAAccidentImages;
     private String remarkVehicleA;
-    @Lob
-    @Column(name = "vehicle_b_accident_image", columnDefinition="BLOB")
-    private byte[] vehicleBAccidentImage;
+    @OneToMany
+    private List<AccidentImage> vehicleBAccidentImages;
     private String remarkVehicleB;
     private String visibleDamageVehicleA;
     private String visibleDamageVehicleB;
