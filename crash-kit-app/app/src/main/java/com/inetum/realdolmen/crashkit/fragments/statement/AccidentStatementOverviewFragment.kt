@@ -1,5 +1,6 @@
 package com.inetum.realdolmen.crashkit.fragments.statement
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.transition.ChangeTransform
 import android.transition.TransitionManager
@@ -17,6 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import com.inetum.realdolmen.crashkit.CrashKitApp
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentAccidentStatementOverviewBinding
+import com.inetum.realdolmen.crashkit.dto.AccidentImageDTO
 import com.inetum.realdolmen.crashkit.dto.AccidentStatementData
 import com.inetum.realdolmen.crashkit.dto.DriverDTO
 import com.inetum.realdolmen.crashkit.dto.InsuranceAgency
@@ -322,6 +324,27 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
 
         val policyHolders = listOf<PolicyHolderDTO>(policyHolderVehicleA, policyHolderVehicleB)
 
+        val vehicleAAccidentPhotos = mutableListOf<AccidentImageDTO>()
+
+        if (!statementData?.vehicleAAccidentPhotos.isNullOrEmpty()) {
+
+            for (image: Bitmap in statementData?.vehicleAAccidentPhotos!!) {
+                val imageByte = image.toByteArray()
+                vehicleAAccidentPhotos.add(AccidentImageDTO(imageByte))
+            }
+        }
+
+
+        val vehicleBAccidentPhotos = mutableListOf<AccidentImageDTO>()
+
+        if (!statementData?.vehicleBAccidentPhotos.isNullOrEmpty()) {
+
+            for (image: Bitmap in statementData?.vehicleBAccidentPhotos!!) {
+                val imageByte = image.toByteArray()
+                vehicleBAccidentPhotos.add(AccidentImageDTO(imageByte))
+            }
+        }
+
 
         val accidentStatement = AccidentStatementData(
             statementData?.dateOfAccident?.toIsoString(),
@@ -333,9 +356,9 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             null,
             null,
             null,
-            statementData?.vehicleAAccidentPhoto?.toByteArray(),
+            vehicleAAccidentPhotos,
             statementData?.vehicleARemarks,
-            statementData?.vehicleBAccidentPhoto?.toByteArray(),
+            vehicleBAccidentPhotos,
             statementData?.vehicleBRemarks,
             statementData?.vehicleADamageDescription,
             statementData?.vehicleBDamageDescription,
