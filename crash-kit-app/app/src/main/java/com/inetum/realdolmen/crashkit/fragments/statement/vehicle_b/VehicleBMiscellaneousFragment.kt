@@ -13,10 +13,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.scale
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.viewpager2.widget.ViewPager2
+import com.inetum.realdolmen.crashkit.ImageAdapter
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleBMiscellaneousBinding
 import com.inetum.realdolmen.crashkit.fragments.statement.AccidentStatementOverviewFragment
@@ -35,29 +36,36 @@ class VehicleBMiscellaneousFragment : Fragment(), StatementDataHandler {
         FragmentNavigationHelper(requireActivity().supportFragmentManager)
     }
 
-    private var accidentImage: Bitmap? = null
-
+    private var accidentImages = mutableListOf<Bitmap>()
     private val requestImageCapture = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
+
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
             val imageBitmap = data?.extras?.get("data") as? Bitmap
-            if (imageBitmap != null) {
-                binding.ivStatementVehicleBAccidentPhoto.setImageBitmap(
-                    imageBitmap.scale(
-                        850,
-                        850
-                    )
+            if (imageBitmap != null && accidentImages.size < 3) {
+                accidentImages.add(imageBitmap)
+
+                // Update the ViewPager2's adapter
+                val viewPager =
+                    view?.findViewById<ViewPager2>(R.id.vp_statement_vehicle_b_accident_photos)
+                viewPager?.visibility = View.VISIBLE
+                viewPager?.adapter = ImageAdapter(accidentImages, this.requireContext())
+
+                Toast.makeText(
+                    requireContext(),
+                    "Image captured successfully!",
+                    Toast.LENGTH_SHORT
                 )
-                binding.ivStatementVehicleBAccidentPhoto.visibility = View.VISIBLE
-                accidentImage = imageBitmap
-                model.statementData.value?.vehicleBAccidentPhoto = imageBitmap
-                Toast.makeText(requireContext(), "Image captured successfully!", Toast.LENGTH_SHORT)
                     .show()
-            } else {
-                Toast.makeText(requireContext(), "Error capturing image", Toast.LENGTH_SHORT).show()
             }
+        } else {
+            Toast.makeText(
+                requireContext(),
+                "Error capturing image or maximum number of images reached",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -132,6 +140,13 @@ class VehicleBMiscellaneousFragment : Fragment(), StatementDataHandler {
         model.statementData.observe(viewLifecycleOwner, Observer { statementData ->
             binding.etStatementVehicleBDriverRemarks.setText(statementData.vehicleBRemarks)
             binding.etStatementVehicleBDamageDescription.setText(statementData.vehicleBDamageDescription)
+            if (!statementData.vehicleBAccidentPhotos.isNullOrEmpty()) {
+                accidentImages = statementData.vehicleBAccidentPhotos!!
+                val viewPager =
+                    view?.findViewById<ViewPager2>(R.id.vp_statement_vehicle_b_accident_photos)
+                viewPager?.visibility = View.VISIBLE
+                viewPager?.adapter = ImageAdapter(accidentImages, this.requireContext())
+            }
         })
     }
 
@@ -140,6 +155,8 @@ class VehicleBMiscellaneousFragment : Fragment(), StatementDataHandler {
             this.vehicleBRemarks = binding.etStatementVehicleBDriverRemarks.text.toString()
             this.vehicleBDamageDescription =
                 binding.etStatementVehicleBDamageDescription.text.toString()
+            this.vehicleBAccidentPhotos = accidentImages
+
         }
     }
 
