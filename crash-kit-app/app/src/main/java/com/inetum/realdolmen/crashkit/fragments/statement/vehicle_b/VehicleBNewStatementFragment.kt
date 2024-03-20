@@ -291,25 +291,25 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, Validatio
     ) {
         model.statementData.value?.apply {
             this.vehicleBInsuranceCompanyName =
-                response.insuranceCertificate?.insuranceCompany?.name.toString()
+                response.insuranceCertificate?.insuranceCompany?.name ?: ""
             this.vehicleBInsuranceCompanyPolicyNumber =
-                response.insuranceCertificate?.policyNumber.toString()
+                response.insuranceCertificate?.policyNumber ?: ""
             this.vehicleBInsuranceCompanyGreenCardNumber =
-                response.insuranceCertificate?.greenCardNumber.toString()
+                response.insuranceCertificate?.greenCardNumber ?: ""
             this.vehicleBInsuranceCertificateAvailabilityDate =
                 response.insuranceCertificate?.availabilityDate?.toLocalDate()
             this.vehicleBInsuranceCertificateExpirationDate =
                 response.insuranceCertificate?.expirationDate?.toLocalDate()
             this.vehicleBInsuranceAgencyName =
-                response.insuranceCertificate?.insuranceAgency?.name.toString()
+                response.insuranceCertificate?.insuranceAgency?.name ?: ""
             this.vehicleBInsuranceAgencyAddress =
-                response.insuranceCertificate?.insuranceAgency?.address.toString()
+                response.insuranceCertificate?.insuranceAgency?.address ?: ""
             this.vehicleBInsuranceAgencyCountry =
-                response.insuranceCertificate?.insuranceAgency?.country.toString()
+                response.insuranceCertificate?.insuranceAgency?.country ?: ""
             this.vehicleBInsuranceAgencyPhoneNumber =
-                response.insuranceCertificate?.insuranceAgency?.phoneNumber.toString()
+                response.insuranceCertificate?.insuranceAgency?.phoneNumber ?: ""
             this.vehicleBInsuranceAgencyEmail =
-                response.insuranceCertificate?.insuranceAgency?.email.toString()
+                response.insuranceCertificate?.insuranceAgency?.email ?: ""
         }
     }
 }
