@@ -31,7 +31,7 @@ interface ApiService {
     suspend fun updatePolicyHolderPersonalInformation(@Body personalInformationData: PersonalInformationData): Response<PolicyHolderPersonalInformationResponse>
 
     @PUT("user/profile/insurance")
-    suspend fun updateInsuranceCertificateInformation(@Body insuranceCertificate: InsuranceCertificate): Response<InsuranceCertificate>
+    suspend fun updateInsuranceCertificateInformation(@Body insuranceCertificate: InsuranceCertificate): Response<List<InsuranceCertificate>>
 
     @POST("statement/create")
     suspend fun createAccidentStatement(@Body accidentStatementData: AccidentStatementData): Response<RequestResponse>
