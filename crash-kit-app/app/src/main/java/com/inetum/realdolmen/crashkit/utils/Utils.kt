@@ -69,11 +69,16 @@ fun String.toLocalDateTime(): LocalDateTime? {
 }
 
 fun String.toLocalDate(): LocalDate? {
-    return try {
-        LocalDate.parse(this, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-    } catch (e: DateTimeParseException) {
-        null
+    val formats = listOf("yyyy-MM-dd", "dd/MM/yyyy")
+    for (format in formats) {
+        try {
+            return LocalDate.parse(this, DateTimeFormatter.ofPattern(format))
+        } catch (e: DateTimeParseException) {
+            // Ignore and try the next format
+        }
     }
+    // All formats failed
+    return null
 }
 
 fun Bitmap.toByteArray(): ByteArray {
