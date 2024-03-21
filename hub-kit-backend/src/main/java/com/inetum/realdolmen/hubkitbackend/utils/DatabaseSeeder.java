@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -31,33 +32,24 @@ public class DatabaseSeeder {
 
     @EventListener
     public void seed(ContextRefreshedEvent event) {
-        seedInsuranceCompanyTable();
-        seedInsuranceAgencyTable();
         seedInsuranceCertificateTable();
         seedPolicyHolderTable();
     }
 
-    private void seedInsuranceCompanyTable() {
-        String sql = "SELECT * FROM insurance_companies IC";
-        List<InsuranceCompany> ic = jdbcTemplate.query(sql, (resultSet, rowNum) -> null);
+    private void seedInsuranceCertificateTable() {
+        String sql = "SELECT * FROM insurance_certificates IC";
+        List<InsuranceCertificate> ic = jdbcTemplate.query(sql, (resultSet, rowNum) -> null);
         if (ic.isEmpty()) {
             var insuranceCompany = InsuranceCompany.builder()
                     .name("Ethias")
                     .build();
-
             insuranceCompanyRepository.save(insuranceCompany);
 
-            log.info("Insurance Company Seeded");
-        } else {
-            log.info("Insurance Company Seeding Not Required");
-        }
+            var insuranceCompany2 = InsuranceCompany.builder()
+                    .name("Argenta")
+                    .build();
+            insuranceCompanyRepository.save(insuranceCompany2);
 
-    }
-
-    private void seedInsuranceAgencyTable() {
-        String sql = "SELECT * FROM insurance_agencies IA";
-        List<InsuranceAgency> ia = jdbcTemplate.query(sql, (resultSet, rowNum) -> null);
-        if (ia.isEmpty()) {
             var insuranceAgency = InsuranceAgency.builder()
                     .name("Arces")
                     .address("Desguinlei 92, 2018 Antwerpen")
@@ -65,47 +57,48 @@ public class DatabaseSeeder {
                     .phoneNumber("032591970")
                     .email("Info@arces.be")
                     .build();
-
             insuranceAgencyRepository.save(insuranceAgency);
 
-            log.info("Insurance Agency Seeded");
-        } else {
-            log.info("Insurance Agency Seeding Not Required");
-        }
+            var insuranceAgency2 = InsuranceAgency.builder()
+                    .name("ING")
+                    .address("Ringlaan 92, 2027 Antwerpen")
+                    .country("BE")
+                    .phoneNumber("032598950")
+                    .email("Info@ing.be")
+                    .build();
+            insuranceAgencyRepository.save(insuranceAgency2);
 
-    }
-
-    private void seedInsuranceCertificateTable() {
-        String sql = "SELECT * FROM insurance_certificates IC";
-        List<InsuranceCertificate> ic = jdbcTemplate.query(sql, (resultSet, rowNum) -> null);
-        if (ic.isEmpty()) {
-            var insuranceCertificate = InsuranceCertificate.builder()
+            var insuranceCertificate1 = InsuranceCertificate.builder()
                     .policyNumber("POL123456789")
                     .greenCardNumber("GCN987654321")
                     .availabilityDate(LocalDate.now())
                     .expirationDate(LocalDate.of(2025, 2, 28))
+                    .insuranceCompany(insuranceCompany)
+                    .insuranceAgency(insuranceAgency)
                     .build();
 
-            var insuranceAgency = insuranceAgencyRepository.findByName("Arces");
-            insuranceAgency.ifPresent(insuranceCertificate::setInsuranceAgency);
+            var insuranceCertificate2 = InsuranceCertificate.builder()
+                    .policyNumber("POL987654321")
+                    .greenCardNumber("GCN123456789")
+                    .availabilityDate(LocalDate.now())
+                    .expirationDate(LocalDate.of(2025, 2, 28))
+                    .insuranceCompany(insuranceCompany2)
+                    .insuranceAgency(insuranceAgency2)
+                    .build();
 
-            var insuranceCompany = insuranceCompanyRepository.findByName("Ethias");
-            insuranceCompany.ifPresent(insuranceCertificate::setInsuranceCompany);
+            insuranceCertificateRepository.save(insuranceCertificate1);
+            insuranceCertificateRepository.save(insuranceCertificate2);
 
-            insuranceCertificateRepository.save(insuranceCertificate);
-
-            log.info("Insurance Certificate Seeded");
+            log.info("Insurance Certificates Seeded");
         } else {
             log.info("Insurance Certificate Seeding Not Required");
         }
-
     }
 
     private void seedPolicyHolderTable() {
         String sql = "SELECT * FROM policy_holders PH";
         List<PolicyHolder> ph = jdbcTemplate.query(sql, (resultSet, rowNum) -> null);
         if (ph.isEmpty()) {
-
             var policyHolder = PolicyHolder.builder()
                     .firstName("John")
                     .lastName("Doe")
@@ -117,8 +110,8 @@ public class DatabaseSeeder {
                     .password(new BCryptPasswordEncoder().encode("1234"))
                     .build();
 
-            var insuranceCertificate = insuranceCertificateRepository.findByGreenCardNumberAndPolicyNumber("GCN987654321", "POL123456789");
-            insuranceCertificate.ifPresent(policyHolder::setInsuranceCertificate);
+            var insuranceCertificates = new ArrayList<InsuranceCertificate>(insuranceCertificateRepository.findAll());
+            policyHolder.setInsuranceCertificates(insuranceCertificates);
 
             userRepository.save(policyHolder);
             log.info("Policy Holder Seeded");
@@ -126,6 +119,5 @@ public class DatabaseSeeder {
             log.info("Policy Holder Seeding Not Required");
         }
     }
-
 
 }
