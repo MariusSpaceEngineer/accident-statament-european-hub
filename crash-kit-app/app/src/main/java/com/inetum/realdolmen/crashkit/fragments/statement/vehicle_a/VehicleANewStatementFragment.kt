@@ -12,9 +12,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.inetum.realdolmen.crashkit.CrashKitApp
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleANewStatementBinding
+import com.inetum.realdolmen.crashkit.dto.InsuranceCertificate
 import com.inetum.realdolmen.crashkit.dto.PolicyHolderResponse
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
 import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
@@ -70,15 +72,9 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
         if (response.isSuccessful) {
             val personalInformationResponse = response.body()
             if (personalInformationResponse != null) {
+                importInsuranceInformation(personalInformationResponse.insuranceCertificates)
                 bindPolicyHolderInformationToUI(binding, personalInformationResponse)
-                importInsuranceInformation(model, personalInformationResponse)
             }
-            Toast.makeText(
-                requireContext(),
-                "Import successful",
-                Toast.LENGTH_LONG
-            )
-                .show()
         } else {
 
             val errorMessage = "Error while fetching insurance information"
@@ -273,30 +269,54 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
     }
 
     private fun importInsuranceInformation(
-        model: NewStatementViewModel,
-        response: PolicyHolderResponse
+        insuranceCertificates: List<InsuranceCertificate>?
     ) {
-        model.statementData.value?.apply {
-            this.vehicleAInsuranceCompanyName =
-                response.insuranceCertificate?.insuranceCompany?.name.toString()
-            this.vehicleAInsuranceCompanyPolicyNumber =
-                response.insuranceCertificate?.policyNumber.toString()
-            this.vehicleAInsuranceCompanyGreenCardNumber =
-                response.insuranceCertificate?.greenCardNumber.toString()
-            this.vehicleAInsuranceCertificateAvailabilityDate =
-                response.insuranceCertificate?.availabilityDate?.toLocalDate()
-            this.vehicleAInsuranceCertificateExpirationDate =
-                response.insuranceCertificate?.expirationDate?.toLocalDate()
-            this.vehicleAInsuranceAgencyName =
-                response.insuranceCertificate?.insuranceAgency?.name.toString()
-            this.vehicleAInsuranceAgencyAddress =
-                response.insuranceCertificate?.insuranceAgency?.address.toString()
-            this.vehicleAInsuranceAgencyCountry =
-                response.insuranceCertificate?.insuranceAgency?.country.toString()
-            this.vehicleAInsuranceAgencyPhoneNumber =
-                response.insuranceCertificate?.insuranceAgency?.phoneNumber.toString()
-            this.vehicleAInsuranceAgencyEmail =
-                response.insuranceCertificate?.insuranceAgency?.email.toString()
+        if (insuranceCertificates != null) {
+            val insuranceCertificateStrings =
+                insuranceCertificates.map { "Company name: ${it.insuranceCompany?.name}\nAgency name: ${it.insuranceAgency?.name}\nPolicy Number: ${it.policyNumber}" }
+                    .toTypedArray()
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Select an Insurance Certificate")
+                .setSingleChoiceItems(
+                    insuranceCertificateStrings,
+                    -1
+                ) { dialog, which ->
+                    val selectedInsurance = insuranceCertificates.get(which)
+
+                    model.statementData.value?.apply {
+                        this.vehicleAInsuranceCompanyName =
+                            selectedInsurance.insuranceCompany?.name ?: ""
+                        this.vehicleAInsuranceCompanyPolicyNumber =
+                            selectedInsurance.policyNumber.toString()
+                        this.vehicleAInsuranceCompanyGreenCardNumber =
+                            selectedInsurance.greenCardNumber.toString()
+                        this.vehicleAInsuranceCertificateAvailabilityDate =
+                            selectedInsurance.availabilityDate?.toLocalDate()
+                        this.vehicleAInsuranceCertificateExpirationDate =
+                            selectedInsurance.expirationDate?.toLocalDate()
+                        this.vehicleAInsuranceAgencyName =
+                            selectedInsurance.insuranceAgency?.name.toString()
+                        this.vehicleAInsuranceAgencyAddress =
+                            selectedInsurance.insuranceAgency?.address.toString()
+                        this.vehicleAInsuranceAgencyCountry =
+                            selectedInsurance.insuranceAgency?.country.toString()
+                        this.vehicleAInsuranceAgencyPhoneNumber =
+                            selectedInsurance.insuranceAgency?.phoneNumber.toString()
+                        this.vehicleAInsuranceAgencyEmail =
+                            selectedInsurance.insuranceAgency?.email.toString()
+                    }
+
+                    dialog.dismiss()
+
+                    Toast.makeText(
+                        requireContext(),
+                        "Import successful",
+                        Toast.LENGTH_LONG
+                    )
+                        .show()
+                }
+                .show()
+
         }
     }
 }
