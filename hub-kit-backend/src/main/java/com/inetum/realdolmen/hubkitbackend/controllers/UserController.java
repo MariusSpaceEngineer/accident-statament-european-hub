@@ -11,6 +11,7 @@ import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -55,11 +56,11 @@ public class UserController {
     }
 
     @PutMapping("/profile/insurance")
-    public ResponseEntity<InsuranceCertificateDTO> updatePolicyHolderInsuranceInformation(HttpServletRequest request, @RequestBody InsuranceCertificateDTO insuranceCertificateDTO) {
+    public ResponseEntity<List<InsuranceCertificateDTO>> updatePolicyHolderInsuranceInformation(HttpServletRequest request, @RequestBody InsuranceCertificateDTO insuranceCertificateDTO) {
         String token = extractToken(request);
 
         if (token != null) {
-            Optional<InsuranceCertificateDTO> insuranceCertificate = service.updateInsuranceCertificateInformation(token, insuranceCertificateDTO);
+            Optional<List<InsuranceCertificateDTO>> insuranceCertificate = service.updateInsuranceCertificateInformation(token, insuranceCertificateDTO);
 
             if (insuranceCertificate.isPresent()) {
                 return ResponseEntity.ok().cacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES)).body(insuranceCertificate.get());
