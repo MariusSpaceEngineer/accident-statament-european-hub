@@ -16,6 +16,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.inetum.realdolmen.crashkit.CrashKitApp
 import com.inetum.realdolmen.crashkit.R
@@ -43,6 +44,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 
 class ProfileFragment : Fragment() {
+
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
@@ -93,6 +95,9 @@ class ProfileFragment : Fragment() {
     private val insuranceCertificateDateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
         .setTitleText("Select dates")
         .build()
+
+    private var insuranceCertificates: List<InsuranceCertificate>? = null
+    private var selectedCertificate: InsuranceCertificate? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -155,6 +160,10 @@ class ProfileFragment : Fragment() {
                 binding.clProfilePersonalCard
             )
 
+        }
+
+        binding.tvProfileInsuranceCardChangeInsurance.setOnClickListener {
+            showInsuranceDialog()
         }
 
         binding.btnProfilePersonalCardUpdate.setOnClickListener {
@@ -372,7 +381,7 @@ class ProfileFragment : Fragment() {
 
     ) {
         val insuranceAgency = InsuranceAgency(
-            null,
+            selectedCertificate?.insuranceAgency?.id,
             fieldInsuranceAgencyName.text.toString(),
             fieldInsuranceAgencyAddress.text.toString(),
             fieldInsuranceAgencyCountry.text.toString(),
@@ -380,10 +389,13 @@ class ProfileFragment : Fragment() {
             fieldInsuranceAgencyEmail.text.toString()
         )
 
-        val insuranceCompany = InsuranceCompany(null, fieldInsuranceCompanyName.text.toString())
+        val insuranceCompany = InsuranceCompany(
+            selectedCertificate?.insuranceCompany?.id,
+            fieldInsuranceCompanyName.text.toString()
+        )
 
         val insuranceCertificateData = InsuranceCertificate(
-            null,
+            selectedCertificate?.id,
             fieldPolicyNumber.text.toString(),
             fieldGreenCardNumber.text.toString(),
             fieldInsuranceCertAvailabilityDate.text.toString().toLocalDate()?.toIsoString(),
@@ -391,6 +403,8 @@ class ProfileFragment : Fragment() {
             insuranceAgency,
             insuranceCompany
         )
+
+        Log.i("insurance certificate", insuranceCertificateData.toString())
 
         CoroutineScope(Dispatchers.IO).launch {
             val response =
@@ -407,7 +421,8 @@ class ProfileFragment : Fragment() {
         emailField: TextInputEditText,
         addressField: TextInputEditText,
         postalCodeField: TextInputEditText,
-        phoneNumberField: TextInputEditText, fields: Map<TextInputEditText, String>
+        phoneNumberField: TextInputEditText,
+        fields: Map<TextInputEditText, String>
 
     ) {
         val personalInformationData = PersonalInformationData(
@@ -428,49 +443,16 @@ class ProfileFragment : Fragment() {
     }
 
     private fun handlePolicyHolderInsuranceInformationResponse(
-        response: Response<InsuranceCertificate>,
+        response: Response<List<InsuranceCertificate>>,
         fields: Map<TextInputEditText, String>
     ) {
         Log.i("Request", "Request code: ${response.code()}")
         if (response.isSuccessful) {
-            val insuranceCertificate = response.body()
-            if (insuranceCertificate != null) {
-                binding.etProfileInsuranceCompanyPolicyNumberValue.setText(
-                    insuranceCertificate.policyNumber
-                )
-                binding.etProfileInsuranceCompanyGreenCardNumberValue.setText(
-                    insuranceCertificate.greenCardNumber
-                )
-                binding.etProfileInsuranceCompanyInsuranceAvailabilityDateValue.setText(
-                    insuranceCertificate.availabilityDate
-                )
-                binding.etProfileInsuranceCompanyInsuranceExpirationDateValue.setText(
-                    insuranceCertificate.expirationDate
-                )
+            val responseBody = response.body()
 
-                if (insuranceCertificate.insuranceCompany != null) {
-                    binding.etProfileInsuranceCompanyNameValue.setText(
-                        insuranceCertificate.insuranceCompany.name
-                    )
-                }
-
-                if (insuranceCertificate.insuranceAgency != null) {
-                    binding.etProfileInsuranceAgencyNameValue.setText(
-                        insuranceCertificate.insuranceAgency.name
-                    )
-                    binding.etProfileInsuranceAgencyEmailValue.setText(
-                        insuranceCertificate.insuranceAgency.email
-                    )
-                    binding.etProfileInsuranceAgencyPhoneNumberValue.setText(
-                        insuranceCertificate.insuranceAgency.phoneNumber
-                    )
-                    binding.etProfileInsuranceAgencyAddressValue.setText(
-                        insuranceCertificate.insuranceAgency.address
-                    )
-                    binding.etProfileInsuranceAgencyCountryValue.setText(
-                        insuranceCertificate.insuranceAgency.country
-                    )
-                }
+            if (!responseBody.isNullOrEmpty()) {
+                insuranceCertificates = responseBody
+                showInsuranceDialog()
 
                 Toast.makeText(
                     requireContext(),
@@ -541,6 +523,7 @@ class ProfileFragment : Fragment() {
         Log.i("Request", "Request code: ${response.code()}")
         if (response.isSuccessful) {
             val personalInformationResponse = response.body()
+            Log.i("Request", "Request body: ${response.body()}")
             if (personalInformationResponse != null) {
                 binding.etProfilePersonalFirstNameValue.setText(personalInformationResponse.firstName)
                 binding.etProfilePersonalLastNameValue.setText(personalInformationResponse.lastName)
@@ -549,58 +532,89 @@ class ProfileFragment : Fragment() {
                 binding.etProfilePersonalAddressValue.setText(personalInformationResponse.address)
                 binding.etProfilePersonalPostalCodeValue.setText(personalInformationResponse.postalCode)
 
-                if (personalInformationResponse.insuranceCertificate != null) {
-                    binding.etProfileInsuranceCompanyPolicyNumberValue.setText(
-                        personalInformationResponse.insuranceCertificate.policyNumber
-                    )
-                    binding.etProfileInsuranceCompanyGreenCardNumberValue.setText(
-                        personalInformationResponse.insuranceCertificate.greenCardNumber
-                    )
-                    binding.etProfileInsuranceCompanyInsuranceAvailabilityDateValue.setText(
-                        personalInformationResponse.insuranceCertificate.availabilityDate
-                    )
-                    binding.etProfileInsuranceCompanyInsuranceExpirationDateValue.setText(
-                        personalInformationResponse.insuranceCertificate.expirationDate
-                    )
-
-                    if (personalInformationResponse.insuranceCertificate.insuranceCompany != null) {
-                        binding.etProfileInsuranceCompanyNameValue.setText(
-                            personalInformationResponse.insuranceCertificate.insuranceCompany.name
-                        )
-                    }
-
-                    if (personalInformationResponse.insuranceCertificate.insuranceAgency != null) {
-                        binding.etProfileInsuranceAgencyNameValue.setText(
-                            personalInformationResponse.insuranceCertificate.insuranceAgency.name
-                        )
-                        binding.etProfileInsuranceAgencyEmailValue.setText(
-                            personalInformationResponse.insuranceCertificate.insuranceAgency.email
-                        )
-                        binding.etProfileInsuranceAgencyPhoneNumberValue.setText(
-                            personalInformationResponse.insuranceCertificate.insuranceAgency.phoneNumber
-                        )
-                        binding.etProfileInsuranceAgencyAddressValue.setText(
-                            personalInformationResponse.insuranceCertificate.insuranceAgency.address
-                        )
-                        binding.etProfileInsuranceAgencyCountryValue.setText(
-                            personalInformationResponse.insuranceCertificate.insuranceAgency.country
-                        )
-                    }
-
+                if (!personalInformationResponse.insuranceCertificates.isNullOrEmpty()) {
+                    insuranceCertificates = personalInformationResponse.insuranceCertificates
+                    showInsuranceDialog()
+                } else {
+                    binding.tvProfileInsuranceCardChangeInsurance.visibility = View.GONE
                 }
-                Toast.makeText(
-                    requireContext(),
-                    "Registration successful",
-                    Toast.LENGTH_LONG
-                )
-                    .show()
+            } else {
 
+                val errorMessage = "Unknown error"
+                requireContext().createSimpleDialog(getString(R.string.error), errorMessage)
             }
-        } else {
-
-            val errorMessage = "Unknown error"
-            requireContext().createSimpleDialog(getString(R.string.error), errorMessage)
         }
     }
 
+    private fun showInsuranceDialog(
+    ) {
+        if (insuranceCertificates != null) {
+            val insuranceCertificateStrings =
+                insuranceCertificates!!.map { "Company name: ${it.insuranceCompany?.name}\nAgency name: ${it.insuranceAgency?.name}\nPolicy Number: ${it.policyNumber}" }
+                    .toMutableList()
+            insuranceCertificateStrings.add("Create a new certificate")
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Select an Insurance Certificate")
+                .setSingleChoiceItems(
+                    insuranceCertificateStrings.toTypedArray(),
+                    -1
+                ) { dialog, which ->
+                    if (which == insuranceCertificateStrings.lastIndex) {
+                        selectedCertificate= null
+
+                        binding.etProfileInsuranceCompanyPolicyNumberValue.setText("")
+                        binding.etProfileInsuranceCompanyGreenCardNumberValue.setText("")
+                        binding.etProfileInsuranceCompanyInsuranceAvailabilityDateValue.setText("")
+                        binding.etProfileInsuranceCompanyInsuranceExpirationDateValue.setText("")
+                        binding.etProfileInsuranceCompanyNameValue.setText("")
+                        binding.etProfileInsuranceAgencyNameValue.setText("")
+                        binding.etProfileInsuranceAgencyEmailValue.setText("")
+                        binding.etProfileInsuranceAgencyPhoneNumberValue.setText("")
+                        binding.etProfileInsuranceAgencyAddressValue.setText("")
+                        binding.etProfileInsuranceAgencyCountryValue.setText("")
+
+                    } else {
+                        selectedCertificate = insuranceCertificates?.get(which)
+
+                        // Update the UI with the selected certificate
+                        binding.etProfileInsuranceCompanyPolicyNumberValue.setText(
+                            selectedCertificate?.policyNumber ?: ""
+                        )
+                        binding.etProfileInsuranceCompanyGreenCardNumberValue.setText(
+                            selectedCertificate?.greenCardNumber ?: ""
+                        )
+                        binding.etProfileInsuranceCompanyInsuranceAvailabilityDateValue.setText(
+                            selectedCertificate?.availabilityDate?.toLocalDate()?.to24Format() ?: ""
+                        )
+                        binding.etProfileInsuranceCompanyInsuranceExpirationDateValue.setText(
+                            selectedCertificate?.expirationDate?.toLocalDate()?.to24Format() ?: ""
+                        )
+                        if (selectedCertificate?.insuranceCompany != null) {
+                            binding.etProfileInsuranceCompanyNameValue.setText(
+                                selectedCertificate?.insuranceCompany?.name ?: ""
+                            )
+                        }
+                        if (selectedCertificate?.insuranceAgency != null) {
+                            binding.etProfileInsuranceAgencyNameValue.setText(
+                                selectedCertificate?.insuranceAgency?.name ?: ""
+                            )
+                            binding.etProfileInsuranceAgencyEmailValue.setText(
+                                selectedCertificate?.insuranceAgency?.email ?: ""
+                            )
+                            binding.etProfileInsuranceAgencyPhoneNumberValue.setText(
+                                selectedCertificate?.insuranceAgency?.phoneNumber ?: ""
+                            )
+                            binding.etProfileInsuranceAgencyAddressValue.setText(
+                                selectedCertificate?.insuranceAgency?.address ?: ""
+                            )
+                            binding.etProfileInsuranceAgencyCountryValue.setText(
+                                selectedCertificate?.insuranceAgency?.country ?: ""
+                            )
+                        }
+                    }
+                    dialog.dismiss()
+                }
+                .show()
+        }
+    }
 }
