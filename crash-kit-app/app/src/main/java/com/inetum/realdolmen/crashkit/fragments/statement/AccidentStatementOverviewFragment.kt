@@ -287,7 +287,7 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             statementData?.policyHolderAPhoneNumber,
             statementData?.policyHolderAAddress,
             statementData?.policyHolderAPostalCode,
-            insuranceCertificateVehicleA
+            listOf<InsuranceCertificate>(insuranceCertificateVehicleA)
         )
 
         val insuranceCompanyVehicleB =
@@ -319,7 +319,7 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             statementData?.policyHolderBPhoneNumber,
             statementData?.policyHolderBAddress,
             statementData?.policyHolderBPostalCode,
-            insuranceCertificateVehicleB
+            listOf<InsuranceCertificate>(insuranceCertificateVehicleB)
         )
 
         val policyHolders = listOf<PolicyHolderDTO>(policyHolderVehicleA, policyHolderVehicleB)
