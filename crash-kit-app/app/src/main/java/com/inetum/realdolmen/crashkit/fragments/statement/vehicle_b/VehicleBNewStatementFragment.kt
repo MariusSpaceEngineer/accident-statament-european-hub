@@ -21,7 +21,7 @@ import com.google.gson.JsonSyntaxException
 import com.google.zxing.integration.android.IntentIntegrator
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleBNewStatementBinding
-import com.inetum.realdolmen.crashkit.dto.PolicyHolderResponse
+import com.inetum.realdolmen.crashkit.dto.PolicyHolderVehicleBResponse
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
 import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
@@ -72,7 +72,8 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, Validatio
                 val json = scanResult.contents
                 val gson = Gson()
                 try {
-                    val policyHolderResponse = gson.fromJson(json, PolicyHolderResponse::class.java)
+                    val policyHolderResponse =
+                        gson.fromJson(json, PolicyHolderVehicleBResponse::class.java)
 
                     bindPolicyHolderInformationToUI(binding, policyHolderResponse)
                     importInsuranceInformation(model, policyHolderResponse)
@@ -275,25 +276,25 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, Validatio
 
     private fun bindPolicyHolderInformationToUI(
         binding: FragmentVehicleBNewStatementBinding,
-        response: PolicyHolderResponse
+        response: PolicyHolderVehicleBResponse
     ) {
         binding.etStatementPolicyHolderName.setText(response.lastName)
-        binding.etStatementPolicyHolderName.error= null
+        binding.etStatementPolicyHolderName.error = null
         binding.etStatementPolicyHolderFirstName.setText(response.firstName)
-        binding.etStatementPolicyHolderFirstName.error= null
+        binding.etStatementPolicyHolderFirstName.error = null
         binding.etStatementPolicyHolderAddress.setText(response.address)
-        binding.etStatementPolicyHolderAddress.error= null
+        binding.etStatementPolicyHolderAddress.error = null
         binding.etStatementPolicyHolderPostalCode.setText(response.postalCode)
-        binding.etStatementPolicyHolderPostalCode.error= null
+        binding.etStatementPolicyHolderPostalCode.error = null
         binding.etStatementPolicyHolderPhoneNumber.setText(response.phoneNumber)
-        binding.etStatementPolicyHolderPhoneNumber.error= null
+        binding.etStatementPolicyHolderPhoneNumber.error = null
         binding.etStatementPolicyHolderEmail.setText(response.email)
-        binding.etStatementPolicyHolderEmail.error= null
+        binding.etStatementPolicyHolderEmail.error = null
     }
 
     private fun importInsuranceInformation(
         model: NewStatementViewModel,
-        response: PolicyHolderResponse
+        response: PolicyHolderVehicleBResponse
     ) {
         model.statementData.value?.apply {
             this.vehicleBInsuranceCompanyName =
@@ -318,4 +319,6 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, Validatio
                 response.insuranceCertificate?.insuranceAgency?.email ?: ""
         }
     }
+
+
 }
