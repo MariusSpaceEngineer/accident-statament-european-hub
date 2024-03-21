@@ -10,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -40,8 +38,8 @@ public class AccidentStatementService {
             if (!accidentStatement.getVehicleAAccidentImages().isEmpty()) {
                 accidentImageRepository.saveAll(accidentStatement.getVehicleAAccidentImages());
             }
-            if (!accidentStatement.getVehicleBAccidentImages().isEmpty()){
-            accidentImageRepository.saveAll(accidentStatement.getVehicleBAccidentImages());
+            if (!accidentStatement.getVehicleBAccidentImages().isEmpty()) {
+                accidentImageRepository.saveAll(accidentStatement.getVehicleBAccidentImages());
             }
 
             for (Driver driver : accidentStatement.getDrivers()) {
@@ -101,34 +99,35 @@ public class AccidentStatementService {
             }
 
             for (PolicyHolder policyHolder : accidentStatement.getPolicyHolders()) {
-                if (policyHolder.getInsuranceCertificate().getGreenCardNumber() == null || policyHolder.getInsuranceCertificate().getGreenCardNumber().isEmpty() || policyHolder.getInsuranceCertificate().getPolicyNumber() == null || policyHolder.getInsuranceCertificate().getPolicyNumber().isEmpty()) {
+                var insuranceCertificate = policyHolder.getInsuranceCertificates().getFirst();
+                if (insuranceCertificate.getGreenCardNumber() == null || insuranceCertificate.getGreenCardNumber().isEmpty() || insuranceCertificate.getPolicyNumber() == null || insuranceCertificate.getPolicyNumber().isEmpty()) {
                     throw new MissingPropertyException("PolicyHolder's green card number and policy number cannot be null");
                 }
-                var existingCertificate = insuranceCertificateRepository.findByGreenCardNumberAndPolicyNumber(policyHolder.getInsuranceCertificate().getGreenCardNumber(), policyHolder.getInsuranceCertificate().getPolicyNumber());
+                var existingCertificate = insuranceCertificateRepository.findByGreenCardNumberAndPolicyNumber(insuranceCertificate.getGreenCardNumber(), insuranceCertificate.getPolicyNumber());
                 if (existingCertificate.isEmpty()) {
                     var existingInsuranceAgency = insuranceAgencyRepository.findByNameAndAddress(
-                            policyHolder.getInsuranceCertificate().getInsuranceAgency().getName(),
-                            policyHolder.getInsuranceCertificate().getInsuranceAgency().getAddress());
+                            insuranceCertificate.getInsuranceAgency().getName(),
+                            insuranceCertificate.getInsuranceAgency().getAddress());
 
                     var existingInsuranceCompany = insuranceCompanyRepository.findByName(
-                            policyHolder.getInsuranceCertificate().getInsuranceCompany().getName());
+                            insuranceCertificate.getInsuranceCompany().getName());
 
                     if (existingInsuranceAgency.isPresent()) {
-                        policyHolder.getInsuranceCertificate().setInsuranceAgency(existingInsuranceAgency.get());
+                        insuranceCertificate.setInsuranceAgency(existingInsuranceAgency.get());
                     } else {
-                        insuranceAgencyRepository.save(policyHolder.getInsuranceCertificate().getInsuranceAgency());
+                        insuranceAgencyRepository.save(insuranceCertificate.getInsuranceAgency());
                     }
 
                     if (existingInsuranceCompany.isPresent()) {
-                        policyHolder.getInsuranceCertificate().setInsuranceCompany(existingInsuranceCompany.get());
+                        insuranceCertificate.setInsuranceCompany(existingInsuranceCompany.get());
                     } else {
-                        insuranceCompanyRepository.save(policyHolder.getInsuranceCertificate().getInsuranceCompany());
+                        insuranceCompanyRepository.save(insuranceCertificate.getInsuranceCompany());
                     }
-                    insuranceCertificateRepository.save(policyHolder.getInsuranceCertificate());
+                    insuranceCertificateRepository.save(insuranceCertificate);
                     policyHolderRepository.save(policyHolder);
 
                 } else {
-                    var existingPolicyHolder = policyHolderRepository.findByInsuranceCertificate(existingCertificate.get());
+                    var existingPolicyHolder = policyHolderRepository.findByInsuranceCertificateId(existingCertificate.get().getId());
                     if (existingPolicyHolder.isPresent()) {
                         var index = accidentStatement.getPolicyHolders().indexOf(policyHolder);
                         accidentStatement.getPolicyHolders().set(index, existingPolicyHolder.get());
