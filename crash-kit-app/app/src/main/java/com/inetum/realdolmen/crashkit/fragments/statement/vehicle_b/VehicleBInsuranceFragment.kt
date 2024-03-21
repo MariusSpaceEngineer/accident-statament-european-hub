@@ -187,8 +187,9 @@ class VehicleBInsuranceFragment : Fragment(), StatementDataHandler, ValidationCo
                 binding.etStatementVehicleBInsuranceCompanyPolicyNumber.text.toString()
             this.vehicleBInsuranceCompanyGreenCardNumber =
                 binding.etStatementVehicleBInsuranceCompanyGreenCardNumber.text.toString()
-            this.vehicleBInsuranceCertificateAvailabilityDate = insuranceCertificateAvailabilityDate
-            this.vehicleBInsuranceCertificateExpirationDate = insuranceCertificateExpirationDate
+            this.vehicleBInsuranceCertificateAvailabilityDate = binding.etStatementVehicleBInsuranceCompanyCertificateAvailabilityDate.text.toString().toLocalDate()
+            this.vehicleBInsuranceCertificateExpirationDate = binding.etStatementVehicleBInsuranceCompanyCertificateExpirationDate.text.toString()
+                .toLocalDate()
             this.vehicleBInsuranceAgencyName =
                 binding.etStatementVehicleBInsuranceAgencyName.text.toString()
             this.vehicleBInsuranceAgencyAddress =

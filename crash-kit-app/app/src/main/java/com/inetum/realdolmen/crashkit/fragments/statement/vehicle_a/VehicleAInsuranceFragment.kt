@@ -1,7 +1,6 @@
 package com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -189,8 +188,8 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler, ValidationCo
                 binding.etStatementVehicleAInsuranceCompanyPolicyNumber.text.toString()
             this.vehicleAInsuranceCompanyGreenCardNumber =
                 binding.etStatementVehicleAInsuranceCompanyGreenCardNumber.text.toString()
-            this.vehicleAInsuranceCertificateAvailabilityDate = insuranceCertificateAvailabilityDate
-            this.vehicleAInsuranceCertificateExpirationDate = insuranceCertificateExpirationDate
+            this.vehicleAInsuranceCertificateAvailabilityDate = binding.etStatementVehicleAInsuranceCompanyCertificateAvailabilityDate.text.toString().toLocalDate()
+            this.vehicleAInsuranceCertificateExpirationDate = binding.etStatementVehicleAInsuranceCompanyCertificateExpirationDate.text.toString().toLocalDate()
             this.vehicleAInsuranceAgencyName =
                 binding.etStatementVehicleAInsuranceAgencyName.text.toString()
             this.vehicleAInsuranceAgencyAddress =
