@@ -7,5 +7,5 @@ data class PolicyHolderDTO(
     val phoneNumber: String? = null,
     val address: String? = null,
     val postalCode: String? = null,
-    val insuranceCertificate: InsuranceCertificate? = null
+    val insuranceCertificates: List<InsuranceCertificate>? = null
 )

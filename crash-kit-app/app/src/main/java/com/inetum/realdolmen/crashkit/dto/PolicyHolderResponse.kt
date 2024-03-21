@@ -8,6 +8,17 @@ data class PolicyHolderResponse(
     val phoneNumber: String?,
     val address: String?,
     val postalCode: String?,
+    val insuranceCertificates: List<InsuranceCertificate>?
+)
+
+data class PolicyHolderVehicleBResponse(
+    val id: Int?,
+    val firstName: String?,
+    val lastName: String?,
+    val email: String?,
+    val phoneNumber: String?,
+    val address: String?,
+    val postalCode: String?,
     val insuranceCertificate: InsuranceCertificate?
 )
 
