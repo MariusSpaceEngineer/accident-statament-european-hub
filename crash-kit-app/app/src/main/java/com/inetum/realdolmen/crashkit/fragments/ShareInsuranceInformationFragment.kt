@@ -130,7 +130,7 @@ class ShareInsuranceInformationFragment : Fragment() {
         insuranceCertificates: List<InsuranceCertificate>?,
         onCertificateSelected: (InsuranceCertificate?) -> Unit
     ) {
-        if (insuranceCertificates != null) {
+        if (!insuranceCertificates.isNullOrEmpty()) {
             var selectedCertificate: InsuranceCertificate? = null
 
             val insuranceCertificateStrings =
