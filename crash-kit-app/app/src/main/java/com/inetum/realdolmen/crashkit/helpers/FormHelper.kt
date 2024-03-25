@@ -1,9 +1,23 @@
 package com.inetum.realdolmen.crashkit.helpers
 
+import android.content.Context
 import android.widget.TextView
+import com.inetum.realdolmen.crashkit.R
 
 class FormHelper(
-    private val fields: List<TextView>) {
+    context: Context,
+    private val fields: List<TextView>
+) {
+
+    public val errors = InputFieldsErrors(
+        context.getString(R.string.field_required),
+        context.getString(R.string.no_digits_allowed),
+        context.getString(R.string.no_letters_allowed),
+        context.getString(R.string.field_needs_characters),
+        context.getString(R.string.future_date),
+        context.getString(R.string.past_date),
+        context.getString(R.string.invalid_email)
+    )
 
     fun validateFields(validationRules: List<Triple<TextView, (String?) -> Boolean, String>>) {
         validationRules.forEach { (field, validationRule, errorMessage) ->
@@ -19,12 +33,12 @@ class FormHelper(
 }
 
 data class InputFieldsErrors(
-    var fieldRequired: String = "Field is required",
-    var noDigitsAllowed: String = "No digits allowed",
-    var noLettersAllowed: String = "No letters allowed",
-    var fieldNeedsCharacters: String = "Field needs certain characters:",
-    var futureDate: String = "Date is in the future",
-    var pastDate: String = "Date is in the past",
-    var invalidEmail: String = "Invalid email"
+    var fieldRequired: String,
+    var noDigitsAllowed: String,
+    var noLettersAllowed: String,
+    var fieldNeedsCharacters: String,
+    var futureDate: String,
+    var pastDate: String,
+    var invalidEmail: String
 )
 
