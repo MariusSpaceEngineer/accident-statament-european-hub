@@ -10,12 +10,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.datepicker.MaterialDatePicker
-import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleADriverBinding
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
 import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
-import com.inetum.realdolmen.crashkit.utils.StatementDataErrors
+import com.inetum.realdolmen.crashkit.helpers.InputFieldsErrors
+import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.printBackStack
@@ -36,6 +36,7 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
     private var fields: List<TextView> = listOf()
     private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = listOf()
     private var formHelper: FormHelper = FormHelper(fields)
+    private val inputFieldsErrors = InputFieldsErrors()
 
     private val fragmentNavigationHelper by lazy {
         FragmentNavigationHelper(requireActivity().supportFragmentManager)
@@ -95,9 +96,7 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val statementDataErrors = model.statementDataErrors.value!!
-
-        setupValidation(statementDataErrors, fields, validationRules, formHelper)
+        setupValidation()
 
         requireActivity().supportFragmentManager.printBackStack()
 
@@ -206,10 +205,6 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
     }
 
     override fun setupValidation(
-        statementDataErrors: StatementDataErrors,
-        fields: List<TextView>,
-        validationRules: List<Triple<TextView, (String?) -> Boolean, String>>,
-        formHelper: FormHelper
     ) {
         this.fields = listOf(
             binding.etStatementVehicleADriverName,
@@ -228,58 +223,58 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
             Triple(
                 binding.etStatementVehicleADriverName,
                 { value -> value.isNullOrEmpty() },
-                statementDataErrors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleADriverName,
                 { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                statementDataErrors.noDigitsAllowed
+                this.inputFieldsErrors.noDigitsAllowed
             ),
             Triple(
                 binding.etStatementVehicleADriverFirstName,
                 { value -> value.isNullOrEmpty() },
-                statementDataErrors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleADriverFirstName,
                 { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                statementDataErrors.noDigitsAllowed
+                this.inputFieldsErrors.noDigitsAllowed
             ),
 
             Triple(
                 binding.etStatementVehicleADriverDateOfBirth,
                 { value -> value.isNullOrEmpty() },
-                statementDataErrors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleADriverDateOfBirth, { value ->
                     value?.toLocalDate()?.isAfter(LocalDate.now()) ?: false
-                }, statementDataErrors.futureDate
+                }, this.inputFieldsErrors.futureDate
             ),
             Triple(
                 binding.etStatementVehicleADriverAddress,
                 { value -> value.isNullOrEmpty() },
-                statementDataErrors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleADriverCountry,
                 { value -> value.isNullOrEmpty() },
-                statementDataErrors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleADriverCountry,
                 { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                statementDataErrors.noDigitsAllowed
+                this.inputFieldsErrors.noDigitsAllowed
             ),
             Triple(
                 binding.etStatementVehicleADriverPhoneNumber,
                 { value -> value.isNullOrEmpty() },
-                statementDataErrors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleADriverEmail,
                 { value -> value.isNullOrEmpty() },
-                statementDataErrors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleADriverEmail,
@@ -288,22 +283,22 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
                         value
                     ).matches()
                 },
-                statementDataErrors.invalidEmail
+                this.inputFieldsErrors.invalidEmail
             ),
             Triple(
                 binding.etStatementVehicleADriverDrivingLicenseNumber,
                 { value -> value.isNullOrEmpty() },
-                statementDataErrors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleADriverDrivingLicenseExpirationDate,
                 { value -> value.isNullOrEmpty() },
-                statementDataErrors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleADriverDrivingLicenseExpirationDate, { value ->
                     value?.toLocalDate()?.isBefore(LocalDate.now()) ?: false
-                }, statementDataErrors.pastDate
+                }, this.inputFieldsErrors.pastDate
             ),
         )
     }

@@ -14,8 +14,8 @@ import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleAInsuranceBinding
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
 import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
+import com.inetum.realdolmen.crashkit.helpers.InputFieldsErrors
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
-import com.inetum.realdolmen.crashkit.utils.StatementDataErrors
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.printBackStack
@@ -37,6 +37,7 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler, ValidationCo
     private var fields: List<TextView> = listOf()
     private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = listOf()
     private var formHelper: FormHelper = FormHelper(fields)
+    private val inputFieldsErrors = InputFieldsErrors()
 
     private val fragmentNavigationHelper by lazy {
         FragmentNavigationHelper(requireActivity().supportFragmentManager)
@@ -95,9 +96,7 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler, ValidationCo
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val statementDataErrors = model.statementDataErrors.value!!
-
-        setupValidation(statementDataErrors, fields, validationRules, formHelper)
+        setupValidation()
 
         requireActivity().supportFragmentManager.printBackStack()
 
@@ -147,7 +146,7 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler, ValidationCo
             binding.etStatementVehicleAInsuranceCompanyCertificateAvailabilityDate.setText(
                 (insuranceCertificateAvailabilityDate?.to24Format() ?: "")
             )
-            binding.etStatementVehicleAInsuranceCompanyCertificateAvailabilityDate.error=null
+            binding.etStatementVehicleAInsuranceCompanyCertificateAvailabilityDate.error = null
         }
 
         addDateChangeListener {
@@ -155,7 +154,7 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler, ValidationCo
                 (insuranceCertificateExpirationDate?.to24Format() ?: "")
 
             )
-            binding.etStatementVehicleAInsuranceCompanyCertificateExpirationDate.error= null
+            binding.etStatementVehicleAInsuranceCompanyCertificateExpirationDate.error = null
         }
     }
 
@@ -165,8 +164,8 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler, ValidationCo
             binding.etStatementVehicleAInsuranceCompanyPolicyNumber.setText(statementData.vehicleAInsuranceCompanyPolicyNumber)
             binding.etStatementVehicleAInsuranceCompanyGreenCardNumber.setText(statementData.vehicleAInsuranceCompanyGreenCardNumber)
             binding.etStatementVehicleAInsuranceCompanyCertificateAvailabilityDate.setText(
-                    statementData.vehicleAInsuranceCertificateAvailabilityDate?.to24Format() ?: ""
-                    )
+                statementData.vehicleAInsuranceCertificateAvailabilityDate?.to24Format() ?: ""
+            )
             binding.etStatementVehicleAInsuranceCompanyCertificateExpirationDate.setText(
                 statementData.vehicleAInsuranceCertificateExpirationDate?.to24Format() ?: ""
             )
@@ -188,8 +187,12 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler, ValidationCo
                 binding.etStatementVehicleAInsuranceCompanyPolicyNumber.text.toString()
             this.vehicleAInsuranceCompanyGreenCardNumber =
                 binding.etStatementVehicleAInsuranceCompanyGreenCardNumber.text.toString()
-            this.vehicleAInsuranceCertificateAvailabilityDate = binding.etStatementVehicleAInsuranceCompanyCertificateAvailabilityDate.text.toString().toLocalDate()
-            this.vehicleAInsuranceCertificateExpirationDate = binding.etStatementVehicleAInsuranceCompanyCertificateExpirationDate.text.toString().toLocalDate()
+            this.vehicleAInsuranceCertificateAvailabilityDate =
+                binding.etStatementVehicleAInsuranceCompanyCertificateAvailabilityDate.text.toString()
+                    .toLocalDate()
+            this.vehicleAInsuranceCertificateExpirationDate =
+                binding.etStatementVehicleAInsuranceCompanyCertificateExpirationDate.text.toString()
+                    .toLocalDate()
             this.vehicleAInsuranceAgencyName =
                 binding.etStatementVehicleAInsuranceAgencyName.text.toString()
             this.vehicleAInsuranceAgencyAddress =
@@ -209,10 +212,6 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler, ValidationCo
     }
 
     override fun setupValidation(
-        statementDataErrors: StatementDataErrors,
-        fields: List<TextView>,
-        validationRules: List<Triple<TextView, (String?) -> Boolean, String>>,
-        formHelper: FormHelper
     ) {
         this.fields = listOf(
             binding.etStatementVehicleAInsuranceCompanyName,
@@ -232,77 +231,77 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler, ValidationCo
             Triple(
                 binding.etStatementVehicleAInsuranceCompanyName,
                 { value -> value.isNullOrEmpty() },
-                statementDataErrors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleAInsuranceCompanyName,
                 { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                statementDataErrors.noDigitsAllowed
+                this.inputFieldsErrors.noDigitsAllowed
             ),
             Triple(
                 binding.etStatementVehicleAInsuranceCompanyPolicyNumber,
                 { value -> value.isNullOrEmpty() },
-                statementDataErrors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleAInsuranceCompanyGreenCardNumber,
                 { value -> value.isNullOrEmpty() },
-                statementDataErrors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleAInsuranceCompanyCertificateAvailabilityDate,
                 { value -> value.isNullOrEmpty() },
-                statementDataErrors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleAInsuranceCompanyCertificateAvailabilityDate, { value ->
                     value?.toLocalDate()?.isAfter(LocalDate.now()) ?: false
-                }, statementDataErrors.futureDate
+                }, this.inputFieldsErrors.futureDate
             ),
             Triple(
                 binding.etStatementVehicleAInsuranceCompanyCertificateExpirationDate,
                 { value -> value.isNullOrEmpty() },
-                statementDataErrors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleAInsuranceAgencyName,
                 { value -> value.isNullOrEmpty() },
-                statementDataErrors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleAInsuranceAgencyName,
                 { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                statementDataErrors.noDigitsAllowed
+                this.inputFieldsErrors.noDigitsAllowed
             ),
             Triple(
                 binding.etStatementVehicleAInsuranceAgencyAddress,
                 { value -> value.isNullOrEmpty() },
-                statementDataErrors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleAInsuranceAgencyCountry,
                 { value -> value.isNullOrEmpty() },
-                statementDataErrors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleAInsuranceAgencyCountry,
                 { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                statementDataErrors.noDigitsAllowed
+                this.inputFieldsErrors.noDigitsAllowed
             ),
             Triple(
                 binding.etStatementVehicleAInsuranceAgencyPhoneNumber,
                 { value -> value.isNullOrEmpty() },
-                statementDataErrors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleAInsuranceAgencyPhoneNumber,
                 { value -> !value.isNullOrEmpty() && value.any { it.isLetter() } },
-                statementDataErrors.noLettersAllowed
+                this.inputFieldsErrors.noLettersAllowed
             ),
             Triple(
                 binding.etStatementVehicleAInsuranceAgencyEmail,
                 { value -> value.isNullOrEmpty() },
-                statementDataErrors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleAInsuranceAgencyEmail,
@@ -311,7 +310,7 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler, ValidationCo
                         value
                     ).matches()
                 },
-                statementDataErrors.invalidEmail
+                this.inputFieldsErrors.invalidEmail
             )
         )
     }

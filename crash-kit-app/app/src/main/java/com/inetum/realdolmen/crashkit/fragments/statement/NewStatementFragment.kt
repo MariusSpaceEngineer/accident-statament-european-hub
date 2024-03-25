@@ -15,9 +15,9 @@ import com.inetum.realdolmen.crashkit.databinding.FragmentNewStatementBinding
 import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleANewStatementFragment
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
 import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
+import com.inetum.realdolmen.crashkit.helpers.InputFieldsErrors
 import com.inetum.realdolmen.crashkit.utils.DateTimePicker
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
-import com.inetum.realdolmen.crashkit.utils.StatementDataErrors
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.printBackStack
@@ -34,6 +34,7 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
     private var fields: List<TextView> = listOf()
     private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = listOf()
     private var formHelper: FormHelper = FormHelper(fields)
+    private var inputFieldsErrors = InputFieldsErrors()
 
     private val fragmentNavigationHelper by lazy {
         FragmentNavigationHelper(requireActivity().supportFragmentManager)
@@ -62,9 +63,7 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val statementDataErrors = model.statementDataErrors.value!!
-
-        setupValidation(statementDataErrors, fields, validationRules, formHelper)
+        setupValidation()
 
         updateUIFromViewModel(model)
 
@@ -100,7 +99,7 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
             binding.etStatementAccidentDate.setText(
                 (dateTimePicker.dateTime?.to24Format() ?: "")
             )
-            binding.etStatementAccidentDate.error= null
+            binding.etStatementAccidentDate.error = null
         }
     }
 
@@ -138,10 +137,6 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
     }
 
     override fun setupValidation(
-        errors: StatementDataErrors,
-        fields: List<TextView>,
-        validationRules: List<Triple<TextView, (String?) -> Boolean, String>>,
-        formHelper: FormHelper
     ) {
         this.fields = listOf(
             binding.etStatementAccidentDate,
@@ -157,37 +152,37 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
             Triple(
                 binding.etStatementAccidentDate,
                 { value -> value.isNullOrEmpty() },
-                errors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementAccidentDate, { value ->
                     value?.toLocalDateTime()?.isAfter(LocalDateTime.now()) ?: false
-                }, errors.futureDate
+                }, this.inputFieldsErrors.futureDate
             ),
             Triple(
                 binding.etStatementAccidentLocation,
                 { value -> value.isNullOrEmpty() },
-                errors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementWitnessName,
                 { value -> value.isNullOrEmpty() },
-                errors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementWitnessName,
                 { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                errors.noDigitsAllowed
+                this.inputFieldsErrors.noDigitsAllowed
             ),
             Triple(
                 binding.etStatementWitnessAddress,
                 { value -> value.isNullOrEmpty() },
-                errors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
             Triple(
                 binding.etStatementWitnessPhone,
                 { value -> value.isNullOrEmpty() },
-                errors.fieldRequired
+                this.inputFieldsErrors.fieldRequired
             ),
         )
     }
