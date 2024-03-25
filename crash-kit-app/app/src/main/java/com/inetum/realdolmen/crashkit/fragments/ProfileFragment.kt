@@ -29,7 +29,6 @@ import com.inetum.realdolmen.crashkit.dto.PersonalInformationData
 import com.inetum.realdolmen.crashkit.dto.PolicyHolderPersonalInformationResponse
 import com.inetum.realdolmen.crashkit.dto.PolicyHolderResponse
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
-import com.inetum.realdolmen.crashkit.helpers.InputFieldsErrors
 import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.createSimpleDialog
 import com.inetum.realdolmen.crashkit.utils.to24Format
@@ -105,13 +104,12 @@ class ProfileFragment : Fragment(), ValidationConfigure {
     private var personalInformationFields: List<TextView> = listOf()
     private var personalInformationValidationRules: List<Triple<EditText, (String?) -> Boolean, String>> =
         listOf()
-    private var personalFormHelper: FormHelper = FormHelper(personalInformationFields)
+    private lateinit var personalFormHelper: FormHelper
 
     private var insuranceInformationFields: List<TextView> = listOf()
     private var insuranceInformationValidationRules: List<Triple<EditText, (String?) -> Boolean, String>> =
         listOf()
-    private var insuranceFormHelper: FormHelper = FormHelper(personalInformationFields)
-    private var inputFieldsErrors = InputFieldsErrors()
+    private lateinit var insuranceFormHelper: FormHelper
 
     private lateinit var fieldPersonalFirstName: TextView
     private lateinit var fieldPersonalLastName: TextView
@@ -144,6 +142,8 @@ class ProfileFragment : Fragment(), ValidationConfigure {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        personalFormHelper = FormHelper(requireContext(), personalInformationFields)
+        insuranceFormHelper = FormHelper(requireContext(), insuranceInformationFields)
 
         fetchProfileInformation()
 
@@ -177,27 +177,27 @@ class ProfileFragment : Fragment(), ValidationConfigure {
                 Triple(
                     binding.etProfilePersonalFirstNameValue,
                     { value -> value.isNullOrEmpty() },
-                    this.inputFieldsErrors.fieldRequired
+                    personalFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfilePersonalFirstNameValue,
                     { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                    this.inputFieldsErrors.noDigitsAllowed
+                    personalFormHelper.errors.noDigitsAllowed
                 ),
                 Triple(
                     binding.etProfilePersonalLastNameValue,
                     { value -> value.isNullOrEmpty() },
-                    this.inputFieldsErrors.fieldRequired
+                    personalFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfilePersonalLastNameValue,
                     { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                    this.inputFieldsErrors.noDigitsAllowed
+                    personalFormHelper.errors.noDigitsAllowed
                 ),
                 Triple(
                     binding.etProfilePersonalEmailValue,
                     { value -> value.isNullOrEmpty() },
-                    this.inputFieldsErrors.fieldRequired
+                    personalFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfilePersonalEmailValue,
@@ -206,22 +206,22 @@ class ProfileFragment : Fragment(), ValidationConfigure {
                             value
                         ).matches()
                     },
-                    this.inputFieldsErrors.invalidEmail
+                    personalFormHelper.errors.invalidEmail
                 ),
                 Triple(
                     binding.etProfilePersonalAddressValue,
                     { value -> value.isNullOrEmpty() },
-                    this.inputFieldsErrors.fieldRequired
+                    personalFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfilePersonalPostalCodeValue,
                     { value -> value.isNullOrEmpty() },
-                    this.inputFieldsErrors.fieldRequired
+                    personalFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfilePersonalPhoneValue,
                     { value -> value.isNullOrEmpty() },
-                    this.inputFieldsErrors.fieldRequired
+                    personalFormHelper.errors.fieldRequired
                 )
             )
 
@@ -243,47 +243,47 @@ class ProfileFragment : Fragment(), ValidationConfigure {
                 Triple(
                     binding.etProfileInsuranceCompanyNameValue,
                     { value -> value.isNullOrEmpty() },
-                    this.inputFieldsErrors.fieldRequired
+                    personalFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfileInsuranceCompanyNameValue,
                     { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                    this.inputFieldsErrors.noDigitsAllowed
+                    personalFormHelper.errors.noDigitsAllowed
                 ),
                 Triple(
                     binding.etProfileInsuranceCompanyPolicyNumberValue,
                     { value -> value.isNullOrEmpty() },
-                    this.inputFieldsErrors.fieldRequired
+                    personalFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfileInsuranceCompanyGreenCardNumberValue,
                     { value -> value.isNullOrEmpty() },
-                    this.inputFieldsErrors.fieldRequired
+                    personalFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfileInsuranceCompanyInsuranceAvailabilityDateValue,
                     { value -> value.isNullOrEmpty() },
-                    this.inputFieldsErrors.fieldRequired
+                    personalFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfileInsuranceCompanyInsuranceAvailabilityDateValue, { value ->
                         value?.toLocalDate()?.isAfter(LocalDate.now()) ?: false
-                    }, this.inputFieldsErrors.futureDate
+                    }, personalFormHelper.errors.futureDate
                 ),
                 Triple(
                     binding.etProfileInsuranceCompanyInsuranceExpirationDateValue,
                     { value -> value.isNullOrEmpty() },
-                    this.inputFieldsErrors.fieldRequired
+                    personalFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfileInsuranceAgencyNameValue,
                     { value -> value.isNullOrEmpty() },
-                    this.inputFieldsErrors.fieldRequired
+                    personalFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfileInsuranceAgencyNameValue,
                     { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                    this.inputFieldsErrors.noDigitsAllowed
+                    personalFormHelper.errors.noDigitsAllowed
                 ),
                 Triple(
                     binding.etProfileInsuranceAgencyEmailValue,
@@ -292,27 +292,27 @@ class ProfileFragment : Fragment(), ValidationConfigure {
                             value
                         ).matches()
                     },
-                    this.inputFieldsErrors.invalidEmail
+                    personalFormHelper.errors.invalidEmail
                 ),
                 Triple(
                     binding.etProfileInsuranceAgencyPhoneNumberValue,
                     { value -> value.isNullOrEmpty() },
-                    this.inputFieldsErrors.fieldRequired
+                    personalFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfileInsuranceAgencyAddressValue,
                     { value -> value.isNullOrEmpty() },
-                    this.inputFieldsErrors.fieldRequired
+                    personalFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfileInsuranceAgencyCountryValue,
                     { value -> value.isNullOrEmpty() },
-                    this.inputFieldsErrors.fieldRequired
+                    personalFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfileInsuranceAgencyCountryValue,
                     { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                    this.inputFieldsErrors.noDigitsAllowed
+                    personalFormHelper.errors.noDigitsAllowed
                 ),
             )
     }
@@ -394,7 +394,7 @@ class ProfileFragment : Fragment(), ValidationConfigure {
                 ChangeTransform()
             )
         } else {
-            editText.setText(R.string.edit)
+            editText.setText(R.string.edit_button)
             setFieldState(personalInformationFields, false)
             updateButton.visibility = View.GONE
         }

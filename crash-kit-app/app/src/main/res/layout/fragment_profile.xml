@@ -69,7 +69,7 @@
                         android:layout_marginTop="36dp"
                         android:layout_marginEnd="60dp"
                         android:gravity="center"
-                        android:text="@string/edit"
+                        android:text="@string/edit_button"
                         android:textAllCaps="true"
                         android:textSize="20sp"
                         android:textStyle="bold"
@@ -164,7 +164,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
                             android:enabled="false"
-                            android:hint="Phone Number"
+                            android:hint="@string/label_phone_number"
                             app:boxBackgroundColor="@color/input_field_background"
                             app:boxStrokeColor="@color/primary800">
 
@@ -182,7 +182,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
                             android:enabled="false"
-                            android:hint="Address"
+                            android:hint="@string/label_address"
                             app:boxBackgroundColor="@color/input_field_background"
                             app:boxStrokeColor="@color/primary800">
 
@@ -200,7 +200,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
                             android:enabled="false"
-                            android:hint="Postal Code"
+                            android:hint="@string/label_postal_code"
                             app:boxBackgroundColor="@color/input_field_background"
                             app:boxStrokeColor="@color/primary800">
 
@@ -217,7 +217,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:padding="15dp"
-                            android:text="Update"
+                            android:text="@string/update_button"
                             android:visibility="gone" />
 
                     </LinearLayout>
@@ -251,7 +251,7 @@
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="64dp"
-                        android:text="Insurance Information"
+                        android:text="@string/profile_insurance_card_title"
                         android:textAllCaps="true"
                         android:textSize="25sp"
                         android:textStyle="bold"
@@ -266,7 +266,7 @@
                         android:layout_marginTop="36dp"
                         android:layout_marginEnd="60dp"
                         android:gravity="center"
-                        android:text="@string/edit"
+                        android:text="@string/edit_button"
                         android:textAllCaps="true"
                         android:textSize="20sp"
                         android:textStyle="bold"
@@ -306,7 +306,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
-                            android:text="Change Insurance"
+                            android:text="@string/profile_change_insurance_button"
                             android:textAllCaps="true"
                             android:textSize="20sp"
                             android:textStyle="bold" />
@@ -317,7 +317,7 @@
                             android:layout_marginTop="16dp"
                             android:layout_marginBottom="16dp"
                             android:gravity="center"
-                            android:text="Insurance Company"
+                            android:text="@string/statement_insurance_company_title"
                             android:textAllCaps="true"
                             android:textSize="25sp"
                             android:textStyle="bold" />
@@ -328,7 +328,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
                             android:enabled="false"
-                            android:hint="Name"
+                            android:hint="@string/name"
                             app:boxBackgroundColor="@color/input_field_background"
                             app:boxStrokeColor="@color/primary800">
 
@@ -346,7 +346,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
                             android:enabled="false"
-                            android:hint="Policy Number"
+                            android:hint="@string/label_policy_number"
                             app:boxBackgroundColor="@color/input_field_background"
                             app:boxStrokeColor="@color/primary800">
 
@@ -364,7 +364,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
                             android:enabled="false"
-                            android:hint="Green Card Number"
+                            android:hint="@string/label_green_card_number"
                             app:boxBackgroundColor="@color/input_field_background"
                             app:boxStrokeColor="@color/primary800">
 
@@ -381,7 +381,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
-                            android:hint="Insurance Cert. Availability Date"
+                            android:hint="@string/label_insurance_cert_availability_date"
                             app:boxBackgroundColor="@color/input_field_background"
                             app:boxStrokeColor="@color/primary800">
 
@@ -398,7 +398,7 @@
                             android:id="@+id/til_profile_insurance_company_insurance_expiration_date_label"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Insurance Cert. Expiration Date"
+                            android:hint="@string/label_insurance_cert_expiration_date"
                             app:boxBackgroundColor="@color/input_field_background"
                             app:boxStrokeColor="@color/primary800">
 
@@ -426,7 +426,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
                             android:gravity="center"
-                            android:text="Insurance Agency"
+                            android:text="@string/statement_insurance_agency_title"
                             android:textAllCaps="true"
                             android:textSize="25sp"
                             android:textStyle="bold" />
@@ -437,7 +437,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
                             android:enabled="false"
-                            android:hint="Name"
+                            android:hint="@string/name"
                             app:boxBackgroundColor="@color/input_field_background"
                             app:boxStrokeColor="@color/primary800">
 
@@ -455,7 +455,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
                             android:enabled="false"
-                            android:hint="Email"
+                            android:hint="@string/label_email"
                             app:boxBackgroundColor="@color/input_field_background"
                             app:boxStrokeColor="@color/primary800">
 
@@ -473,7 +473,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
                             android:enabled="false"
-                            android:hint="Phone Number"
+                            android:hint="@string/label_phone_number"
                             app:boxBackgroundColor="@color/input_field_background"
                             app:boxStrokeColor="@color/primary800">
 
@@ -491,7 +491,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
                             android:enabled="false"
-                            android:hint="Address"
+                            android:hint="@string/label_address"
                             app:boxBackgroundColor="@color/input_field_background"
                             app:boxStrokeColor="@color/primary800">
 
@@ -509,7 +509,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
                             android:enabled="false"
-                            android:hint="Country"
+                            android:hint="@string/label_country"
                             app:boxBackgroundColor="@color/input_field_background"
                             app:boxStrokeColor="@color/primary800">
 
@@ -526,7 +526,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:padding="15dp"
-                            android:text="Update"
+                            android:text="@string/update_button"
                             android:visibility="gone" />
 
                     </LinearLayout>

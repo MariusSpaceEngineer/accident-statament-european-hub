@@ -14,7 +14,6 @@ import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleBDriverBinding
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
 import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
-import com.inetum.realdolmen.crashkit.helpers.InputFieldsErrors
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
@@ -35,8 +34,7 @@ class VehicleBDriverFragment : Fragment(), StatementDataHandler, ValidationConfi
 
     private var fields: List<TextView> = listOf()
     private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = listOf()
-    private var formHelper: FormHelper = FormHelper(fields)
-    private val inputFieldsErrors = InputFieldsErrors()
+    private lateinit var formHelper: FormHelper
 
     private val fragmentNavigationHelper by lazy {
         FragmentNavigationHelper(requireActivity().supportFragmentManager)
@@ -97,6 +95,7 @@ class VehicleBDriverFragment : Fragment(), StatementDataHandler, ValidationConfi
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        formHelper = FormHelper(requireContext(), fields)
 
         setupValidation()
 
@@ -217,58 +216,58 @@ class VehicleBDriverFragment : Fragment(), StatementDataHandler, ValidationConfi
             Triple(
                 binding.etStatementVehicleBDriverName,
                 { value -> value.isNullOrEmpty() },
-                this.inputFieldsErrors.fieldRequired
+                formHelper.errors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleBDriverName,
                 { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                this.inputFieldsErrors.noDigitsAllowed
+                formHelper.errors.noDigitsAllowed
             ),
             Triple(
                 binding.etStatementVehicleBDriverFirstName,
                 { value -> value.isNullOrEmpty() },
-                this.inputFieldsErrors.fieldRequired
+                formHelper.errors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleBDriverFirstName,
                 { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                this.inputFieldsErrors.noDigitsAllowed
+                formHelper.errors.noDigitsAllowed
             ),
 
             Triple(
                 binding.etStatementVehicleBDriverDateOfBirth,
                 { value -> value.isNullOrEmpty() },
-                this.inputFieldsErrors.fieldRequired
+                formHelper.errors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleBDriverDateOfBirth, { value ->
                     value?.toLocalDate()?.isAfter(LocalDate.now()) ?: false
-                }, this.inputFieldsErrors.futureDate
+                }, formHelper.errors.futureDate
             ),
             Triple(
                 binding.etStatementVehicleBDriverAddress,
                 { value -> value.isNullOrEmpty() },
-                this.inputFieldsErrors.fieldRequired
+                formHelper.errors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleBDriverCountry,
                 { value -> value.isNullOrEmpty() },
-                this.inputFieldsErrors.fieldRequired
+                formHelper.errors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleBDriverCountry,
                 { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                this.inputFieldsErrors.noDigitsAllowed
+                formHelper.errors.noDigitsAllowed
             ),
             Triple(
                 binding.etStatementVehicleBDriverPhoneNumber,
                 { value -> value.isNullOrEmpty() },
-                this.inputFieldsErrors.fieldRequired
+                formHelper.errors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleBDriverEmail,
                 { value -> value.isNullOrEmpty() },
-                this.inputFieldsErrors.fieldRequired
+                formHelper.errors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleBDriverEmail,
@@ -277,22 +276,22 @@ class VehicleBDriverFragment : Fragment(), StatementDataHandler, ValidationConfi
                         value
                     ).matches()
                 },
-                this.inputFieldsErrors.invalidEmail
+                formHelper.errors.invalidEmail
             ),
             Triple(
                 binding.etStatementVehicleBDriverDrivingLicenseNumber,
                 { value -> value.isNullOrEmpty() },
-                this.inputFieldsErrors.fieldRequired
+                formHelper.errors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleBDrivingLicenseExpirationDate,
                 { value -> value.isNullOrEmpty() },
-                this.inputFieldsErrors.fieldRequired
+                formHelper.errors.fieldRequired
             ),
             Triple(
                 binding.etStatementVehicleBDrivingLicenseExpirationDate, { value ->
                     value?.toLocalDate()?.isBefore(LocalDate.now()) ?: false
-                }, this.inputFieldsErrors.pastDate
+                }, formHelper.errors.pastDate
             ),
         )
     }

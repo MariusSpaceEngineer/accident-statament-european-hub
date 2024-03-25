@@ -15,7 +15,6 @@ import com.inetum.realdolmen.crashkit.databinding.FragmentNewStatementBinding
 import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleANewStatementFragment
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
 import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
-import com.inetum.realdolmen.crashkit.helpers.InputFieldsErrors
 import com.inetum.realdolmen.crashkit.utils.DateTimePicker
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
@@ -33,8 +32,7 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
 
     private var fields: List<TextView> = listOf()
     private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = listOf()
-    private var formHelper: FormHelper = FormHelper(fields)
-    private var inputFieldsErrors = InputFieldsErrors()
+    private lateinit var formHelper: FormHelper
 
     private val fragmentNavigationHelper by lazy {
         FragmentNavigationHelper(requireActivity().supportFragmentManager)
@@ -62,6 +60,8 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        formHelper = FormHelper(requireContext(), fields)
 
         setupValidation()
 
@@ -152,37 +152,37 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
             Triple(
                 binding.etStatementAccidentDate,
                 { value -> value.isNullOrEmpty() },
-                this.inputFieldsErrors.fieldRequired
+                formHelper.errors.fieldRequired
             ),
             Triple(
                 binding.etStatementAccidentDate, { value ->
                     value?.toLocalDateTime()?.isAfter(LocalDateTime.now()) ?: false
-                }, this.inputFieldsErrors.futureDate
+                }, formHelper.errors.futureDate
             ),
             Triple(
                 binding.etStatementAccidentLocation,
                 { value -> value.isNullOrEmpty() },
-                this.inputFieldsErrors.fieldRequired
+                formHelper.errors.fieldRequired
             ),
             Triple(
                 binding.etStatementWitnessName,
                 { value -> value.isNullOrEmpty() },
-                this.inputFieldsErrors.fieldRequired
+                formHelper.errors.fieldRequired
             ),
             Triple(
                 binding.etStatementWitnessName,
                 { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                this.inputFieldsErrors.noDigitsAllowed
+                formHelper.errors.noDigitsAllowed
             ),
             Triple(
                 binding.etStatementWitnessAddress,
                 { value -> value.isNullOrEmpty() },
-                this.inputFieldsErrors.fieldRequired
+                formHelper.errors.fieldRequired
             ),
             Triple(
                 binding.etStatementWitnessPhone,
                 { value -> value.isNullOrEmpty() },
-                this.inputFieldsErrors.fieldRequired
+                formHelper.errors.fieldRequired
             ),
         )
     }
