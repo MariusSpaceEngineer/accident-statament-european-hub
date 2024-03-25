@@ -10,6 +10,7 @@
     <string name="home_share_insurance_card_title">Share insurance information</string>
     <string name="profile_title">Profile</string>
     <string name="profile_personal_card_title">Personal Information</string>
+    <string name="profile_insurance_card_title">Insurance Information</string>
     <string name="new_statement_title">Accident Statement</string>
     <string name="statement_material_damage_title">Material Damage</string>
     <string name="statement_witness_title">Witness</string>
@@ -61,6 +62,9 @@
     <string name="import_insurance_information_button">Import own Insurance information</string>
     <string name="add_trailer_button">Add Trailer</string>
     <string name="share_insurance_generate_qr_code_button">Generate QR-Code</string>
+    <string name="profile_change_insurance_button">Change Insurance</string>
+    <string name="edit_button">Edit</string>
+    <string name="update_button">Update</string>
 
     <!--    Descriptions-->
     <string name="main_description">Save time and hassle after a crash</string>
@@ -72,12 +76,18 @@
     <string name="statement_driver_description">(see driving license)</string>
     <string name="share_insurance_qr_code_description">Scan this QR-code with another driver’s phone to share your insurance details instantly.</string>
 
-
     <!--    Field Validation-->
     <string name="warning_email_required">Email is required!</string>
     <string name="warning_password_required">Password is required!</string>
 
     <!--    Errors-->
+    <string name="field_required">Field is required</string>
+    <string name="no_digits_allowed">No digits allowed</string>
+    <string name="no_letters_allowed">No letters allowed</string>
+    <string name="field_needs_characters">Field needs certain characters:</string>
+    <string name="future_date">Date is in the future</string>
+    <string name="past_date">Date is in the past</string>
+    <string name="invalid_email">Invalid email</string>
     <string name="error_network">A network error occurred. Please try again.</string>
     <string name="error">Error</string>
 
@@ -104,8 +114,9 @@
     <string name="coming_the_right_road_junction_checkbox">Coming from the right (at road junction)</string>
     <string name="not_observed_right_way_sign_red_light_checkbox">Had not observed a right of way sign or a red light</string>
 
-    <string name="edit">Edit</string>
     <string name="name">Name</string>
     <string name="company_name">Company Name:</string>
     <string name="agency_name">Agency Name:</string>
+
+
 </resources>
