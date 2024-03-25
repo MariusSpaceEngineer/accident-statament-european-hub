@@ -12,7 +12,8 @@
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:paddingStart="15dp"
-        android:paddingEnd="15dp">
+        android:paddingEnd="15dp"
+        tools:ignore="UselessParent">
 
         <TextView
             android:id="@+id/tv_share_insurance_title"
@@ -20,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="80dp"
             android:gravity="center"
-            android:text="Share insurance information"
+            android:text="@string/share_insurance_information_title"
             android:textAllCaps="true"
             android:textColor="@color/title"
             android:textSize="36sp"
@@ -36,7 +37,7 @@
             android:paddingTop="20dp"
             android:paddingRight="65dp"
             android:paddingBottom="20dp"
-            android:text="Generate QR-Code"
+            android:text="@string/share_insurance_generate_qr_code_button"
             android:textSize="24sp"
             tools:ignore="ButtonStyle" />
 
@@ -45,7 +46,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/tv_share_insurance_qr_code_description"
@@ -53,7 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:gravity="center"
-            android:text="Scan this QR-code with another driver’s phone to share your insurance details instantly."
+            android:text="@string/share_insurance_qr_code_description"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"

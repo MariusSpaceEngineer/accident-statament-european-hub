@@ -21,6 +21,7 @@
     <string name="statement_motor_title">Motor</string>
     <string name="statement_driver_title">Driver</string>
     <string name="statement_vehicle_b_title">Vehicle B</string>
+    <string name="share_insurance_information_title">Share insurance information</string>
 
     <!--    Labels-->
     <string name="label_email">Email</string>
@@ -59,6 +60,7 @@
     <string name="statement_front_button">Next</string>
     <string name="import_insurance_information_button">Import own Insurance information</string>
     <string name="add_trailer_button">Add Trailer</string>
+    <string name="share_insurance_generate_qr_code_button">Generate QR-Code</string>
 
     <!--    Descriptions-->
     <string name="main_description">Save time and hassle after a crash</string>
@@ -68,6 +70,8 @@
     <string name="home_new_statement_card_image_description">Photo of a black insurance statement</string>
     <string name="statement_insurance_description">(see insurance certificate)</string>
     <string name="statement_driver_description">(see driving license)</string>
+    <string name="share_insurance_qr_code_description">Scan this QR-code with another driver’s phone to share your insurance details instantly.</string>
+
 
     <!--    Field Validation-->
     <string name="warning_email_required">Email is required!</string>
@@ -77,12 +81,10 @@
     <string name="error_network">A network error occurred. Please try again.</string>
     <string name="error">Error</string>
 
-
+    <!--    Checkboxes-->
     <string name="login_remember_checkbox">Remember Me</string>
-    <string name="edit">Edit</string>
     <string name="statement_material_damage_other_vehicles_checkbox">Other vehicles than vehicle A and B</string>
     <string name="statement_material_damage_other_than_vehicles_checkbox">Objects other than vehicles</string>
-    <string name="name">Name</string>
     <string name="material_damage_covered_checkbox">Material Damage Covered</string>
     <string name="parked_stopped_checkbox">Parked/Stopped</string>
     <string name="leaving_parking_place_opening_the_door_checkbox">Leaving a parking place/ opening the door</string>
@@ -101,4 +103,9 @@
     <string name="encroaching_lane_reserved_circulation_opposite_direction_checkbox">Encroaching on a lane reserved for circulation in the opposite direction</string>
     <string name="coming_the_right_road_junction_checkbox">Coming from the right (at road junction)</string>
     <string name="not_observed_right_way_sign_red_light_checkbox">Had not observed a right of way sign or a red light</string>
+
+    <string name="edit">Edit</string>
+    <string name="name">Name</string>
+    <string name="company_name">Company Name:</string>
+    <string name="agency_name">Agency Name:</string>
 </resources>
