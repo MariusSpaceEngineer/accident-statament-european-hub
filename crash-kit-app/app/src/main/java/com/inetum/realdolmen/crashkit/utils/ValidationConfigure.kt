@@ -1,14 +1,15 @@
 package com.inetum.realdolmen.crashkit.utils
 
-import android.widget.TextView
-import com.inetum.realdolmen.crashkit.helpers.FormHelper
-
+/**
+ * This interface defines the setupValidation method. Before calling this method,
+ * the following properties must be set:
+ *
+ * - inputFieldsErrors: An instance of InputFieldsErrors.
+ * - fields: A list of TextViews that represent the fields to be validated.
+ * - validationRules: A list of rules for validation. Each rule is a Triple containing a TextView, a validation function, and an error message.
+ * - formHelper: An instance of FormHelper.
+ */
 interface ValidationConfigure {
-    fun setupValidation(
-        errors: StatementDataErrors,
-        fields: List<TextView>,
-        validationRules: List<Triple<TextView, (String?) -> Boolean, String>>,
-        formHelper: FormHelper
-
-    )
+    fun setupValidation()
 }
+
