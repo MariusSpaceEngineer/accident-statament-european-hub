@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
@@ -23,12 +22,12 @@ import com.inetum.realdolmen.crashkit.dto.InsuranceCertificate
 import com.inetum.realdolmen.crashkit.dto.PolicyHolderResponse
 import com.inetum.realdolmen.crashkit.dto.PolicyHolderVehicleBResponse
 import com.inetum.realdolmen.crashkit.utils.createSimpleDialog
+import com.inetum.realdolmen.crashkit.utils.showToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
-
 
 class ShareInsuranceInformationFragment : Fragment() {
     private var _binding: FragmentShareInsuranceInformationBinding? = null
@@ -36,10 +35,8 @@ class ShareInsuranceInformationFragment : Fragment() {
 
     private val apiService = CrashKitApp.apiService
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
+    private val qrCodeWidth: Int = 1000
+    private val qrCodeHeight: Int = 1000
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -55,11 +52,15 @@ class ShareInsuranceInformationFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.btnShareInsuranceGenerateQrCode.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
-                val response = apiService.getPolicyHolderProfileInformation()
-                withContext(Dispatchers.Main) {
-                    handlePolicyHolderProfileResponse(response)
-                }
+            fetchPolicyHolderInformation()
+        }
+    }
+
+    private fun fetchPolicyHolderInformation() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val response = apiService.getPolicyHolderProfileInformation()
+            withContext(Dispatchers.Main) {
+                handlePolicyHolderProfileResponse(response)
             }
         }
     }
@@ -71,59 +72,72 @@ class ShareInsuranceInformationFragment : Fragment() {
             if (personalInformationResponse != null) {
                 showInsuranceDialog(personalInformationResponse.insuranceCertificates) { selectedCertificate ->
                     // This block of code will be executed after the user has made a selection in the dialog
-                    val gson = Gson()
-                    val policyHolder = PolicyHolderVehicleBResponse(
-                        personalInformationResponse.id,
-                        personalInformationResponse.firstName,
-                        personalInformationResponse.lastName,
-                        personalInformationResponse.email,
-                        personalInformationResponse.phoneNumber,
-                        personalInformationResponse.address,
-                        personalInformationResponse.postalCode,
-                        selectedCertificate
-                    )
-                    val json = gson.toJson(policyHolder)
+                    val json =
+                        convertResponseToJSON(personalInformationResponse, selectedCertificate)
 
-                    val qrCodeWriter = QRCodeWriter()
-                    val width = 1000
-                    val height = 1000
-                    var bitMatrix: BitMatrix? = null
+                    val bitmap = generateQRCode(json, qrCodeWidth, qrCodeHeight)
 
-                    try {
-                        val hints: MutableMap<EncodeHintType, Any?> = HashMap()
-                        hints[EncodeHintType.CHARACTER_SET] = "UTF-8"
-                        bitMatrix =
-                            qrCodeWriter.encode(json, BarcodeFormat.QR_CODE, width, height, hints)
-                    } catch (e: WriterException) {
-                        e.printStackTrace()
-                    }
-
-                    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
-                    for (x in 0 until width) {
-                        for (y in 0 until height) {
-                            bitmap.setPixel(
-                                x,
-                                y,
-                                if (bitMatrix!![x, y]) Color.BLACK else Color.WHITE
-                            )
-                        }
-                    }
                     binding.ivShareInsuranceQrCode.visibility = View.VISIBLE
                     binding.ivShareInsuranceQrCode.setImageBitmap(bitmap)
                     binding.tvShareInsuranceQrCodeDescription.visibility = View.VISIBLE
 
-                    Toast.makeText(
-                        requireContext(),
-                        "Import successful",
-                        Toast.LENGTH_LONG
-                    )
-                        .show()
+                    requireContext().showToast("Import successful")
                 }
             } else {
-                val errorMessage = "Error while fetching insurance information"
-                requireContext().createSimpleDialog(getString(R.string.error), errorMessage)
+                requireContext().createSimpleDialog(
+                    getString(R.string.error),
+                    getString(R.string.error_network)
+                )
             }
         }
+    }
+
+    private fun convertResponseToJSON(
+        personalInformationResponse: PolicyHolderResponse,
+        selectedCertificate: InsuranceCertificate?
+    ): String? {
+        val gson = Gson()
+        val policyHolder = PolicyHolderVehicleBResponse(
+            personalInformationResponse.id,
+            personalInformationResponse.firstName,
+            personalInformationResponse.lastName,
+            personalInformationResponse.email,
+            personalInformationResponse.phoneNumber,
+            personalInformationResponse.address,
+            personalInformationResponse.postalCode,
+            selectedCertificate
+        )
+        val json = gson.toJson(policyHolder)
+        return json
+    }
+
+    private fun generateQRCode(
+        json: String?,
+        width: Int,
+        height: Int
+    ): Bitmap {
+        val qrCodeWriter = QRCodeWriter()
+        var bitMatrix: BitMatrix? = null
+        try {
+            val hints: MutableMap<EncodeHintType, Any?> = HashMap()
+            hints[EncodeHintType.CHARACTER_SET] = "UTF-8"
+            bitMatrix =
+                qrCodeWriter.encode(json, BarcodeFormat.QR_CODE, width, height, hints)
+        } catch (e: WriterException) {
+            e.printStackTrace()
+        }
+
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+        for (x in 0 until width) {
+            for (y in 0 until height) {
+                bitmap.setPixel(
+                    x,
+                    y,
+                    if (bitMatrix!![x, y]) Color.BLACK else Color.WHITE
+                )
+            }
+        }
+        return bitmap
     }
 
     private fun showInsuranceDialog(
@@ -131,10 +145,16 @@ class ShareInsuranceInformationFragment : Fragment() {
         onCertificateSelected: (InsuranceCertificate?) -> Unit
     ) {
         if (!insuranceCertificates.isNullOrEmpty()) {
-            var selectedCertificate: InsuranceCertificate? = null
+            var selectedCertificate: InsuranceCertificate?
 
             val insuranceCertificateStrings =
-                insuranceCertificates.map { "Company name: ${it.insuranceCompany?.name}\nAgency name: ${it.insuranceAgency?.name}\nPolicy Number: ${it.policyNumber}" }
+                insuranceCertificates.map {
+                    "${getString(R.string.company_name)} ${it.insuranceCompany?.name}\n${
+                        getString(
+                            R.string.agency_name
+                        )
+                    } ${it.insuranceAgency?.name}\n${getString(R.string.label_policy_number)}: ${it.policyNumber}"
+                }
                     .toTypedArray()
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Select an Insurance Certificate")
