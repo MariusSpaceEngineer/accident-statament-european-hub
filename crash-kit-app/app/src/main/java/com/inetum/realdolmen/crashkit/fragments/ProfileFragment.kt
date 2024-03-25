@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -27,7 +28,9 @@ import com.inetum.realdolmen.crashkit.dto.InsuranceCompany
 import com.inetum.realdolmen.crashkit.dto.PersonalInformationData
 import com.inetum.realdolmen.crashkit.dto.PolicyHolderPersonalInformationResponse
 import com.inetum.realdolmen.crashkit.dto.PolicyHolderResponse
-import com.inetum.realdolmen.crashkit.utils.areFieldsValid
+import com.inetum.realdolmen.crashkit.helpers.FormHelper
+import com.inetum.realdolmen.crashkit.helpers.InputFieldsErrors
+import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.createSimpleDialog
 import com.inetum.realdolmen.crashkit.utils.to24Format
 import com.inetum.realdolmen.crashkit.utils.toIsoString
@@ -43,7 +46,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 
-class ProfileFragment : Fragment() {
+class ProfileFragment : Fragment(), ValidationConfigure {
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
@@ -99,6 +102,35 @@ class ProfileFragment : Fragment() {
     private var insuranceCertificates: List<InsuranceCertificate>? = null
     private var selectedCertificate: InsuranceCertificate? = null
 
+    private var personalInformationFields: List<TextView> = listOf()
+    private var personalInformationValidationRules: List<Triple<EditText, (String?) -> Boolean, String>> =
+        listOf()
+    private var personalFormHelper: FormHelper = FormHelper(personalInformationFields)
+
+    private var insuranceInformationFields: List<TextView> = listOf()
+    private var insuranceInformationValidationRules: List<Triple<EditText, (String?) -> Boolean, String>> =
+        listOf()
+    private var insuranceFormHelper: FormHelper = FormHelper(personalInformationFields)
+    private var inputFieldsErrors = InputFieldsErrors()
+
+    private lateinit var fieldPersonalFirstName: TextView
+    private lateinit var fieldPersonalLastName: TextView
+    private lateinit var fieldPersonalEmail: TextView
+    private lateinit var fieldPersonalAddress: TextView
+    private lateinit var fieldPersonalPostalCode: TextView
+    private lateinit var fieldPersonalPhoneNumber: TextView
+
+    private lateinit var fieldInsuranceCompanyName: TextView
+    private lateinit var fieldPolicyNumber: TextView
+    private lateinit var fieldGreenCardNumber: TextView
+    private lateinit var fieldInsuranceCertAvailabilityDate: TextView
+    private lateinit var fieldInsuranceCertExpirationDate: TextView
+    private lateinit var fieldInsuranceAgencyName: TextView
+    private lateinit var fieldInsuranceAgencyEmail: TextView
+    private lateinit var fieldInsuranceAgencyPhoneNumber: TextView
+    private lateinit var fieldInsuranceAgencyAddress: TextView
+    private lateinit var fieldInsuranceAgencyCountry: TextView
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -113,178 +145,200 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //Fetch profile information
-        lifecycleScope.launch {
-            val response = withContext(Dispatchers.IO) {
-                apiService.getPolicyHolderProfileInformation()
-            }
-            handlePolicyHolderProfileResponse(response)
-        }
+        fetchProfileInformation()
 
-        //Personal Information Card
-        val fieldFirstName = binding.etProfilePersonalFirstNameValue
-        val fieldLastName = binding.etProfilePersonalLastNameValue
-        val fieldEmail = binding.etProfilePersonalEmailValue
-        val fieldAddress = binding.etProfilePersonalAddressValue
-        val fieldPostalCode = binding.etProfilePersonalPostalCodeValue
-        val fieldPhoneNumber = binding.etProfilePersonalPhoneValue
-        val personalInformationFields = mapOf(
-            binding.etProfilePersonalFirstNameValue to "First Name is required!",
-            binding.etProfilePersonalLastNameValue to "Last Name is required!",
-            binding.etProfilePersonalEmailValue to "Email is required!",
-            binding.etProfilePersonalAddressValue to "Address is required!",
-            binding.etProfilePersonalPostalCodeValue to "Postal code is required!",
-            binding.etProfilePersonalPhoneValue to "Phone Number is required!"
+        setupValidation()
+
+        setupPersonalInformationCardFields()
+        setupPersonalInformationCardButtonListeners()
+
+        setupInsuranceInformationCardFields()
+        setupInsuranceCardButtonListeners()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    override fun setupValidation(
+    ) {
+        this.personalInformationFields = listOf(
+            binding.etProfilePersonalFirstNameValue,
+            binding.etProfilePersonalLastNameValue,
+            binding.etProfilePersonalEmailValue,
+            binding.etProfilePersonalAddressValue,
+            binding.etProfilePersonalPostalCodeValue,
+            binding.etProfilePersonalPhoneValue
         )
 
-        binding.ibProfilePersonalCardButton.setOnClickListener {
-
-            toggleCardFields(
-                binding.clProfilePersonalCard,
-                binding.llProfilePersonal,
-                binding.ibProfilePersonalCardButton,
-                R.drawable.arrow_drop_up,
-                R.drawable.arrow_drop_down
-            )
-
-        }
-
-        binding.tvProfilePersonalCardEdit.setOnClickListener {
-            personalCardEditing = updateCard(
-                personalCardEditing,
-                personalInformationFields,
-                binding.llProfilePersonal,
-                binding.tvProfilePersonalCardEdit,
-                binding.btnProfilePersonalCardUpdate,
-                binding.ibProfilePersonalCardButton,
-                binding.clProfilePersonalCard
-            )
-
-        }
-
-        binding.tvProfileInsuranceCardChangeInsurance.setOnClickListener {
-            showInsuranceDialog()
-        }
-
-        binding.btnProfilePersonalCardUpdate.setOnClickListener {
-            if (personalInformationFields.areFieldsValid()) {
-                lifecycleScope.launch {
-                    performChangesToPersonalInformation(
-                        fieldFirstName,
-                        fieldLastName,
-                        fieldEmail,
-                        fieldAddress,
-                        fieldPostalCode,
-                        fieldPhoneNumber,
-                        personalInformationFields
-                    )
-                }
-            }
-        }
-
-        binding.btnProfileDateTimePickerInsuranceCertificateDates.setOnClickListener {
-            insuranceCertificateDateRangePicker.show(
-                parentFragmentManager,
-                "insurance_certificate_date_picker"
-            )
-            insuranceCertificateDateRangePicker.addOnPositiveButtonClickListener { selection ->
-                insuranceCertificateAvailabilityDate = Instant.ofEpochMilli(selection.first).atZone(
-                    ZoneId.systemDefault()
-                ).toLocalDate()
-                insuranceCertificateExpirationDate = Instant.ofEpochMilli(selection.second).atZone(
-                    ZoneId.systemDefault()
-                ).toLocalDate()
-            }
-
-            addChangeListener {
-                binding.btnProfileDateTimePickerInsuranceCertificateDates.isEnabled =
-                    insuranceCardEditing
-            }
-
-            addChangeListener {
-
-                binding.etProfileInsuranceCompanyInsuranceAvailabilityDateValue.setText(
-                    (insuranceCertificateAvailabilityDate?.to24Format() ?: "")
+        this.personalInformationValidationRules =
+            listOf<Triple<EditText, (String?) -> Boolean, String>>(
+                Triple(
+                    binding.etProfilePersonalFirstNameValue,
+                    { value -> value.isNullOrEmpty() },
+                    this.inputFieldsErrors.fieldRequired
+                ),
+                Triple(
+                    binding.etProfilePersonalFirstNameValue,
+                    { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
+                    this.inputFieldsErrors.noDigitsAllowed
+                ),
+                Triple(
+                    binding.etProfilePersonalLastNameValue,
+                    { value -> value.isNullOrEmpty() },
+                    this.inputFieldsErrors.fieldRequired
+                ),
+                Triple(
+                    binding.etProfilePersonalLastNameValue,
+                    { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
+                    this.inputFieldsErrors.noDigitsAllowed
+                ),
+                Triple(
+                    binding.etProfilePersonalEmailValue,
+                    { value -> value.isNullOrEmpty() },
+                    this.inputFieldsErrors.fieldRequired
+                ),
+                Triple(
+                    binding.etProfilePersonalEmailValue,
+                    { value ->
+                        !value.isNullOrEmpty() && !android.util.Patterns.EMAIL_ADDRESS.matcher(
+                            value
+                        ).matches()
+                    },
+                    this.inputFieldsErrors.invalidEmail
+                ),
+                Triple(
+                    binding.etProfilePersonalAddressValue,
+                    { value -> value.isNullOrEmpty() },
+                    this.inputFieldsErrors.fieldRequired
+                ),
+                Triple(
+                    binding.etProfilePersonalPostalCodeValue,
+                    { value -> value.isNullOrEmpty() },
+                    this.inputFieldsErrors.fieldRequired
+                ),
+                Triple(
+                    binding.etProfilePersonalPhoneValue,
+                    { value -> value.isNullOrEmpty() },
+                    this.inputFieldsErrors.fieldRequired
                 )
-                binding.etProfileInsuranceCompanyInsuranceAvailabilityDateValue.error = null
-            }
+            )
 
-            addChangeListener {
-                binding.etProfileInsuranceCompanyInsuranceExpirationDateValue.setText(
-                    (insuranceCertificateExpirationDate?.to24Format() ?: "")
+        this.insuranceInformationFields = listOf(
+            binding.etProfileInsuranceCompanyNameValue,
+            binding.etProfileInsuranceCompanyPolicyNumberValue,
+            binding.etProfileInsuranceCompanyGreenCardNumberValue,
+            binding.etProfileInsuranceCompanyInsuranceAvailabilityDateValue,
+            binding.etProfileInsuranceCompanyInsuranceExpirationDateValue,
+            binding.etProfileInsuranceAgencyNameValue,
+            binding.etProfileInsuranceAgencyEmailValue,
+            binding.etProfileInsuranceAgencyPhoneNumberValue,
+            binding.etProfileInsuranceAgencyAddressValue,
+            binding.etProfileInsuranceAgencyCountryValue
+        )
 
-                )
-                binding.etProfileInsuranceCompanyInsuranceExpirationDateValue.error = null
-            }
-        }
+        this.insuranceInformationValidationRules =
+            listOf<Triple<EditText, (String?) -> Boolean, String>>(
+                Triple(
+                    binding.etProfileInsuranceCompanyNameValue,
+                    { value -> value.isNullOrEmpty() },
+                    this.inputFieldsErrors.fieldRequired
+                ),
+                Triple(
+                    binding.etProfileInsuranceCompanyNameValue,
+                    { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
+                    this.inputFieldsErrors.noDigitsAllowed
+                ),
+                Triple(
+                    binding.etProfileInsuranceCompanyPolicyNumberValue,
+                    { value -> value.isNullOrEmpty() },
+                    this.inputFieldsErrors.fieldRequired
+                ),
+                Triple(
+                    binding.etProfileInsuranceCompanyGreenCardNumberValue,
+                    { value -> value.isNullOrEmpty() },
+                    this.inputFieldsErrors.fieldRequired
+                ),
+                Triple(
+                    binding.etProfileInsuranceCompanyInsuranceAvailabilityDateValue,
+                    { value -> value.isNullOrEmpty() },
+                    this.inputFieldsErrors.fieldRequired
+                ),
+                Triple(
+                    binding.etProfileInsuranceCompanyInsuranceAvailabilityDateValue, { value ->
+                        value?.toLocalDate()?.isAfter(LocalDate.now()) ?: false
+                    }, this.inputFieldsErrors.futureDate
+                ),
+                Triple(
+                    binding.etProfileInsuranceCompanyInsuranceExpirationDateValue,
+                    { value -> value.isNullOrEmpty() },
+                    this.inputFieldsErrors.fieldRequired
+                ),
+                Triple(
+                    binding.etProfileInsuranceAgencyNameValue,
+                    { value -> value.isNullOrEmpty() },
+                    this.inputFieldsErrors.fieldRequired
+                ),
+                Triple(
+                    binding.etProfileInsuranceAgencyNameValue,
+                    { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
+                    this.inputFieldsErrors.noDigitsAllowed
+                ),
+                Triple(
+                    binding.etProfileInsuranceAgencyEmailValue,
+                    { value ->
+                        !value.isNullOrEmpty() && !android.util.Patterns.EMAIL_ADDRESS.matcher(
+                            value
+                        ).matches()
+                    },
+                    this.inputFieldsErrors.invalidEmail
+                ),
+                Triple(
+                    binding.etProfileInsuranceAgencyPhoneNumberValue,
+                    { value -> value.isNullOrEmpty() },
+                    this.inputFieldsErrors.fieldRequired
+                ),
+                Triple(
+                    binding.etProfileInsuranceAgencyAddressValue,
+                    { value -> value.isNullOrEmpty() },
+                    this.inputFieldsErrors.fieldRequired
+                ),
+                Triple(
+                    binding.etProfileInsuranceAgencyCountryValue,
+                    { value -> value.isNullOrEmpty() },
+                    this.inputFieldsErrors.fieldRequired
+                ),
+                Triple(
+                    binding.etProfileInsuranceAgencyCountryValue,
+                    { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
+                    this.inputFieldsErrors.noDigitsAllowed
+                ),
+            )
+    }
 
-        //Insurance information card
-        val fieldInsuranceCompanyName = binding.etProfileInsuranceCompanyNameValue
-        val fieldPolicyNumber = binding.etProfileInsuranceCompanyPolicyNumberValue
-        val fieldGreenCardNumber = binding.etProfileInsuranceCompanyGreenCardNumberValue
-        val fieldInsuranceCertAvailabilityDate =
+    private fun setupInsuranceInformationCardFields() {
+        fieldInsuranceCompanyName = binding.etProfileInsuranceCompanyNameValue
+        fieldPolicyNumber = binding.etProfileInsuranceCompanyPolicyNumberValue
+        fieldGreenCardNumber = binding.etProfileInsuranceCompanyGreenCardNumberValue
+        fieldInsuranceCertAvailabilityDate =
             binding.etProfileInsuranceCompanyInsuranceAvailabilityDateValue
-        val fieldInsuranceCertExpirationDate =
+        fieldInsuranceCertExpirationDate =
             binding.etProfileInsuranceCompanyInsuranceExpirationDateValue
-        val fieldInsuranceAgencyName = binding.etProfileInsuranceAgencyNameValue
-        val fieldInsuranceAgencyEmail = binding.etProfileInsuranceAgencyEmailValue
-        val fieldInsuranceAgencyPhoneNumber = binding.etProfileInsuranceAgencyPhoneNumberValue
-        val fieldInsuranceAgencyAddress = binding.etProfileInsuranceAgencyAddressValue
-        val fieldInsuranceAgencyCountry = binding.etProfileInsuranceAgencyCountryValue
-        val insuranceInformationFields = mapOf(
-            binding.etProfileInsuranceCompanyNameValue to "Company Name is required!",
-            binding.etProfileInsuranceCompanyPolicyNumberValue to "Policy Number is required!",
-            binding.etProfileInsuranceCompanyGreenCardNumberValue to "Green Card Number is required!",
-            binding.etProfileInsuranceCompanyInsuranceAvailabilityDateValue to "Date is required!",
-            binding.etProfileInsuranceCompanyInsuranceExpirationDateValue to "Date is required!",
-            binding.etProfileInsuranceAgencyNameValue to "Agency Name is required!",
-            binding.etProfileInsuranceAgencyEmailValue to "Agency Email is required",
-            binding.etProfileInsuranceAgencyPhoneNumberValue to "Phone Number is required!",
-            binding.etProfileInsuranceAgencyAddressValue to "Agency address is required!",
-            binding.etProfileInsuranceAgencyCountryValue to "Agency Country is required!"
-        )
+        fieldInsuranceAgencyName = binding.etProfileInsuranceAgencyNameValue
+        fieldInsuranceAgencyEmail = binding.etProfileInsuranceAgencyEmailValue
+        fieldInsuranceAgencyPhoneNumber = binding.etProfileInsuranceAgencyPhoneNumberValue
+        fieldInsuranceAgencyAddress = binding.etProfileInsuranceAgencyAddressValue
+        fieldInsuranceAgencyCountry = binding.etProfileInsuranceAgencyCountryValue
+    }
 
-        binding.ibProfileInsuranceCardButton.setOnClickListener {
-            toggleCardFields(
-                binding.clProfileInsuranceCard,
-                binding.llProfileInsurance,
-                binding.ibProfileInsuranceCardButton,
-                R.drawable.arrow_drop_up,
-                R.drawable.arrow_drop_down
-            )
-        }
-
-        binding.tvProfileInsuranceCardEdit.setOnClickListener {
-            insuranceCardEditing = updateCard(
-                insuranceCardEditing,
-                insuranceInformationFields,
-                binding.llProfileInsurance,
-                binding.tvProfileInsuranceCardEdit,
-                binding.btnProfileInsuranceCardUpdate,
-                binding.ibProfileInsuranceCardButton,
-                binding.clProfileInsuranceCard
-            )
-        }
-
-        binding.btnProfileInsuranceCardUpdate.setOnClickListener {
-            if (insuranceInformationFields.areFieldsValid()) {
-                lifecycleScope.launch {
-                    performChangesToInsuranceInformation(
-                        fieldInsuranceCompanyName,
-                        fieldPolicyNumber,
-                        fieldGreenCardNumber,
-                        fieldInsuranceAgencyName,
-                        fieldInsuranceAgencyEmail,
-                        fieldInsuranceCertAvailabilityDate,
-                        fieldInsuranceCertExpirationDate,
-                        fieldInsuranceAgencyPhoneNumber,
-                        fieldInsuranceAgencyAddress,
-                        fieldInsuranceAgencyCountry,
-                        insuranceInformationFields
-                    )
-                }
-            }
-        }
+    private fun setupPersonalInformationCardFields() {
+        fieldPersonalFirstName = binding.etProfilePersonalFirstNameValue
+        fieldPersonalLastName = binding.etProfilePersonalLastNameValue
+        fieldPersonalEmail = binding.etProfilePersonalEmailValue
+        fieldPersonalAddress = binding.etProfilePersonalAddressValue
+        fieldPersonalPostalCode = binding.etProfilePersonalPostalCodeValue
+        fieldPersonalPhoneNumber = binding.etProfilePersonalPhoneValue
     }
 
     private fun addChangeListener(listener: PropertyChangeListener) {
@@ -314,7 +368,7 @@ class ProfileFragment : Fragment() {
 
     private fun updateCard(
         beingEdited: Boolean,
-        personalInformationFields: Map<TextInputEditText, String>,
+        personalInformationFields: List<TextView>,
         fieldLayout: LinearLayout,
         editText: TextView,
         updateButton: Button,
@@ -347,37 +401,30 @@ class ProfileFragment : Fragment() {
         return editMode
     }
 
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    private fun setFieldState(fields: Map<TextInputEditText, String>, isEnabled: Boolean) {
+    private fun setFieldState(fields: List<TextView>, isEnabled: Boolean) {
         for (field in fields) {
-            if (field.key == view?.findViewById<TextInputEditText>(R.id.et_profile_insurance_company_insurance_availability_date_value) || field.key == view?.findViewById<TextInputEditText>(
+            if (field == view?.findViewById<TextInputEditText>(R.id.et_profile_insurance_company_insurance_availability_date_value) || field == view?.findViewById<TextInputEditText>(
                     R.id.et_profile_insurance_company_insurance_expiration_date_value
                 )
             ) {
                 continue
             } else {
-                field.key.isEnabled = isEnabled
+                field.isEnabled = isEnabled
             }
         }
     }
 
     private suspend fun performChangesToInsuranceInformation(
-        fieldInsuranceCompanyName: TextInputEditText,
-        fieldPolicyNumber: TextInputEditText,
-        fieldGreenCardNumber: TextInputEditText,
-        fieldInsuranceAgencyName: TextInputEditText,
-        fieldInsuranceAgencyEmail: TextInputEditText,
-        fieldInsuranceCertAvailabilityDate: TextInputEditText,
-        fieldInsuranceCertExpirationDate: TextInputEditText,
-        fieldInsuranceAgencyPhoneNumber: TextInputEditText,
-        fieldInsuranceAgencyAddress: TextInputEditText,
-        fieldInsuranceAgencyCountry: TextInputEditText,
-        fields: Map<TextInputEditText, String>
+        fieldInsuranceCompanyName: TextView,
+        fieldPolicyNumber: TextView,
+        fieldGreenCardNumber: TextView,
+        fieldInsuranceAgencyName: TextView,
+        fieldInsuranceAgencyEmail: TextView,
+        fieldInsuranceCertAvailabilityDate: TextView,
+        fieldInsuranceCertExpirationDate: TextView,
+        fieldInsuranceAgencyPhoneNumber: TextView,
+        fieldInsuranceAgencyAddress: TextView,
+        fieldInsuranceAgencyCountry: TextView
 
     ) {
         val insuranceAgency = InsuranceAgency(
@@ -410,19 +457,18 @@ class ProfileFragment : Fragment() {
             val response =
                 apiService.updateInsuranceCertificateInformation(insuranceCertificateData)
             withContext(Dispatchers.Main) {
-                handlePolicyHolderInsuranceInformationResponse(response, fields)
+                handlePolicyHolderInsuranceInformationResponse(response, insuranceInformationFields)
             }
         }
     }
 
     private suspend fun performChangesToPersonalInformation(
-        firstNameField: TextInputEditText,
-        lastNameField: TextInputEditText,
-        emailField: TextInputEditText,
-        addressField: TextInputEditText,
-        postalCodeField: TextInputEditText,
-        phoneNumberField: TextInputEditText,
-        fields: Map<TextInputEditText, String>
+        firstNameField: TextView,
+        lastNameField: TextView,
+        emailField: TextView,
+        addressField: TextView,
+        postalCodeField: TextView,
+        phoneNumberField: TextView
 
     ) {
         val personalInformationData = PersonalInformationData(
@@ -437,14 +483,14 @@ class ProfileFragment : Fragment() {
         CoroutineScope(Dispatchers.IO).launch {
             val response = apiService.updatePolicyHolderPersonalInformation(personalInformationData)
             withContext(Dispatchers.Main) {
-                handlePolicyHolderPersonalInformationResponse(response, fields)
+                handlePolicyHolderPersonalInformationResponse(response, personalInformationFields)
             }
         }
     }
 
     private fun handlePolicyHolderInsuranceInformationResponse(
         response: Response<List<InsuranceCertificate>>,
-        fields: Map<TextInputEditText, String>
+        fields: List<TextView>
     ) {
         Log.i("Request", "Request code: ${response.code()}")
         if (response.isSuccessful) {
@@ -481,7 +527,7 @@ class ProfileFragment : Fragment() {
 
     private fun handlePolicyHolderPersonalInformationResponse(
         response: Response<PolicyHolderPersonalInformationResponse>,
-        fields: Map<TextInputEditText, String>
+        fields: List<TextView>
     ) {
         Log.i("Request", "Request code: ${response.code()}")
         if (response.isSuccessful) {
@@ -560,7 +606,7 @@ class ProfileFragment : Fragment() {
                     -1
                 ) { dialog, which ->
                     if (which == insuranceCertificateStrings.lastIndex) {
-                        selectedCertificate= null
+                        selectedCertificate = null
 
                         binding.etProfileInsuranceCompanyPolicyNumberValue.setText("")
                         binding.etProfileInsuranceCompanyGreenCardNumberValue.setText("")
@@ -617,4 +663,155 @@ class ProfileFragment : Fragment() {
                 .show()
         }
     }
+
+    private fun setupInsuranceCardButtonListeners() {
+        binding.ibProfileInsuranceCardButton.setOnClickListener {
+            toggleCardFields(
+                binding.clProfileInsuranceCard,
+                binding.llProfileInsurance,
+                binding.ibProfileInsuranceCardButton,
+                R.drawable.arrow_drop_up,
+                R.drawable.arrow_drop_down
+            )
+        }
+
+        binding.tvProfileInsuranceCardEdit.setOnClickListener {
+            insuranceCardEditing = updateCard(
+                insuranceCardEditing,
+                insuranceInformationFields,
+                binding.llProfileInsurance,
+                binding.tvProfileInsuranceCardEdit,
+                binding.btnProfileInsuranceCardUpdate,
+                binding.ibProfileInsuranceCardButton,
+                binding.clProfileInsuranceCard
+            )
+        }
+
+        binding.btnProfileInsuranceCardUpdate.setOnClickListener {
+            validateAndSubmitInsuranceInformation()
+        }
+    }
+
+    private fun validateAndSubmitInsuranceInformation() {
+        insuranceFormHelper.clearErrors()
+
+        insuranceFormHelper.validateFields(insuranceInformationValidationRules)
+
+        if (insuranceInformationFields.none { it.error != null }) {
+            lifecycleScope.launch {
+                performChangesToInsuranceInformation(
+                    fieldInsuranceCompanyName,
+                    fieldPolicyNumber,
+                    fieldGreenCardNumber,
+                    fieldInsuranceAgencyName,
+                    fieldInsuranceAgencyEmail,
+                    fieldInsuranceCertAvailabilityDate,
+                    fieldInsuranceCertExpirationDate,
+                    fieldInsuranceAgencyPhoneNumber,
+                    fieldInsuranceAgencyAddress,
+                    fieldInsuranceAgencyCountry
+                )
+            }
+        }
+    }
+
+    private fun setupPersonalInformationCardButtonListeners() {
+        binding.ibProfilePersonalCardButton.setOnClickListener {
+
+            toggleCardFields(
+                binding.clProfilePersonalCard,
+                binding.llProfilePersonal,
+                binding.ibProfilePersonalCardButton,
+                R.drawable.arrow_drop_up,
+                R.drawable.arrow_drop_down
+            )
+
+        }
+
+        binding.tvProfilePersonalCardEdit.setOnClickListener {
+            personalCardEditing = updateCard(
+                personalCardEditing,
+                personalInformationFields,
+                binding.llProfilePersonal,
+                binding.tvProfilePersonalCardEdit,
+                binding.btnProfilePersonalCardUpdate,
+                binding.ibProfilePersonalCardButton,
+                binding.clProfilePersonalCard
+            )
+
+        }
+
+        binding.tvProfileInsuranceCardChangeInsurance.setOnClickListener {
+            showInsuranceDialog()
+        }
+
+        binding.btnProfileDateTimePickerInsuranceCertificateDates.setOnClickListener {
+            insuranceCertificateDateRangePicker.show(
+                parentFragmentManager,
+                "insurance_certificate_date_picker"
+            )
+            insuranceCertificateDateRangePicker.addOnPositiveButtonClickListener { selection ->
+                insuranceCertificateAvailabilityDate = Instant.ofEpochMilli(selection.first).atZone(
+                    ZoneId.systemDefault()
+                ).toLocalDate()
+                insuranceCertificateExpirationDate = Instant.ofEpochMilli(selection.second).atZone(
+                    ZoneId.systemDefault()
+                ).toLocalDate()
+            }
+
+            addChangeListener {
+                binding.btnProfileDateTimePickerInsuranceCertificateDates.isEnabled =
+                    insuranceCardEditing
+            }
+
+            addChangeListener {
+
+                binding.etProfileInsuranceCompanyInsuranceAvailabilityDateValue.setText(
+                    (insuranceCertificateAvailabilityDate?.to24Format() ?: "")
+                )
+                binding.etProfileInsuranceCompanyInsuranceAvailabilityDateValue.error = null
+            }
+
+            addChangeListener {
+                binding.etProfileInsuranceCompanyInsuranceExpirationDateValue.setText(
+                    (insuranceCertificateExpirationDate?.to24Format() ?: "")
+
+                )
+                binding.etProfileInsuranceCompanyInsuranceExpirationDateValue.error = null
+            }
+        }
+
+        binding.btnProfilePersonalCardUpdate.setOnClickListener {
+            validateAndSubmitPersonalInformation()
+        }
+    }
+
+    private fun validateAndSubmitPersonalInformation() {
+        personalFormHelper.clearErrors()
+
+        personalFormHelper.validateFields(personalInformationValidationRules)
+
+        if (personalInformationFields.none { it.error != null }) {
+            lifecycleScope.launch {
+                performChangesToPersonalInformation(
+                    fieldPersonalFirstName,
+                    fieldPersonalLastName,
+                    fieldPersonalEmail,
+                    fieldPersonalAddress,
+                    fieldPersonalPostalCode,
+                    fieldPersonalPhoneNumber
+                )
+            }
+        }
+    }
+
+    private fun fetchProfileInformation() {
+        lifecycleScope.launch {
+            val response = withContext(Dispatchers.IO) {
+                apiService.getPolicyHolderProfileInformation()
+            }
+            handlePolicyHolderProfileResponse(response)
+        }
+    }
+
 }
