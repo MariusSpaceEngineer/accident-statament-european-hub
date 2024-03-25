@@ -17,3 +17,14 @@ class FormHelper(
         fields.forEach { it.error = null }
     }
 }
+
+data class InputFieldsErrors(
+    var fieldRequired: String = "Field is required",
+    var noDigitsAllowed: String = "No digits allowed",
+    var noLettersAllowed: String = "No letters allowed",
+    var fieldNeedsCharacters: String = "Field needs certain characters:",
+    var futureDate: String = "Date is in the future",
+    var pastDate: String = "Date is in the past",
+    var invalidEmail: String = "Invalid email"
+)
+
