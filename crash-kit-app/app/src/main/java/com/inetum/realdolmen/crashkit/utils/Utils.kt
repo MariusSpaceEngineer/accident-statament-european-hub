@@ -3,6 +3,7 @@ package com.inetum.realdolmen.crashkit.utils
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
+import android.widget.Toast
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -97,6 +98,11 @@ fun Bitmap.toByteArray(): ByteArray {
 
     return byteArray
 }
+
+fun Context.showToast(message: String, duration: Int = Toast.LENGTH_LONG) {
+    Toast.makeText(this, message, duration).show()
+}
+
 
 
 
