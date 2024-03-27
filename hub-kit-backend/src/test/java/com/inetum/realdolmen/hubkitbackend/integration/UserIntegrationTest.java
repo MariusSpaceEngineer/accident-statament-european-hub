@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.inetum.realdolmen.hubkitbackend.dto.InsuranceAgencyDTO;
 import com.inetum.realdolmen.hubkitbackend.dto.InsuranceCertificateDTO;
 import com.inetum.realdolmen.hubkitbackend.dto.InsuranceCompanyDTO;
+import com.inetum.realdolmen.hubkitbackend.dto.PolicyHolderPersonalInformationDTO;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import jakarta.transaction.Transactional;
@@ -27,6 +28,8 @@ import static io.restassured.RestAssured.given;
 class UserIntegrationTest {
     private static ObjectMapper objectMapper;
 
+
+    private PolicyHolderPersonalInformationDTO policyHolderPersonalInformation;
     private InsuranceCertificateDTO insuranceCertificate;
 
     private RequestSpecification requestSpec;
@@ -56,6 +59,15 @@ class UserIntegrationTest {
                 .statusCode(200)
                 .extract()
                 .path("token");
+
+        policyHolderPersonalInformation = PolicyHolderPersonalInformationDTO.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@example.com")
+                .address("123 Main St")
+                .postalCode("12345")
+                .phoneNumber("123-456-7890")
+                .build();
 
         InsuranceAgencyDTO insuranceAgency = InsuranceAgencyDTO.builder()
                 .id(1)
@@ -119,34 +131,33 @@ class UserIntegrationTest {
     }
 
     @Test
-    public void updatePolicyHolderPersonalInformationWithValidToken() {
-
-        String jsonBody = "{\"firstName\": \"John john\", \"lastName\": \"Doe doe\"}";
-
+    public void updatePolicyHolderPersonalInformationWithValidToken() throws JsonProcessingException {
+        String json = objectMapper.writeValueAsString(policyHolderPersonalInformation);
 
         requestSpec
-                .body(jsonBody)
+                .body(json)
                 .when()
                 .put(baseURI + "/user/profile/personal")
                 .then()
                 .statusCode(200);
     }
 
+
     @Test
-    public void updatePolicyHolderPersonalInformationWithoutValidToken() {
-        String jsonBody = "{\"firstName\": \"John john\", \"lastName\": \"Doe doe\"}";
+    public void updatePolicyHolderPersonalInformationWithoutValidToken() throws JsonProcessingException {
+        String json = objectMapper.writeValueAsString(policyHolderPersonalInformation);
+
 
         given()
                 .relaxedHTTPSValidation()
                 .contentType("application/json")
-                .body(jsonBody)
+                .body(json)
                 .when().put(baseURI + "/user/profile/personal").then()
                 .statusCode(403);
     }
 
     @Test
     public void updatePolicyHolderInsuranceInformationWithValidToken() throws JsonProcessingException {
-
         String json = objectMapper.writeValueAsString(insuranceCertificate);
 
         requestSpec
