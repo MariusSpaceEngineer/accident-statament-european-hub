@@ -287,6 +287,11 @@ class ProfileFragment : Fragment(), ValidationConfigure {
                 ),
                 Triple(
                     binding.etProfileInsuranceAgencyEmailValue,
+                    { value -> value.isNullOrEmpty() },
+                    personalFormHelper.errors.fieldRequired
+                ),
+                Triple(
+                    binding.etProfileInsuranceAgencyEmailValue,
                     { value ->
                         !value.isNullOrEmpty() && !android.util.Patterns.EMAIL_ADDRESS.matcher(
                             value
@@ -368,7 +373,7 @@ class ProfileFragment : Fragment(), ValidationConfigure {
 
     private fun updateCard(
         beingEdited: Boolean,
-        personalInformationFields: List<TextView>,
+        fields: List<TextView>,
         fieldLayout: LinearLayout,
         editText: TextView,
         updateButton: Button,
@@ -380,8 +385,8 @@ class ProfileFragment : Fragment(), ValidationConfigure {
         editMode = !editMode
 
         if (editMode) {
-            editText.setText("Cancel")
-            setFieldState(personalInformationFields, true)
+            editText.text = getString(R.string.cancel_button)
+            setFieldState(fields, true)
             updateButton.visibility = View.VISIBLE
 
             if (fieldLayout.visibility == View.GONE) {
@@ -395,7 +400,7 @@ class ProfileFragment : Fragment(), ValidationConfigure {
             )
         } else {
             editText.setText(R.string.edit_button)
-            setFieldState(personalInformationFields, false)
+            setFieldState(fields, false)
             updateButton.visibility = View.GONE
         }
         return editMode

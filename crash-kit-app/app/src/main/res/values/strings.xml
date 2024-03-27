@@ -64,7 +64,9 @@
     <string name="share_insurance_generate_qr_code_button">Generate QR-Code</string>
     <string name="profile_change_insurance_button">Change Insurance</string>
     <string name="edit_button">Edit</string>
+    <string name="cancel_button">Cancel</string>
     <string name="update_button">Update</string>
+
 
     <!--    Descriptions-->
     <string name="main_description">Save time and hassle after a crash</string>
