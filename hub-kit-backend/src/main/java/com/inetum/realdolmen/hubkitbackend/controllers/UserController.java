@@ -7,14 +7,15 @@ import com.inetum.realdolmen.hubkitbackend.dto.PolicyHolderPersonalInformationDT
 import com.inetum.realdolmen.hubkitbackend.services.PolicyHolderService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.CacheControl;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
@@ -25,50 +26,57 @@ public class UserController {
     @GetMapping("/profile")
     public ResponseEntity<PolicyHolderDTO> getPolicyHolderProfile(HttpServletRequest request) {
         String token = extractToken(request);
-        if (token != null) {
-            Optional<PolicyHolderDTO> userProfile = service.fetchPolicyHolderProfile(token);
 
-            if (userProfile.isPresent()) {
-                return ResponseEntity.ok().cacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES)).body(userProfile.get());
-            } else {
-                return ResponseEntity.notFound().build(); // User not found
+        if (token != null) {
+            try {
+                Optional<PolicyHolderDTO> userProfile = service.fetchPolicyHolderProfile(token);
+                return userProfile.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+
+            } catch (Exception e) {
+                log.error("Error while fetching policy holder profile:", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         } else {
-            return ResponseEntity.badRequest().build(); // Invalid token
+            // Invalid token
+            return ResponseEntity.badRequest().build();
         }
     }
 
     @PutMapping("/profile/personal")
     public ResponseEntity<PolicyHolderPersonalInformationDTO> updatePolicyHolderPersonalInformation(HttpServletRequest request, @RequestBody PolicyHolderPersonalInformationDTO policyHolderDTO) {
         String token = extractToken(request);
-
         if (token != null) {
-            Optional<PolicyHolderPersonalInformationDTO> policyHolderPersonalInformationDTO = service.updatePolicyHolderPersonalInformation(token, policyHolderDTO);
+            try {
+                Optional<PolicyHolderPersonalInformationDTO> policyHolderPersonalInformationDTO = service.updatePolicyHolderPersonalInformation(token, policyHolderDTO);
 
-            if (policyHolderPersonalInformationDTO.isPresent()) {
-                return ResponseEntity.ok().cacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES)).body(policyHolderPersonalInformationDTO.get());
-            } else {
-                return ResponseEntity.notFound().build(); // User not found
+                return policyHolderPersonalInformationDTO.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+            } catch (Exception e) {
+                log.error("Error while updating policy holder personal information:", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         } else {
-            return ResponseEntity.badRequest().build(); // Invalid token
+            // Invalid token
+            return ResponseEntity.badRequest().build();
         }
     }
+
 
     @PutMapping("/profile/insurance")
     public ResponseEntity<List<InsuranceCertificateDTO>> updatePolicyHolderInsuranceInformation(HttpServletRequest request, @RequestBody InsuranceCertificateDTO insuranceCertificateDTO) {
         String token = extractToken(request);
 
         if (token != null) {
-            Optional<List<InsuranceCertificateDTO>> insuranceCertificate = service.updateInsuranceCertificateInformation(token, insuranceCertificateDTO);
+            try {
+                Optional<List<InsuranceCertificateDTO>> insuranceCertificate = service.updateInsuranceCertificateInformation(token, insuranceCertificateDTO);
 
-            if (insuranceCertificate.isPresent()) {
-                return ResponseEntity.ok().cacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES)).body(insuranceCertificate.get());
-            } else {
-                return ResponseEntity.notFound().build(); // User not found
+                return insuranceCertificate.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+            } catch (Exception e) {
+                log.error("Error while updating policy holder insurance information:", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         } else {
-            return ResponseEntity.badRequest().build(); // Invalid token
+            // Invalid token
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -76,8 +84,7 @@ public class UserController {
         // Extract the token from the authorization header
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            String token = authorizationHeader.substring(7);
-            return token;
+            return authorizationHeader.substring(7);
         } else {
             return null;
         }
