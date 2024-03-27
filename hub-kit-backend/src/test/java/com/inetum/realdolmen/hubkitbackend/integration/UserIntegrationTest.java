@@ -1,5 +1,11 @@
 package com.inetum.realdolmen.hubkitbackend.integration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.inetum.realdolmen.hubkitbackend.dto.InsuranceAgencyDTO;
+import com.inetum.realdolmen.hubkitbackend.dto.InsuranceCertificateDTO;
+import com.inetum.realdolmen.hubkitbackend.dto.InsuranceCompanyDTO;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import jakarta.transaction.Transactional;
@@ -10,6 +16,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDate;
+
 import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
 
@@ -17,10 +25,17 @@ import static io.restassured.RestAssured.given;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Transactional
 class UserIntegrationTest {
+    private static ObjectMapper objectMapper;
+
+    private InsuranceCertificateDTO insuranceCertificate;
+
     private RequestSpecification requestSpec;
 
     @BeforeAll
     public static void setUpClass() {
+        objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
         baseURI = "https://localhost:8080/api/v1";
     }
 
@@ -41,6 +56,31 @@ class UserIntegrationTest {
                 .statusCode(200)
                 .extract()
                 .path("token");
+
+        InsuranceAgencyDTO insuranceAgency = InsuranceAgencyDTO.builder()
+                .id(1)
+                .name("Insurance Agency")
+                .address("789 Insurance Ave")
+                .country("Belgium")
+                .phoneNumber("1122334455")
+                .email("agency@example.com")
+                .build();
+
+        InsuranceCompanyDTO insuranceCompany = InsuranceCompanyDTO.builder()
+                .id(1)
+                .name("Insurance Company")
+                .build();
+
+        insuranceCertificate = InsuranceCertificateDTO.builder()
+                .id(1)
+                .policyNumber("Policy123")
+                .greenCardNumber("Green123")
+                .availabilityDate(LocalDate.parse("2024-01-01"))
+                .expirationDate(LocalDate.parse("2025-01-01"))
+                .insuranceAgency(insuranceAgency)
+                .insuranceCompany(insuranceCompany)
+                .build();
+
 
         requestSpec = given()
                 .relaxedHTTPSValidation()
@@ -105,12 +145,12 @@ class UserIntegrationTest {
     }
 
     @Test
-    public void updatePolicyHolderInsuranceInformationWithValidToken() {
+    public void updatePolicyHolderInsuranceInformationWithValidToken() throws JsonProcessingException {
 
-        String jsonBody = "{\"policyNumber\": \"P56464894949546654\", \"greenCardNumber\": \"GCN987654321\"}";
+        String json = objectMapper.writeValueAsString(insuranceCertificate);
 
         requestSpec
-                .body(jsonBody)
+                .body(json)
                 .when()
                 .put(baseURI + "/user/profile/insurance")
                 .then()
@@ -118,13 +158,13 @@ class UserIntegrationTest {
     }
 
     @Test
-    public void updatePolicyHolderInsuranceInformationWithoutValidToken() {
-        String jsonBody = "{\"policyNumber\": \"P56464894949546654\", \"greenCardNumber\": \"GCN987654321\"}";
+    public void updatePolicyHolderInsuranceInformationWithoutValidToken() throws JsonProcessingException {
+        String json = objectMapper.writeValueAsString(insuranceCertificate);
 
         given()
                 .relaxedHTTPSValidation()
                 .contentType("application/json")
-                .body(jsonBody)
+                .body(json)
                 .when().put(baseURI + "/user/profile/insurance").then()
                 .statusCode(403);
     }
