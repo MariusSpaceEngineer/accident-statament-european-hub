@@ -1,5 +1,6 @@
 package com.inetum.realdolmen.crashkit.utils
 
+import com.inetum.realdolmen.crashkit.BuildConfig
 import com.inetum.realdolmen.crashkit.services.ApiService
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -7,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object NetworkModule {
 
-    private const val BASE_URL = "https://10.0.2.2:8080/api/v1/"
+    private const val BASE_URL = BuildConfig.BASE_URL
 
     fun provideOkHttpClient(securedPreferences: SecuredPreferences): OkHttpClient {
         return OkHttpClient.Builder()
