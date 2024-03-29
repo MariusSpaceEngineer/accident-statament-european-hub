@@ -19,16 +19,12 @@ class NewStatementViewModelTest {
 
     private lateinit var statementDataObserver: Observer<StatementData>
 
-    private lateinit var statementDataErrorsObserver: Observer<StatementDataErrors>
-
     @Before
     fun setUp() {
         statementDataObserver = mockk(relaxUnitFun = true)
-        statementDataErrorsObserver = mockk(relaxUnitFun = true)
 
         viewModel = NewStatementViewModel().apply {
             statementData.observeForever(statementDataObserver)
-            statementDataErrors.observeForever(statementDataErrorsObserver)
         }
     }
 
@@ -38,9 +34,4 @@ class NewStatementViewModelTest {
         verify { statementDataObserver.onChanged(expectedData) }
     }
 
-    @Test
-    fun `verify initial state of statementDataErrors`() {
-        val expectedErrors = StatementDataErrors()
-        verify { statementDataErrorsObserver.onChanged(expectedErrors) }
-    }
 }
