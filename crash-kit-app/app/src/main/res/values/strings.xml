@@ -63,9 +63,13 @@
     <string name="add_trailer_button">Add Trailer</string>
     <string name="share_insurance_generate_qr_code_button">Generate QR-Code</string>
     <string name="profile_change_insurance_button">Change Insurance</string>
+    <string name="import_other_insurance_information_button">Import other driver insurance information</string>
+    <string name="take_picture">Take Picture</string>
     <string name="edit_button">Edit</string>
     <string name="cancel_button">Cancel</string>
     <string name="update_button">Update</string>
+    <string name="remove_button">Remove</string>
+    <string name="submit_button">Submit</string>
 
 
     <!--    Descriptions-->
@@ -95,6 +99,7 @@
 
     <!--    Checkboxes-->
     <string name="login_remember_checkbox">Remember Me</string>
+    <string name="statement_injured_checkbox">Injured</string>
     <string name="statement_material_damage_other_vehicles_checkbox">Other vehicles than vehicle A and B</string>
     <string name="statement_material_damage_other_than_vehicles_checkbox">Objects other than vehicles</string>
     <string name="material_damage_covered_checkbox">Material Damage Covered</string>
@@ -119,6 +124,5 @@
     <string name="name">Name</string>
     <string name="company_name">Company Name:</string>
     <string name="agency_name">Agency Name:</string>
-
 
 </resources>
