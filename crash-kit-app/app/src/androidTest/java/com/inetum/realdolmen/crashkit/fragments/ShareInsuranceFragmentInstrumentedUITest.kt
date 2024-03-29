@@ -23,8 +23,6 @@ class ShareInsuranceFragmentInstrumentedUITest {
     private var originalTransitionAnimationScale: String = ""
     private var originalAnimatorDurationScale: String = ""
 
-    private var expectedText: String = ""
-
     //Disable animations on device as required
     @Before
     fun setup() {
