@@ -128,15 +128,15 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_date_of_birth_date_picker"
+                    style="@style/PrimaryBottomRoundedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
+                    android:layout_marginStart="12dp"
                     android:layout_marginTop="-15dp"
-                    android:layout_marginEnd="15dp"
+                    android:layout_marginEnd="12dp"
                     android:layout_marginBottom="8dp"
-                    android:background="@drawable/bottom_rounded_corners_filled"
                     android:text="@string/label_pick_date"
                     android:textSize="16sp" />
 
@@ -250,15 +250,15 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_driving_license_expiration_date_picker"
+                    style="@style/PrimaryBottomRoundedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
+                    android:layout_marginStart="12dp"
                     android:layout_marginTop="-15dp"
-                    android:layout_marginEnd="15dp"
+                    android:layout_marginEnd="12dp"
                     android:layout_marginBottom="8dp"
-                    android:background="@drawable/bottom_rounded_corners_filled"
                     android:text="@string/label_pick_date"
                     android:textSize="16sp" />
 
@@ -272,24 +272,24 @@
                 android:orientation="horizontal"
                 android:paddingBottom="12dp">
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_statement_accident_previous"
+                    style="@style/SecondaryRoundedButton"
                     android:layout_width="190dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="20dp"
-                    android:background="@drawable/rounded_main_button"
                     android:paddingLeft="65dp"
                     android:paddingRight="65dp"
                     android:text="@string/statement_back_button"
                     tools:ignore="ButtonStyle" />
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_statement_accident_next"
+                    style="@style/PrimaryRoundedButton"
                     android:layout_width="190dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/rounded_main_button"
                     android:paddingLeft="65dp"
                     android:paddingRight="65dp"
                     android:text="@string/statement_front_button"

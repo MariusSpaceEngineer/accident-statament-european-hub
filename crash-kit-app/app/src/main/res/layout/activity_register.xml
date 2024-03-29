@@ -160,13 +160,14 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_register_submit"
+                style="@style/PrimaryRoundedButton"
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
                 android:layout_marginBottom="12dp"
                 android:background="@drawable/rounded_main_button"
-                android:text="@string/login_title"
+                android:text="@string/register_title"
                 android:textSize="24sp" />
 
         </LinearLayout>

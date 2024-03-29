@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="PrimaryRoundedButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/rounded_main_button</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textColor">@color/title</item>
+    </style>
+    <style name="PrimaryBottomRoundedButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/bottom_rounded_primary_button</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textColor">@color/title</item>
+    </style>
+    <style name="PrimaryTopRoundedButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/top_rounded_primary_button</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textColor">@color/title</item>
+    </style>
+    <style name="PrimaryTopLeftRoundedButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/top_left_rounded_primary_button</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textColor">@color/title</item>
+    </style>
+    <style name="SecondaryRoundedButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/rounded_secondary_button</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textColor">@color/title</item>
+    </style>
+    <style name="VehicleBRoundedButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/rounded_vehicle_b_button</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textColor">@color/title</item>
+    </style>
+    <style name="VehicleBTopRoundedButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/top_rounded_vehicle_b_button</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textColor">@color/title</item>
+    </style>
+    <style name="VehicleBBottomRoundedButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/bottom_rounded_vehicle_b_button</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textColor">@color/title</item>
+    </style>
+
+
+</resources>

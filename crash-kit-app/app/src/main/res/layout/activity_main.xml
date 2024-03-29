@@ -69,29 +69,29 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_main_login_redirect"
+            style="@style/PrimaryRoundedButton"
             android:layout_width="350dp"
             android:layout_height="65dp"
             android:layout_marginBottom="12dp"
-            android:background="@drawable/rounded_main_button"
             android:text="@string/login_title"
             android:textSize="24sp" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_main_register_redirect"
+            style="@style/PrimaryRoundedButton"
             android:layout_width="350dp"
             android:layout_height="65dp"
             android:layout_marginBottom="12dp"
-            android:background="@drawable/rounded_main_button"
             android:text="@string/main_register_button"
             android:textSize="24sp" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_main_guest_redirect"
+            style="@style/SecondaryRoundedButton"
             android:layout_width="350dp"
             android:layout_height="50dp"
-            android:background="@drawable/rounded_main_button"
             android:text="@string/main_guest_button"
             android:textSize="24sp" />
 

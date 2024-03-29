@@ -1,5 +1,5 @@
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -7,13 +7,15 @@
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        tools:ignore="ContentDescription" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/removeButton"
+        style="@style/PrimaryTopLeftRoundedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:background="@drawable/top_left_rounded_corner_filled"
-        android:text="Remove" />
+        android:background="@drawable/top_left_rounded_primary_button"
+        android:text="@string/remove_button" />
 </FrameLayout>

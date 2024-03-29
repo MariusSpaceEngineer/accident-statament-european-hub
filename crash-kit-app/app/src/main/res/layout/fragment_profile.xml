@@ -417,7 +417,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="0dp"
                             android:layout_marginBottom="16dp"
-                            android:background="@drawable/bottom_rounded_corners_filled"
+                            android:background="@drawable/bottom_rounded_primary_button"
                             android:text="@string/label_pick_date"
                             android:textSize="16sp" />
 

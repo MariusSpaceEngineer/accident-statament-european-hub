@@ -53,12 +53,12 @@
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_statement_vehicle_a_import_insurance_information"
+                    style="@style/PrimaryTopRoundedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:background="@drawable/top_rounded_corners_filled"
                     android:enabled="false"
                     android:text="@string/import_insurance_information_button"
                     android:textColor="@color/title" />
@@ -263,11 +263,11 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_statement_vehicle_a_add_trailer"
+                    style="@style/PrimaryBottomRoundedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bottom_rounded_corners_filled"
                     android:text="@string/add_trailer_button"
                     android:textColor="@color/title" />
 
@@ -281,24 +281,24 @@
                 android:orientation="horizontal"
                 android:paddingBottom="12dp">
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_statement_accident_previous"
+                    style="@style/SecondaryRoundedButton"
                     android:layout_width="190dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="20dp"
-                    android:background="@drawable/rounded_main_button"
                     android:paddingLeft="65dp"
                     android:paddingRight="65dp"
                     android:text="@string/statement_back_button"
                     tools:ignore="ButtonStyle" />
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_statement_accident_next"
+                    style="@style/PrimaryRoundedButton"
                     android:layout_width="190dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/rounded_main_button"
                     android:paddingLeft="65dp"
                     android:paddingRight="65dp"
                     android:text="@string/statement_front_button"

@@ -56,8 +56,8 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:layout_marginStart="18dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="18dp"
         android:layout_marginBottom="24dp"
         app:cardBackgroundColor="@color/primary300"
@@ -121,12 +121,12 @@
                 android:layout_marginBottom="16dp"
                 android:text="@string/login_remember_checkbox" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_login_submit"
+                style="@style/PrimaryRoundedButton"
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
                 android:layout_marginBottom="12dp"
-                android:background="@drawable/rounded_main_button"
                 android:text="@string/login_title"
                 android:textSize="24sp" />
 

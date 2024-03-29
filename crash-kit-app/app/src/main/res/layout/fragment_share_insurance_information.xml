@@ -27,8 +27,9 @@
             android:textSize="36sp"
             android:textStyle="bold" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_share_insurance_generate_qr_code"
+            style="@style/PrimaryRoundedButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"

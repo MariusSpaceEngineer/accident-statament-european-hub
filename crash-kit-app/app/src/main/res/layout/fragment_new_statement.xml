@@ -42,22 +42,22 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_statement_accident_date"
-                    android:enabled="false"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:enabled="false"
                     android:textColor="@color/input_hint" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_date_time_picker"
+                style="@style/PrimaryBottomRoundedButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="25dp"
                 android:layout_marginTop="-15dp"
                 android:layout_marginEnd="25dp"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/bottom_rounded_corners_filled"
                 android:text="@string/label_pick_date"
                 android:textSize="16sp" />
 
@@ -78,14 +78,14 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_statement_accident_location"
+                style="@style/PrimaryBottomRoundedButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="25dp"
                 android:layout_marginEnd="25dp"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/bottom_rounded_corners_filled"
                 android:text="@string/statement_track_location_button"
                 android:textSize="16sp" />
 
@@ -95,7 +95,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="25dp"
                 android:layout_marginEnd="25dp"
-                android:text="Injured" />
+                android:text="@string/statement_injured_checkbox" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -228,32 +228,31 @@
                 android:orientation="horizontal"
                 android:paddingBottom="12dp">
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_statement_accident_previous"
+                    style="@style/SecondaryRoundedButton"
                     android:layout_width="190dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="20dp"
-                    android:background="@drawable/rounded_main_button"
                     android:enabled="false"
                     android:paddingLeft="65dp"
                     android:paddingRight="65dp"
                     android:text="@string/statement_back_button"
                     tools:ignore="ButtonStyle" />
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_statement_accident_next"
+                    style="@style/PrimaryRoundedButton"
                     android:layout_width="190dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/rounded_main_button"
                     android:paddingLeft="65dp"
                     android:paddingRight="65dp"
                     android:text="@string/statement_front_button"
                     tools:ignore="ButtonStyle" />
 
             </LinearLayout>
-
 
         </LinearLayout>
 

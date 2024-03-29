@@ -1280,28 +1280,27 @@
                 android:orientation="horizontal"
                 android:paddingBottom="12dp">
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_statement_accident_previous"
+                    style="@style/SecondaryRoundedButton"
                     android:layout_width="190dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="20dp"
-                    android:background="@drawable/rounded_main_button"
-                    android:enabled="false"
                     android:paddingLeft="65dp"
                     android:paddingRight="65dp"
                     android:text="@string/statement_back_button"
                     tools:ignore="ButtonStyle" />
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_statement_accident_next"
+                    style="@style/PrimaryRoundedButton"
                     android:layout_width="190dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/rounded_main_button"
                     android:paddingLeft="65dp"
                     android:paddingRight="65dp"
-                    android:text="Submit"
+                    android:text="@string/submit_button"
                     tools:ignore="ButtonStyle" />
 
             </LinearLayout>
