@@ -1,4 +1,4 @@
-package com.inetum.realdolmen.crashkit
+package com.inetum.realdolmen.crashkit.adapters
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.inetum.realdolmen.crashkit.R
 
 class ImageAdapter(private val imageSet: MutableList<Bitmap>, private val context: Context) :
     RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
