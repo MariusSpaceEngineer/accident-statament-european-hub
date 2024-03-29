@@ -17,7 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
-import com.inetum.realdolmen.crashkit.ImageAdapter
+import com.inetum.realdolmen.crashkit.adapters.ImageAdapter
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleBMiscellaneousBinding
 import com.inetum.realdolmen.crashkit.fragments.statement.AccidentStatementOverviewFragment
