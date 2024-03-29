@@ -85,6 +85,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/tv_home_statement_title" />
 
                     <ImageView
+                        android:id="@+id/iv_home_statement_picture"
                         android:layout_width="110dp"
                         android:layout_height="match_parent"
                         android:contentDescription="@string/home_new_statement_card_image_description"
@@ -140,6 +141,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/tv_home_qr_title" />
 
                     <ImageView
+                        android:id="@+id/iv_home_qr_picture"
                         android:layout_width="110dp"
                         android:layout_height="match_parent"
                         android:contentDescription="@string/main_share_insurance_card_image_description"
