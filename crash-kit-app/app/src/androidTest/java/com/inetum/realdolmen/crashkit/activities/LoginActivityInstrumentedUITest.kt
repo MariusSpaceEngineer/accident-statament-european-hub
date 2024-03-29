@@ -8,10 +8,10 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.inetum.realdolmen.crashkit.R
-import com.inetum.realdolmen.crashkit.utils.SecuredPreferences
 import com.inetum.realdolmen.crashkit.dto.LoginData
 import com.inetum.realdolmen.crashkit.dto.LoginResponse
 import com.inetum.realdolmen.crashkit.services.ApiService
+import com.inetum.realdolmen.crashkit.utils.SecuredPreferences
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -30,7 +30,7 @@ import retrofit2.Response
 
 
 @RunWith(AndroidJUnit4::class)
-class LoginActivityInstrumentedTest {
+class LoginActivityInstrumentedUITest {
 
     @get:Rule
     val activityRule: ActivityScenarioRule<LoginActivity> =
