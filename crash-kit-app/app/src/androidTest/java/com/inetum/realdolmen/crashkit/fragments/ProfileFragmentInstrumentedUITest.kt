@@ -1,4 +1,4 @@
-package com.inetum.realdolmen.crashkit.fragments.statement
+package com.inetum.realdolmen.crashkit.fragments
 
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.espresso.Espresso.onView
@@ -16,7 +16,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.inetum.realdolmen.crashkit.R
-import com.inetum.realdolmen.crashkit.fragments.ProfileFragment
 import org.hamcrest.Matchers.not
 import org.junit.After
 import org.junit.Before
