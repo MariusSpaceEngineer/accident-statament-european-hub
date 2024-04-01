@@ -17,8 +17,11 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
+import com.inetum.realdolmen.crashkit.CrashKitApp
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentNewStatementBinding
+import com.inetum.realdolmen.crashkit.dto.LocationCoordinatesData
+import com.inetum.realdolmen.crashkit.dto.RequestResponse
 import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleANewStatementFragment
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
 import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
@@ -26,20 +29,27 @@ import com.inetum.realdolmen.crashkit.utils.DateTimePicker
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
+import com.inetum.realdolmen.crashkit.utils.createSimpleDialog
 import com.inetum.realdolmen.crashkit.utils.printBackStack
 import com.inetum.realdolmen.crashkit.utils.to24Format
 import com.inetum.realdolmen.crashkit.utils.toLocalDateTime
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.Response
 import java.time.LocalDateTime
 
 class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigure {
     private lateinit var model: NewStatementViewModel
+    private lateinit var formHelper: FormHelper
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     private var _binding: FragmentNewStatementBinding? = null
     private val binding get() = _binding!!
 
     private var fields: List<TextView> = listOf()
     private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = listOf()
-    private lateinit var formHelper: FormHelper
 
     private val fragmentNavigationHelper by lazy {
         FragmentNavigationHelper(requireActivity().supportFragmentManager)
@@ -49,7 +59,7 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
         DateTimePicker(requireContext())
     }
 
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private val apiService = CrashKitApp.apiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,6 +101,10 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
 
         requireActivity().supportFragmentManager.printBackStack()
 
+        setupButtonClickListeners()
+    }
+
+    private fun setupButtonClickListeners() {
         binding.btnStatementAccidentNext.setOnClickListener {
             formHelper.clearErrors()
 
@@ -98,11 +112,6 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
 
             formHelper.validateFields(validationRules)
 
-            fields.forEach { field ->
-                if (field.error != null) {
-                    Log.e("FieldError", "Error in field: ${field}, error: ${field.error}")
-                }
-            }
             if (fields.none { it.error != null }) {
                 // If no errors, navigate to the next fragment
                 fragmentNavigationHelper.navigateToFragment(
@@ -218,17 +227,41 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
         val priority = Priority.PRIORITY_HIGH_ACCURACY
         val cancellationTokenSource = CancellationTokenSource()
         try {
-
             fusedLocationProviderClient.getCurrentLocation(priority, cancellationTokenSource.token)
                 .addOnSuccessListener { location ->
                     Log.d("Location", "location is found: $location")
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val response = apiService.getLocationAddress(
+                            LocationCoordinatesData(
+                                location.latitude,
+                                location.longitude
+                            )
+                        )
+                        withContext(Dispatchers.Main) {
+                            handleAccidentLocationResponse(response)
+                        }
+                    }
                 }
                 .addOnFailureListener { exception ->
-                    Log.d("Location", "Oops location failed with exception: $exception")
+                    Log.d("Location", "Coordinates fetch failed with exception: $exception")
                 }
         } catch (securityException: SecurityException) {
-            // Log or handle the exception here.
             Toast.makeText(requireContext(), "Location permission denied", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun handleAccidentLocationResponse(response: Response<RequestResponse>) {
+        Log.i("Request", "Request code: ${response.code()}")
+        val addressResponse = response.body()
+        if (addressResponse != null) {
+            if (response.isSuccessful) {
+                binding.etStatementAccidentLocation.setText(addressResponse.successMessage)
+            } else {
+                requireContext().createSimpleDialog(
+                    getString(R.string.error),
+                    addressResponse.errorMessage!!
+                )
+            }
         }
     }
 }
