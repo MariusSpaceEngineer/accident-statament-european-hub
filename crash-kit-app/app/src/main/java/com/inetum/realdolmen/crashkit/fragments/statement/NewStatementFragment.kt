@@ -1,5 +1,6 @@
 package com.inetum.realdolmen.crashkit.fragments.statement
 
+import android.Manifest
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,9 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationTokenSource
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentNewStatementBinding
 import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleANewStatementFragment
@@ -42,10 +49,14 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
         DateTimePicker(requireContext())
     }
 
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         model = ViewModelProvider(requireActivity())[NewStatementViewModel::class.java]
+        fusedLocationProviderClient =
+            LocationServices.getFusedLocationProviderClient(requireContext())
     }
 
     override fun onCreateView(
@@ -56,6 +67,17 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
         val view = binding.root
 
         return view
+    }
+
+    private val requestLocationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            getCurrentLocation()
+        } else {
+            Toast.makeText(requireContext(), "Location permission denied", Toast.LENGTH_SHORT)
+                .show()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -100,6 +122,10 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
                 (dateTimePicker.dateTime?.to24Format() ?: "")
             )
             binding.etStatementAccidentDate.error = null
+        }
+
+        binding.btnStatementAccidentLocation.setOnClickListener {
+            requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
 
@@ -187,4 +213,22 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
         )
     }
 
+    private fun getCurrentLocation() {
+        //Any other priority will update the location less frequent
+        val priority = Priority.PRIORITY_HIGH_ACCURACY
+        val cancellationTokenSource = CancellationTokenSource()
+        try {
+
+            fusedLocationProviderClient.getCurrentLocation(priority, cancellationTokenSource.token)
+                .addOnSuccessListener { location ->
+                    Log.d("Location", "location is found: $location")
+                }
+                .addOnFailureListener { exception ->
+                    Log.d("Location", "Oops location failed with exception: $exception")
+                }
+        } catch (securityException: SecurityException) {
+            // Log or handle the exception here.
+            Toast.makeText(requireContext(), "Location permission denied", Toast.LENGTH_LONG).show()
+        }
+    }
 }
