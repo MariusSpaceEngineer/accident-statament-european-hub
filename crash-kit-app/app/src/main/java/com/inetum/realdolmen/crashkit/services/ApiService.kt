@@ -2,6 +2,7 @@ package com.inetum.realdolmen.crashkit.services
 
 import com.inetum.realdolmen.crashkit.dto.AccidentStatementData
 import com.inetum.realdolmen.crashkit.dto.InsuranceCertificate
+import com.inetum.realdolmen.crashkit.dto.LocationCoordinatesData
 import com.inetum.realdolmen.crashkit.dto.LoginData
 import com.inetum.realdolmen.crashkit.dto.LoginResponse
 import com.inetum.realdolmen.crashkit.dto.PersonalInformationData
@@ -36,4 +37,6 @@ interface ApiService {
     @POST("statement/create")
     suspend fun createAccidentStatement(@Body accidentStatementData: AccidentStatementData): Response<RequestResponse>
 
+    @POST("statement/accident/location")
+    suspend fun getLocationAddress(@Body locationCoordinatesData: LocationCoordinatesData): Response<RequestResponse>
 }
