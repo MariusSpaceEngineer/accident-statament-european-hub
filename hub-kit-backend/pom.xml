@@ -20,6 +20,7 @@
 		<mapstruct.version>1.5.0.Final</mapstruct.version>
 		<rest-assured.version>5.4.0</rest-assured.version>
 		<maven-compiler-lombok-mapstruct.version>0.2.0</maven-compiler-lombok-mapstruct.version>
+		<jopencage.version>2.2.1</jopencage.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -84,6 +85,11 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.opencagedata</groupId>
+			<artifactId>jopencage</artifactId>
+			<version>${jopencage.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.rest-assured</groupId>
