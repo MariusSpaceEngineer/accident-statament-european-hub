@@ -1,13 +1,19 @@
 package com.inetum.realdolmen.hubkitbackend.services;
 
 import com.inetum.realdolmen.hubkitbackend.dto.AccidentStatementDTO;
+import com.inetum.realdolmen.hubkitbackend.dto.LocationCoordinates;
 import com.inetum.realdolmen.hubkitbackend.exceptions.AccidentStatementCreationFailed;
+import com.inetum.realdolmen.hubkitbackend.exceptions.FetchLocationAddressFailedException;
 import com.inetum.realdolmen.hubkitbackend.exceptions.MissingPropertyException;
 import com.inetum.realdolmen.hubkitbackend.mappers.AccidentStatementMapper;
 import com.inetum.realdolmen.hubkitbackend.models.*;
 import com.inetum.realdolmen.hubkitbackend.repositories.*;
+import com.opencagedata.jopencage.JOpenCageGeocoder;
+import com.opencagedata.jopencage.model.JOpenCageReverseRequest;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -25,6 +31,14 @@ public class AccidentStatementService {
     private final InsuranceCompanyRepository insuranceCompanyRepository;
     private final PolicyHolderRepository policyHolderRepository;
     private final AccidentStatementMapper accidentStatementMapper;
+    @Value("${open-cage-api.key}")
+    private String openCageApiKey;
+    private JOpenCageGeocoder jOpenCageGeocoder;
+
+    @PostConstruct
+    public void init() {
+        jOpenCageGeocoder = new JOpenCageGeocoder(openCageApiKey);
+    }
 
 
     public String createAccidentStatement(AccidentStatementDTO accidentStatementDTO) throws Exception {
@@ -145,4 +159,18 @@ public class AccidentStatementService {
         }
     }
 
+    public String getLocationAddress(LocationCoordinates locationCoordinates) throws Exception{
+        try {
+            JOpenCageReverseRequest request = new JOpenCageReverseRequest(locationCoordinates.getLatitude(), locationCoordinates.getLongitude());
+            request.setNoAnnotations(true); // exclude additional info such as calling code, timezone, and currency
+            request.setMinConfidence(3); // restrict to results with a confidence rating of at least 3 (out of 10)
+
+            var response = jOpenCageGeocoder.reverse(request);
+
+            return response.getResults().getFirst().getFormatted();
+        } catch (Exception e) {
+            log.error("Error while reverse geocoding location", e);
+            throw new FetchLocationAddressFailedException("An error occurred when fetching location, please try again.");
+        }
+    }
 }
