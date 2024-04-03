@@ -45,15 +45,14 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                 // Find the shape under the scale gesture
                 currentShape = findShapeAt(detector.focusX.toInt(), detector.focusY.toInt())
                 currentShape?.let { (drawable, position) ->
-                    val scaleFactor = detector.scaleFactor
 
                     // Calculate the new size of the drawable
                     val newWidth = (drawable.intrinsicWidth * scaleFactor).toInt()
                     val newHeight = (drawable.intrinsicHeight * scaleFactor).toInt()
 
-                    // Calculate the new position from the middle of the shape
-                    val newX = position.x + newWidth / 2
-                    val newY = position.y + newHeight / 2
+                    // Keep the initial position of the shape
+                    val newX = position.x
+                    val newY = position.y
 
                     drawable.setBounds(
                         newX - newWidth / 2,
@@ -102,9 +101,6 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                     currentShape?.let { (_, position) ->
                         touchOffset.set(event.x.toInt() - position.x, event.y.toInt() - position.y)
                     }
-                } else {
-                    // More than one finger down, start a scale gesture
-                    currentShape = findShapeAt(event.x.toInt(), event.y.toInt())
                 }
             }
 
@@ -129,9 +125,16 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
                         invalidate()
                     }
-                } else {
-                    // More than one finger is moving, defer to the ScaleGestureDetector
-                    scaleGestureDetector.onTouchEvent(event)
+                } else if (event.pointerCount > 1) {
+                    // More than one finger is moving, check if both fingers are on the figure
+                    val firstFingerShape = findShapeAt(event.getX(0).toInt(), event.getY(0).toInt())
+                    val secondFingerShape =
+                        findShapeAt(event.getX(1).toInt(), event.getY(1).toInt())
+                    if (firstFingerShape == secondFingerShape && firstFingerShape != null) {
+                        // Both fingers are on the same figure, start a scale gesture
+                        currentShape = firstFingerShape
+                        scaleGestureDetector.onTouchEvent(event)
+                    }
                 }
             }
 
@@ -144,7 +147,6 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
         }
         return true
     }
-
 
     private fun findShapeAt(x: Int, y: Int): Pair<Drawable, Point>? {
         var shape = shapes.find { (drawable, _) ->
