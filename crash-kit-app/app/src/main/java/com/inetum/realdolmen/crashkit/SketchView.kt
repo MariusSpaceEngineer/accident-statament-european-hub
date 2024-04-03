@@ -2,6 +2,8 @@ package com.inetum.realdolmen.crashkit
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.Point
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
@@ -87,9 +89,18 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
         for ((drawable, _) in shapes) {
             // Draw the shape on the canvas at its current bounds
             drawable.draw(canvas)
+
+            // Draw a rectangle around the shape
+            val paint = Paint()
+            paint.color = Color.RED
+            paint.style = Paint.Style.STROKE
+            paint.strokeWidth = 3f
+            canvas.drawRect(drawable.bounds, paint)
         }
     }
 
+
+    private var isScaling = false
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val action = event.actionMasked
@@ -105,7 +116,7 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
             }
 
             MotionEvent.ACTION_MOVE -> {
-                if (event.pointerCount == 1) {
+                if (event.pointerCount == 1 && !isScaling) {
                     // One finger is moving, move the shape
                     currentShape?.let { (drawable, position) ->
                         // Calculate the new position
@@ -126,22 +137,26 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                         invalidate()
                     }
                 } else if (event.pointerCount > 1) {
-                    // More than one finger is moving, check if both fingers are on the figure
+                    // More than one finger down, check if both fingers are on the figure
                     val firstFingerShape = findShapeAt(event.getX(0).toInt(), event.getY(0).toInt())
                     val secondFingerShape =
                         findShapeAt(event.getX(1).toInt(), event.getY(1).toInt())
                     if (firstFingerShape == secondFingerShape && firstFingerShape != null) {
                         // Both fingers are on the same figure, start a scale gesture
                         currentShape = firstFingerShape
+                        isScaling = true
                         scaleGestureDetector.onTouchEvent(event)
+
                     }
                 }
             }
+
 
             MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
                 if (event.pointerCount == 1) {
                     // Last finger lifted, end the gesture
                     currentShape = null
+                    isScaling = false
                 }
             }
         }
