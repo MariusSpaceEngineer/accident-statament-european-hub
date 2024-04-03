@@ -71,6 +71,13 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
         val drawable = ContextCompat.getDrawable(context, resId)
         if (drawable != null) {
             val position = Point(width / 2, height / 2)
+            // Set the initial bounds of the drawable to its intrinsic size at the specified position
+            drawable.setBounds(
+                position.x - drawable.intrinsicWidth / 2,
+                position.y - drawable.intrinsicHeight / 2,
+                position.x + drawable.intrinsicWidth / 2,
+                position.y + drawable.intrinsicHeight / 2
+            )
             shapes.add(Pair(drawable, position))
         }
         invalidate() // Redraw the view
@@ -78,18 +85,12 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        for ((drawable, position) in shapes) {
-            // Set the bounds of the drawable to its original size at the specified position
-            drawable.setBounds(
-                position.x,
-                position.y,
-                position.x + drawable.intrinsicWidth,
-                position.y + drawable.intrinsicHeight
-            )
-            // Draw the shape on the canvas
+        for ((drawable, _) in shapes) {
+            // Draw the shape on the canvas at its current bounds
             drawable.draw(canvas)
         }
     }
+
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val action = event.actionMasked
@@ -110,11 +111,22 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
             MotionEvent.ACTION_MOVE -> {
                 if (event.pointerCount == 1) {
                     // One finger is moving, move the shape
-                    currentShape?.let { (_, position) ->
-                        position.set(
-                            event.x.toInt() - touchOffset.x,
-                            event.y.toInt() - touchOffset.y
+                    currentShape?.let { (drawable, position) ->
+                        // Calculate the new position
+                        val newX = event.x.toInt() - touchOffset.x
+                        val newY = event.y.toInt() - touchOffset.y
+
+                        // Update the position
+                        position.set(newX, newY)
+
+                        // Update the bounds of the drawable to its current size at the new position
+                        drawable.setBounds(
+                            newX - drawable.bounds.width() / 2,
+                            newY - drawable.bounds.height() / 2,
+                            newX + drawable.bounds.width() / 2,
+                            newY + drawable.bounds.height() / 2
                         )
+
                         invalidate()
                     }
                 } else {
