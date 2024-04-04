@@ -27,30 +27,16 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
             override fun onScale(detector: ScaleGestureDetector): Boolean {
                 var scaleFactor = detector.scaleFactor
 
-                // Limit the scale factor to half (0.5) or double (2.0) the current size
-                scaleFactor = when {
-                    scaleFactor < 1f -> max(
-                        0.5f,
-                        scaleFactor
-                    ) // If scaling down, limit to half the size
-                    scaleFactor > 1f -> min(
-                        2.0f,
-                        scaleFactor
-                    ) // If scaling up, limit to double the size
-                    else -> scaleFactor
-                }
-
                 mScaleFactor *= scaleFactor
                 mScaleFactor = max(0.1f, min(mScaleFactor, 5.0f))
 
                 Log.d("SketchView", "onScale called with scale factor ${detector.scaleFactor}")
-                // Find the shape under the scale gesture
-                currentShape = findShapeAt(detector.focusX.toInt(), detector.focusY.toInt())
+                // Use the currentShape that was set in onTouchEvent
                 currentShape?.let { (drawable, position) ->
 
                     // Calculate the new size of the drawable
-                    val newWidth = (drawable.intrinsicWidth * scaleFactor).toInt()
-                    val newHeight = (drawable.intrinsicHeight * scaleFactor).toInt()
+                    var newWidth = (drawable.intrinsicWidth * mScaleFactor).toInt()
+                    var newHeight = (drawable.intrinsicHeight * mScaleFactor).toInt()
 
                     // Keep the initial position of the shape
                     val newX = position.x
@@ -63,9 +49,12 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                         newY + newHeight / 2
                     )
                     invalidate()
+
+                    Log.i("Size", drawable.bounds.toString())
                 }
                 return true
             }
+
         })
 
     fun addShape(resId: Int) {
@@ -102,6 +91,35 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     private var isScaling = false
 
+    private fun findShapeAt(x: Int, y: Int): Pair<Drawable, Point>? {
+        var shape = shapes.find { (drawable, _) ->
+            // Check if the point is within the current bounds of the drawable
+            drawable.bounds.contains(x, y)
+        }
+        if (shape != null)
+            Log.i("Shape", "Shape found at ${shape.second.x} -${shape.second.y}")
+        else {
+            Log.i("Shape", "Shape not found")
+
+        }
+        return shape
+    }
+
+    private fun isNearEdge(
+        x: Int,
+        y: Int,
+        drawable: Drawable,
+        thresholdPercentage: Float = 0.2f
+    ): Boolean {
+        val bounds = drawable.bounds
+        val threshold = (bounds.width() * thresholdPercentage).toInt()
+        val result = (x <= bounds.left + threshold || x >= bounds.right - threshold ||
+                y <= bounds.top + threshold || y >= bounds.bottom - threshold)
+
+        Log.i("Near the edge", result.toString())
+        return result
+    }
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val action = event.actionMasked
         when (action) {
@@ -111,6 +129,29 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                     currentShape = findShapeAt(event.x.toInt(), event.y.toInt())
                     currentShape?.let { (_, position) ->
                         touchOffset.set(event.x.toInt() - position.x, event.y.toInt() - position.y)
+                    }
+                } else if (event.pointerCount > 1) {
+                    // More than one finger down, check if at least one finger is on the figure and near the edge
+                    val firstFingerShape = findShapeAt(event.getX(0).toInt(), event.getY(0).toInt())
+                    val secondFingerShape =
+                        findShapeAt(event.getX(1).toInt(), event.getY(1).toInt())
+                    if (firstFingerShape != null &&
+                        (isNearEdge(
+                            event.getX(0).toInt(),
+                            event.getY(0).toInt(),
+                            firstFingerShape.first
+                        ) ||
+                                isNearEdge(
+                                    event.getX(1).toInt(),
+                                    event.getY(1).toInt(),
+                                    firstFingerShape.first
+                                ))
+                    ) {
+                        Log.i("Figure", "at least one finger near the edge of the shape")
+                        // At least one finger is on the figure and near the edge, start a scale gesture
+                        currentShape = firstFingerShape
+                        isScaling = true
+                        scaleGestureDetector.onTouchEvent(event)
                     }
                 }
             }
@@ -136,46 +177,23 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
                         invalidate()
                     }
-                } else if (event.pointerCount > 1) {
-                    // More than one finger down, check if both fingers are on the figure
-                    val firstFingerShape = findShapeAt(event.getX(0).toInt(), event.getY(0).toInt())
-                    val secondFingerShape =
-                        findShapeAt(event.getX(1).toInt(), event.getY(1).toInt())
-                    if (firstFingerShape == secondFingerShape && firstFingerShape != null) {
-                        // Both fingers are on the same figure, start a scale gesture
-                        currentShape = firstFingerShape
-                        isScaling = true
-                        scaleGestureDetector.onTouchEvent(event)
-
-                    }
+                } else if (event.pointerCount > 1 && isScaling) {
+                    // More than one finger is moving and a scale gesture is in progress, defer to the ScaleGestureDetector
+                    scaleGestureDetector.onTouchEvent(event)
                 }
             }
 
-
             MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
-                if (event.pointerCount == 1) {
-                    // Last finger lifted, end the gesture
-                    currentShape = null
+                if (event.pointerCount <= 1) {
+                    // All fingers are up or only one finger is left, end the scale gesture
                     isScaling = false
                 }
             }
         }
+
         return true
     }
 
-    private fun findShapeAt(x: Int, y: Int): Pair<Drawable, Point>? {
-        var shape = shapes.find { (drawable, _) ->
-            // Check if the point is within the current bounds of the drawable
-            drawable.bounds.contains(x, y)
-        }
-        if (shape != null)
-            Log.i("Shape", "Shape found at ${shape.second.x} -${shape.second.y}")
-        else {
-            Log.i("Shape", "Shape not found")
-
-        }
-        return shape
-    }
 }
 
 
