@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
+import android.widget.Button
 import androidx.core.content.ContextCompat
 import kotlin.math.max
 import kotlin.math.min
@@ -25,6 +26,20 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     private var isScaling: Boolean = false
 
+    private lateinit var deleteButton: Button
+
+    fun setupButton(button: Button){
+        deleteButton= button
+        deleteButton.setOnClickListener {
+            // Remove the currentShape from shapes
+            currentShape?.let { shapes.remove(it) }
+            currentShape = null
+            deleteButton.visibility = View.INVISIBLE // Make the button invisible
+            invalidate() // Redraw the view
+        }
+    }
+
+
     private val scaleGestureDetector =
         ScaleGestureDetector(context, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
             override fun onScale(detector: ScaleGestureDetector): Boolean {
@@ -34,7 +49,6 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                 mScaleFactor = max(0.1f, min(mScaleFactor, 5.0f))
 
                 Log.d("SketchView", "onScale called with scale factor ${detector.scaleFactor}")
-                // Use the currentShape that was set in onTouchEvent
                 currentShape?.let { (drawable, position) ->
 
                     // Calculate the new size of the drawable
@@ -85,7 +99,11 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                     currentShape = findShapeAt(event.x.toInt(), event.y.toInt())
                     currentShape?.let { (_, position) ->
                         touchOffset.set(event.x.toInt() - position.x, event.y.toInt() - position.y)
+                        deleteButton.visibility = View.VISIBLE // Make the button visible
+                    } ?: run {
+                        deleteButton.visibility = View.INVISIBLE // Make the button invisible
                     }
+
                 } else if (event.pointerCount > 1) {
                     // More than one finger down, check if at least one finger is on the figure and near the edge
                     val firstFingerShape = findShapeAt(event.getX(0).toInt(), event.getY(0).toInt())

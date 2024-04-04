@@ -25,12 +25,32 @@
         <com.inetum.realdolmen.crashkit.SketchView
             android:id="@+id/sketchView"
             android:layout_width="match_parent"
-            android:layout_height="290dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="80dp"
+            android:layout_marginBottom="80dp"
             android:background="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_accident_sketch_search_shape"
+            app:layout_constraintVertical_bias="1.0" >
 
+        </com.inetum.realdolmen.crashkit.SketchView>
+
+        <Button
+            android:id="@+id/btn_accident_sketch_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-200dp"
+            android:visibility="gone"
+            android:text="delete shape"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sketchView">
+
+        </Button>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
