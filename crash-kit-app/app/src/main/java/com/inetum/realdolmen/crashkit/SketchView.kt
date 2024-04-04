@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Point
-import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
@@ -16,11 +15,15 @@ import kotlin.math.max
 import kotlin.math.min
 
 class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
-    private val shapes = mutableListOf<Pair<Drawable, Point>>()
-    private var currentShape: Pair<Drawable, Point>? = null
-    private var touchOffset = Point()
+    private val shapes = mutableListOf<Pair<RotatableDrawable, Point>>()
+    private var currentShape: Pair<RotatableDrawable, Point>? = null
 
+    private var touchOffset = Point()
     private var mScaleFactor = 1f
+
+    private val rotations = mutableMapOf<RotatableDrawable, Float>()
+
+    private var isScaling: Boolean = false
 
     private val scaleGestureDetector =
         ScaleGestureDetector(context, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
@@ -57,72 +60,25 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
         })
 
-    fun addShape(resId: Int) {
-        val drawable = ContextCompat.getDrawable(context, resId)
-        if (drawable != null) {
-            val position = Point(width / 2, height / 2)
-            // Set the initial bounds of the drawable to its intrinsic size at the specified position
-            drawable.setBounds(
-                position.x - drawable.intrinsicWidth / 2,
-                position.y - drawable.intrinsicHeight / 2,
-                position.x + drawable.intrinsicWidth / 2,
-                position.y + drawable.intrinsicHeight / 2
-            )
-            shapes.add(Pair(drawable, position))
-        }
-        invalidate() // Redraw the view
-    }
+    private val rotationGestureDetector =
+        RotationGestureDetector(object : RotationGestureDetector.OnRotationGestureListener {
+            override fun onRotation(detector: RotationGestureDetector?): Boolean {
+                Log.i("rotate", "rotation tiggered")
+                currentShape?.let { (drawable, _) ->
+                    // Update the rotation angle of the drawable
+                    val rotation = detector?.angle ?: 0f
+                    Log.i("angle", rotation.toString())
+                    drawable.setRotation(rotation)
 
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-        for ((drawable, _) in shapes) {
-            // Draw the shape on the canvas at its current bounds
-            drawable.draw(canvas)
+                    invalidate()
+                }
+                return true
+            }
 
-            // Draw a rectangle around the shape
-            val paint = Paint()
-            paint.color = Color.RED
-            paint.style = Paint.Style.STROKE
-            paint.strokeWidth = 3f
-            canvas.drawRect(drawable.bounds, paint)
-        }
-    }
-
-
-    private var isScaling = false
-
-    private fun findShapeAt(x: Int, y: Int): Pair<Drawable, Point>? {
-        var shape = shapes.find { (drawable, _) ->
-            // Check if the point is within the current bounds of the drawable
-            drawable.bounds.contains(x, y)
-        }
-        if (shape != null)
-            Log.i("Shape", "Shape found at ${shape.second.x} -${shape.second.y}")
-        else {
-            Log.i("Shape", "Shape not found")
-
-        }
-        return shape
-    }
-
-    private fun isNearEdge(
-        x: Int,
-        y: Int,
-        drawable: Drawable,
-        thresholdPercentage: Float = 0.2f
-    ): Boolean {
-        val bounds = drawable.bounds
-        val threshold = (bounds.width() * thresholdPercentage).toInt()
-        val result = (x <= bounds.left + threshold || x >= bounds.right - threshold ||
-                y <= bounds.top + threshold || y >= bounds.bottom - threshold)
-
-        Log.i("Near the edge", result.toString())
-        return result
-    }
+        })
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        val action = event.actionMasked
-        when (action) {
+        when (event.actionMasked) {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
                 if (event.pointerCount == 1) {
                     // One finger down, start a move gesture
@@ -152,12 +108,16 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                         currentShape = firstFingerShape
                         isScaling = true
                         scaleGestureDetector.onTouchEvent(event)
+                    } else if (currentShape != null) {
+                        // Two fingers down, but not near the edge, start a rotation gesture
+                        isScaling = false
+                        rotationGestureDetector.onTouchEvent(event)
                     }
                 }
             }
 
             MotionEvent.ACTION_MOVE -> {
-                if (event.pointerCount == 1 && !isScaling) {
+                if (event.pointerCount == 1 && !isScaling && currentShape != null) {
                     // One finger is moving, move the shape
                     currentShape?.let { (drawable, position) ->
                         // Calculate the new position
@@ -180,6 +140,9 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                 } else if (event.pointerCount > 1 && isScaling) {
                     // More than one finger is moving and a scale gesture is in progress, defer to the ScaleGestureDetector
                     scaleGestureDetector.onTouchEvent(event)
+                } else if (event.pointerCount > 1 && currentShape != null) {
+                    // More than one finger is moving and a shape is selected, defer to the RotationGestureDetector
+                    rotationGestureDetector.onTouchEvent(event)
                 }
             }
 
@@ -192,6 +155,78 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
         }
 
         return true
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        for ((drawable, _) in shapes) {
+            // Save the current state of the canvas
+            val saveCount = canvas.save()
+
+            // Rotate the canvas around the center of the drawable
+            val rotation = rotations[drawable] ?: 0f
+            val centerX = (drawable.bounds.left + drawable.bounds.right) / 2f
+            val centerY = (drawable.bounds.top + drawable.bounds.bottom) / 2f
+            canvas.rotate(rotation, centerX, centerY)
+
+            // Draw the shape on the rotated canvas
+            drawable.draw(canvas)
+
+            // Draw a rectangle around the shape
+            val paint = Paint()
+            paint.color = Color.RED
+            paint.style = Paint.Style.STROKE
+            paint.strokeWidth = 3f
+            canvas.drawRect(drawable.bounds, paint)
+
+            // Restore the canvas to its previous state
+            canvas.restoreToCount(saveCount)
+        }
+    }
+
+    fun addShape(resId: Int) {
+        val drawable = ContextCompat.getDrawable(context, resId)
+        if (drawable != null) {
+            val rotatableDrawable = RotatableDrawable(drawable)
+            val position = Point(width / 2, height / 2)
+            // Set the initial bounds of the drawable to its intrinsic size at the specified position
+            rotatableDrawable.setBounds(
+                position.x - drawable.intrinsicWidth / 2,
+                position.y - drawable.intrinsicHeight / 2,
+                position.x + drawable.intrinsicWidth / 2,
+                position.y + drawable.intrinsicHeight / 2
+            )
+            shapes.add(Pair(rotatableDrawable, position))
+        }
+        invalidate() // Redraw the view
+    }
+
+    private fun findShapeAt(x: Int, y: Int): Pair<RotatableDrawable, Point>? {
+        val shape = shapes.find { (drawable, _) ->
+            // Check if the point is within the current bounds of the drawable
+            drawable.bounds.contains(x, y)
+        }
+        if (shape != null)
+            Log.i("Shape", "Shape found at ${shape.second.x} -${shape.second.y}")
+        else {
+            Log.i("Shape", "Shape not found")
+        }
+        return shape
+    }
+
+    private fun isNearEdge(
+        x: Int,
+        y: Int,
+        drawable: RotatableDrawable,
+        thresholdPercentage: Float = 0.2f
+    ): Boolean {
+        val bounds = drawable.bounds
+        val threshold = (bounds.width() * thresholdPercentage).toInt()
+        val result = (x <= bounds.left + threshold || x >= bounds.right - threshold ||
+                y <= bounds.top + threshold || y >= bounds.bottom - threshold)
+
+        Log.i("Near the edge", result.toString())
+        return result
     }
 
 }
