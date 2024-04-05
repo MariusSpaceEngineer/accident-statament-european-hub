@@ -3,8 +3,11 @@ package com.inetum.realdolmen.crashkit
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Matrix
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.Point
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
@@ -28,13 +31,13 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     private lateinit var deleteButton: Button
 
-    fun setupButton(button: Button){
-        deleteButton= button
+    fun setupButton(button: Button) {
+        deleteButton = button
         deleteButton.setOnClickListener {
             // Remove the currentShape from shapes
             currentShape?.let { shapes.remove(it) }
             currentShape = null
-            deleteButton.visibility = View.INVISIBLE // Make the button invisible
+            deleteButton.visibility = INVISIBLE // Make the button invisible
             invalidate() // Redraw the view
         }
     }
@@ -91,6 +94,8 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
         })
 
+    private var isRotating = false
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
@@ -101,7 +106,7 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                         touchOffset.set(event.x.toInt() - position.x, event.y.toInt() - position.y)
                         deleteButton.visibility = View.VISIBLE // Make the button visible
                     } ?: run {
-                        deleteButton.visibility = View.INVISIBLE // Make the button invisible
+                        deleteButton.visibility = INVISIBLE // Make the button invisible
                     }
 
                 } else if (event.pointerCount > 1) {
@@ -125,17 +130,19 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                         // At least one finger is on the figure and near the edge, start a scale gesture
                         currentShape = firstFingerShape
                         isScaling = true
+                        isRotating = false
                         scaleGestureDetector.onTouchEvent(event)
                     } else if (currentShape != null) {
                         // Two fingers down, but not near the edge, start a rotation gesture
                         isScaling = false
+                        isRotating = true
                         rotationGestureDetector.onTouchEvent(event)
                     }
                 }
             }
 
             MotionEvent.ACTION_MOVE -> {
-                if (event.pointerCount == 1 && !isScaling && currentShape != null) {
+                if (event.pointerCount == 1 && !isScaling && !isRotating) {
                     // One finger is moving, move the shape
                     currentShape?.let { (drawable, position) ->
                         // Calculate the new position
@@ -158,7 +165,7 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                 } else if (event.pointerCount > 1 && isScaling) {
                     // More than one finger is moving and a scale gesture is in progress, defer to the ScaleGestureDetector
                     scaleGestureDetector.onTouchEvent(event)
-                } else if (event.pointerCount > 1 && currentShape != null) {
+                } else if (event.pointerCount > 1 && isRotating) {
                     // More than one finger is moving and a shape is selected, defer to the RotationGestureDetector
                     rotationGestureDetector.onTouchEvent(event)
                 }
@@ -168,6 +175,8 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                 if (event.pointerCount <= 1) {
                     // All fingers are up or only one finger is left, end the scale gesture
                     isScaling = false
+                    isRotating = false
+
                 }
             }
         }
@@ -190,17 +199,49 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
             // Draw the shape on the rotated canvas
             drawable.draw(canvas)
 
-            // Draw a rectangle around the shape
+            // Create a path that represents the rotated rectangle
+            val path = Path()
+            path.addRect(RectF(drawable.bounds), Path.Direction.CW)
+            path.transform(matrix)
+
+            // Draw the path
             val paint = Paint()
             paint.color = Color.RED
             paint.style = Paint.Style.STROKE
             paint.strokeWidth = 3f
-            canvas.drawRect(drawable.bounds, paint)
+            canvas.drawPath(path, paint)
 
             // Restore the canvas to its previous state
             canvas.restoreToCount(saveCount)
         }
     }
+
+
+    private fun findShapeAt(x: Int, y: Int): Pair<RotatableDrawable, Point>? {
+        val shape = shapes.find { (drawable, _) ->
+            // Calculate the rotated bounding box
+            val rotation = rotations[drawable] ?: 0f
+            val centerX = (drawable.bounds.left + drawable.bounds.right) / 2f
+            val centerY = (drawable.bounds.top + drawable.bounds.bottom) / 2f
+            val rotatedBounds = RectF(drawable.bounds)
+            val matrix = Matrix()
+            matrix.setRotate(rotation, centerX, centerY)
+            matrix.mapRect(rotatedBounds)
+
+            // Check if the point is within the rotated bounds of the drawable
+            rotatedBounds.contains(x.toFloat(), y.toFloat())
+        }
+        if (shape != null) {
+            Log.i("Shape", "Shape found at ${shape.second.x} -${shape.second.y}")
+            // Remove the shape from its current position and add it to the end of the list
+            shapes.remove(shape)
+            shapes.add(shape)
+        } else {
+            Log.i("Shape", "Shape not found")
+        }
+        return shape
+    }
+
 
     fun addShape(resId: Int) {
         val drawable = ContextCompat.getDrawable(context, resId)
@@ -219,18 +260,6 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
         invalidate() // Redraw the view
     }
 
-    private fun findShapeAt(x: Int, y: Int): Pair<RotatableDrawable, Point>? {
-        val shape = shapes.find { (drawable, _) ->
-            // Check if the point is within the current bounds of the drawable
-            drawable.bounds.contains(x, y)
-        }
-        if (shape != null)
-            Log.i("Shape", "Shape found at ${shape.second.x} -${shape.second.y}")
-        else {
-            Log.i("Shape", "Shape not found")
-        }
-        return shape
-    }
 
     private fun isNearEdge(
         x: Int,
