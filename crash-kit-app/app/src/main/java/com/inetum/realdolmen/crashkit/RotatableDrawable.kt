@@ -5,7 +5,7 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.DrawableWrapper
 import android.util.Log
 
-class RotatableDrawable(private val drawable: Drawable) : DrawableWrapper(drawable) {
+class RotatableDrawable(private val drawable: Drawable, val resId: Int) : DrawableWrapper(drawable) {
     private var rotation = 0f
 
 

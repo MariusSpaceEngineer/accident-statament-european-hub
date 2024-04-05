@@ -13,13 +13,16 @@ import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 import androidx.core.content.ContextCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlin.math.max
 import kotlin.math.min
 
 class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
-    private val shapes = mutableListOf<Pair<RotatableDrawable, Point>>()
-    private var currentShape: Pair<RotatableDrawable, Point>? = null
+    private val shapes = mutableListOf<Triple<RotatableDrawable, Point, TextView?>>()
+    private var currentShape: Triple<RotatableDrawable, Point, TextView?>? = null
 
     private var touchOffset = Point()
     private var mScaleFactor = 1f
@@ -30,15 +33,50 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
     private var isRotating: Boolean = false
 
     private lateinit var deleteButton: Button
+    private lateinit var changeAddressButton: Button
 
-    fun setupButton(button: Button) {
-        deleteButton = button
+    fun setupButtons(deleteBtn: Button, changeAddressBtn: Button) {
+        deleteButton = deleteBtn
         deleteButton.setOnClickListener {
             // Remove the currentShape from shapes
             currentShape?.let { shapes.remove(it) }
             currentShape = null
             deleteButton.visibility = INVISIBLE // Make the button invisible
             invalidate() // Redraw the view
+        }
+        changeAddressButton = changeAddressBtn
+        changeAddressButton.setOnClickListener {
+            // Create a MaterialAlertDialogBuilder
+            val builder = MaterialAlertDialogBuilder(context)
+
+            // Create an EditText
+            val editText = EditText(context)
+
+            // Set the dialog title, view, and buttons
+            builder.setTitle("Enter Address")
+                .setView(editText)
+                .setPositiveButton("OK") { dialog, _ ->
+                    // Create a new TextView and set its text to the text entered in the EditText
+                    val textView = TextView(context)
+                    textView.text = editText.text.toString()
+
+                    currentShape?.let {
+                        currentShape?.third?.text = textView.text
+                    }
+
+                    // Dismiss the dialog
+                    dialog.dismiss()
+
+                    // Redraw the view
+                    invalidate()
+                }
+                .setNegativeButton("Cancel") { dialog, _ ->
+                    // Dismiss the dialog
+                    dialog.dismiss()
+                }
+
+            // Show the dialog
+            builder.show()
         }
     }
 
@@ -100,12 +138,22 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                 if (event.pointerCount == 1) {
                     // One finger down, start a move gesture
                     currentShape = findShapeAt(event.x.toInt(), event.y.toInt())
-                    currentShape?.let { (_, position) ->
+                    currentShape?.let { (drawable, position) ->
                         touchOffset.set(event.x.toInt() - position.x, event.y.toInt() - position.y)
-                        deleteButton.visibility = View.VISIBLE // Make the button visible
+                        deleteButton.visibility = View.VISIBLE // Make the delete button visible
+                        if (drawable.resId == R.drawable.street) {
+                            changeAddressButton.visibility =
+                                View.VISIBLE // Make the change address button visible
+                        } else {
+                            changeAddressButton.visibility =
+                                View.INVISIBLE // Make the change address button invisible
+                        }
                     } ?: run {
-                        deleteButton.visibility = INVISIBLE // Make the button invisible
+                        deleteButton.visibility = View.INVISIBLE // Make the delete button invisible
+                        changeAddressButton.visibility =
+                            View.INVISIBLE // Make the change address button invisible
                     }
+
 
                 } else if (event.pointerCount > 1) {
                     // More than one finger down, check if at least one finger is on the figure and near the edge
@@ -184,7 +232,7 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        for ((drawable, _) in shapes) {
+        for ((drawable, _, textView) in shapes) {
             // Save the current state of the canvas
             val saveCount = canvas.save()
 
@@ -196,6 +244,22 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
             // Draw the shape on the rotated canvas
             drawable.draw(canvas)
+
+            // Draw the text on the canvas
+            textView?.let {
+                val text = it.text.toString()
+
+                // Calculate the text size based on the drawable size
+                val textSize = min(drawable.bounds.width(), drawable.bounds.height()) / 2f
+
+                val paint = Paint().apply {
+                    color = Color.BLACK
+                    this.textSize = textSize
+                    textAlign = Paint.Align.CENTER
+                }
+
+                canvas.drawText(text, centerX, centerY, paint)
+            }
 
             // Create a path that represents the rotated rectangle
             val path = Path()
@@ -214,7 +278,8 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
         }
     }
 
-    private fun findShapeAt(x: Int, y: Int): Pair<RotatableDrawable, Point>? {
+
+    private fun findShapeAt(x: Int, y: Int): Triple<RotatableDrawable, Point, TextView?>? {
         val shape = shapes.find { (drawable, _) ->
             // Check if the point is within the current bounds of the drawable
             drawable.bounds.contains(x, y)
@@ -230,7 +295,7 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
     fun addShape(resId: Int) {
         val drawable = ContextCompat.getDrawable(context, resId)
         if (drawable != null) {
-            val rotatableDrawable = RotatableDrawable(drawable)
+            val rotatableDrawable = RotatableDrawable(drawable, resId)
             val position = Point(width / 2, height / 2)
             // Set the initial bounds of the drawable to its intrinsic size at the specified position
             rotatableDrawable.setBounds(
@@ -239,7 +304,13 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                 position.x + drawable.intrinsicWidth / 2,
                 position.y + drawable.intrinsicHeight / 2
             )
-            shapes.add(Pair(rotatableDrawable, position))
+
+            if (resId == R.drawable.street) {
+                shapes.add(Triple(rotatableDrawable, position, TextView(context)))
+            } else {
+                shapes.add(Triple(rotatableDrawable, position, null))
+
+            }
         }
         invalidate() // Redraw the view
     }

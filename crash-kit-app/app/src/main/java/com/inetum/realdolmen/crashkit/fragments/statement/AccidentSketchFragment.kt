@@ -29,7 +29,10 @@ class AccidentSketchFragment : Fragment() {
         val view = binding.root
 
         sketchView = view.findViewById(R.id.sketchView)
-        sketchView.setupButton(binding.btnAccidentSketchDelete)
+        sketchView.setupButtons(
+            binding.btnAccidentSketchDelete,
+            binding.btnAccidentSketchChangeAddress
+        )
 
         return view
     }
