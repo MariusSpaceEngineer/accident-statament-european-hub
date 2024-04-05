@@ -8,12 +8,16 @@ import com.inetum.realdolmen.crashkit.R
 class ShapesAdapter(private val onShapeClicked: (Int) -> Unit) :
     RecyclerView.Adapter<ShapesAdapter.ViewHolder>() {
     private val shapeResIds = intArrayOf(
-        R.drawable.personal_car,
-        R.drawable.motorcycle,
-        R.drawable.truck,
+        R.drawable.personal_car_vehicle_a,
+        R.drawable.personal_car_vehicle_b,
+        R.drawable.motorcycle_vehicle_a,
+        R.drawable.motorcycle_vehicle_b,
+        R.drawable.truck_vehicle_a,
+        R.drawable.truck_vehicle_b,
         R.drawable.four_road_junction,
         R.drawable.roundabout,
         R.drawable.street,
+        R.drawable.direction_arrow
         // Add more shapes here...
     )
 
