@@ -3,7 +3,6 @@ package com.inetum.realdolmen.crashkit
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Point
@@ -28,6 +27,7 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
     private val rotations = mutableMapOf<RotatableDrawable, Float>()
 
     private var isScaling: Boolean = false
+    private var isRotating: Boolean = false
 
     private lateinit var deleteButton: Button
 
@@ -91,10 +91,8 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                 }
                 return true
             }
-
         })
 
-    private var isRotating = false
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.actionMasked) {
@@ -216,32 +214,18 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
         }
     }
 
-
     private fun findShapeAt(x: Int, y: Int): Pair<RotatableDrawable, Point>? {
         val shape = shapes.find { (drawable, _) ->
-            // Calculate the rotated bounding box
-            val rotation = rotations[drawable] ?: 0f
-            val centerX = (drawable.bounds.left + drawable.bounds.right) / 2f
-            val centerY = (drawable.bounds.top + drawable.bounds.bottom) / 2f
-            val rotatedBounds = RectF(drawable.bounds)
-            val matrix = Matrix()
-            matrix.setRotate(rotation, centerX, centerY)
-            matrix.mapRect(rotatedBounds)
-
-            // Check if the point is within the rotated bounds of the drawable
-            rotatedBounds.contains(x.toFloat(), y.toFloat())
+            // Check if the point is within the current bounds of the drawable
+            drawable.bounds.contains(x, y)
         }
-        if (shape != null) {
+        if (shape != null)
             Log.i("Shape", "Shape found at ${shape.second.x} -${shape.second.y}")
-            // Remove the shape from its current position and add it to the end of the list
-            shapes.remove(shape)
-            shapes.add(shape)
-        } else {
+        else {
             Log.i("Shape", "Shape not found")
         }
         return shape
     }
-
 
     fun addShape(resId: Int) {
         val drawable = ContextCompat.getDrawable(context, resId)
