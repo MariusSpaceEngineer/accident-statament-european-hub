@@ -17,7 +17,12 @@ class ShapesAdapter(private val onShapeClicked: (Int) -> Unit) :
         R.drawable.four_road_junction,
         R.drawable.roundabout,
         R.drawable.street,
-        R.drawable.direction_arrow
+        R.drawable.direction_arrow,
+        R.drawable.stop_sign,
+        R.drawable.yield_sign,
+        R.drawable.no_entry_sign,
+        R.drawable.traffic_light_red,
+        R.drawable.traffic_light_green
         // Add more shapes here...
     )
 
