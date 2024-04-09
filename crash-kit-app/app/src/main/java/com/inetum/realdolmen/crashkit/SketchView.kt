@@ -7,6 +7,9 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Point
 import android.graphics.RectF
+import android.text.Layout
+import android.text.StaticLayout
+import android.text.TextPaint
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
@@ -17,6 +20,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import java.util.Locale
 import kotlin.math.max
 import kotlin.math.min
 
@@ -247,18 +251,43 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
             // Draw the text on the canvas
             textView?.let {
-                val text = it.text.toString()
+                val text = it.text.toString().uppercase(Locale.getDefault())
 
-                // Calculate the text size based on the drawable size
-                val textSize = min(drawable.bounds.width(), drawable.bounds.height()) / 2f
+                // Adjust the text size based on the drawable size
+                val textSize = min(drawable.bounds.width(), drawable.bounds.height()) / 6f // Adjust this value as needed
 
-                val paint = Paint().apply {
-                    color = Color.BLACK
+                val textPaint = TextPaint().apply {
+                    color = Color.BLUE
                     this.textSize = textSize
                     textAlign = Paint.Align.CENTER
+
                 }
 
-                canvas.drawText(text, centerX, centerY, paint)
+                // Create a StaticLayout for the text
+                val layout = StaticLayout.Builder.obtain(text, 0, text.length, textPaint, drawable.bounds.width())
+                    .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+                    .setLineSpacing(0.0f, 1.0f)
+                    .setIncludePad(false)
+                    .build()
+
+                // Draw the text
+                // Draw the text
+                canvas.save()
+                val textWidth = textPaint.measureText(text)
+                canvas.translate(centerX, centerY - (layout.height / 2f))
+                layout.draw(canvas)
+                canvas.restore()
+
+
+                // Draw a border around the StaticLayout
+                val borderPaint = Paint().apply {
+                    color = Color.BLUE
+                    style = Paint.Style.STROKE
+                    strokeWidth = 3f
+                }
+                canvas.drawRect(centerX - (layout.width / 2), drawable.bounds.top + (drawable.bounds.height() - layout.height) / 2.0f, centerX + (layout.width / 2), drawable.bounds.bottom - (drawable.bounds.height() - layout.height) / 2.0f, borderPaint)
+
+                canvas.restore()
             }
 
             // Create a path that represents the rotated rectangle
@@ -277,7 +306,6 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
             canvas.restoreToCount(saveCount)
         }
     }
-
 
     private fun findShapeAt(x: Int, y: Int): Triple<RotatableDrawable, Point, TextView?>? {
         val shape = shapes.find { (drawable, _) ->
