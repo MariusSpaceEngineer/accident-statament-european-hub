@@ -5,16 +5,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tertiary400"
+    android:screenOrientation="landscape"
     tools:context=".fragments.statement.AccidentSketchFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <com.inetum.realdolmen.crashkit.SketchView
+            android:id="@+id/sketchView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0">
+
+        </com.inetum.realdolmen.crashkit.SketchView>
+
         <Button
             android:id="@+id/btn_accident_sketch_search_shape"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:elevation="1dp"
             android:text="search shape"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -22,49 +39,36 @@
 
         </Button>
 
-        <com.inetum.realdolmen.crashkit.SketchView
-            android:id="@+id/sketchView"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="80dp"
-            android:layout_marginBottom="80dp"
-            android:background="@android:color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_accident_sketch_search_shape"
-            app:layout_constraintVertical_bias="1.0">
-
-        </com.inetum.realdolmen.crashkit.SketchView>
-
-        <Button
-            android:id="@+id/btn_accident_sketch_delete"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="-200dp"
-            android:text="delete shape"
-            android:visibility="gone"
+            android:elevation="1dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/sketchView">
+            app:layout_constraintStart_toStartOf="parent">
 
-        </Button>
+            <Button
+                android:id="@+id/btn_accident_sketch_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:text="delete shape"
+                android:visibility="gone">
 
-        <Button
-            android:id="@+id/btn_accident_sketch_change_address"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="-50dp"
-            android:text="change address"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_accident_sketch_delete">
+            </Button>
 
-        </Button>
+            <Button
+                android:id="@+id/btn_accident_sketch_change_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="change address"
+                android:visibility="gone">
+
+            </Button>
+        </LinearLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
