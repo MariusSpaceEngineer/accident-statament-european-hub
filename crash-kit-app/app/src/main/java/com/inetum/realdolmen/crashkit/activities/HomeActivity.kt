@@ -27,17 +27,16 @@ class HomeActivity : AppCompatActivity() {
         navController.setGraph(R.navigation.bottom_navigation_bar)
         bottomNavigationView.setupWithNavController(navController)
 
+        savedInstanceState?.let {
+            navController.restoreState(it.getBundle("nav_state"))
+        }
+
         if (securedPreferences.isGuest()) {
             val menu = binding.bottomNavigationView.menu
             menu.removeItem(R.id.profileFragment)
         }
 
         setupNavigation(navController, binding)
-
-        // Restore the NavController's state
-        savedInstanceState?.let {
-            navController.restoreState(it.getBundle("nav_state"))
-        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

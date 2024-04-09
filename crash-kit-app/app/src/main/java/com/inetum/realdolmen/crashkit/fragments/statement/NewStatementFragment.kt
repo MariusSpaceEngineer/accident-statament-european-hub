@@ -69,6 +69,12 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
+
+        navController = findNavController()
+
+        savedInstanceState?.let {
+            navController.restoreState(it.getBundle("nav_state"))
+        }
         // Inflate the layout for this fragment
         _binding = FragmentNewStatementBinding.inflate(inflater, container, false)
         val view = binding.root
@@ -87,10 +93,17 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        if(this::navController.isInitialized) {
+            // Save the NavController's state
+            outState.putBundle("nav_state", navController.saveState())
+        }
+        super.onSaveInstanceState(outState)
+    }
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        navController = findNavController()
 
         formHelper = FormHelper(requireContext(), fields)
 
@@ -111,10 +124,11 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
 
             formHelper.validateFields(validationRules)
 
-            if (fields.none { it.error != null }) {
-                // If no errors, navigate to the next fragment
-                navController.navigate(R.id.vehicleANewStatementFragment)
-            }
+//            if (fields.none { it.error != null }) {
+            // If no errors, navigate to the next fragment
+            //navController.navigate(R.id.vehicleANewStatementFragment)
+            navController.navigate(R.id.accidentSketchFragment)
+//            }
         }
 
         binding.btnDateTimePicker.setOnClickListener {
