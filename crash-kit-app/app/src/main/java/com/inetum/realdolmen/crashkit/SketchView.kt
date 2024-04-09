@@ -7,6 +7,7 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Point
 import android.graphics.RectF
+import android.graphics.Typeface
 import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
@@ -260,6 +261,7 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                     color = Color.BLUE
                     this.textSize = textSize
                     textAlign = Paint.Align.CENTER
+                    typeface= Typeface.DEFAULT_BOLD
 
                 }
 
