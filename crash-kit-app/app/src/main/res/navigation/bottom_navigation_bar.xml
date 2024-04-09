@@ -20,4 +20,53 @@
         android:name="com.inetum.realdolmen.crashkit.fragments.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/vehicleANewStatementFragment"
+        android:name="com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleANewStatementFragment"
+        android:label="VehicleANewStatementFragment" />
+    <fragment
+        android:id="@+id/vehicleAInsuranceFragment"
+        android:name="com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleAInsuranceFragment"
+        android:label="VehicleAInsuranceFragment" />
+    <fragment
+        android:id="@+id/vehicleADriverFragment"
+        android:name="com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleADriverFragment"
+        android:label="VehicleADriverFragment" />
+    <fragment
+        android:id="@+id/vehicleACircumstancesFragment"
+        android:name="com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleACircumstancesFragment"
+        android:label="VehicleACircumstancesFragment" />
+    <fragment
+        android:id="@+id/vehicleAMiscellaneousFragment"
+        android:name="com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleAMiscellaneousFragment"
+        android:label="VehicleAMiscellaneousFragment" />
+    <fragment
+        android:id="@+id/vehicleBNewStatementFragment"
+        android:name="com.inetum.realdolmen.crashkit.fragments.statement.vehicle_b.VehicleBNewStatementFragment"
+        android:label="VehicleBNewStatementFragment" />
+    <fragment
+        android:id="@+id/vehicleBInsuranceFragment"
+        android:name="com.inetum.realdolmen.crashkit.fragments.statement.vehicle_b.VehicleBInsuranceFragment"
+        android:label="VehicleBInsuranceFragment" />
+    <fragment
+        android:id="@+id/vehicleBDriverFragment"
+        android:name="com.inetum.realdolmen.crashkit.fragments.statement.vehicle_b.VehicleBDriverFragment"
+        android:label="VehicleBDriverFragment" />
+    <fragment
+        android:id="@+id/vehicleBCircumstancesFragment"
+        android:name="com.inetum.realdolmen.crashkit.fragments.statement.vehicle_b.VehicleBCircumstancesFragment"
+        android:label="VehicleBCircumstancesFragment" />
+    <fragment
+        android:id="@+id/vehicleBMiscellaneousFragment"
+        android:name="com.inetum.realdolmen.crashkit.fragments.statement.vehicle_b.VehicleBMiscellaneousFragment"
+        android:label="VehicleBMiscellaneousFragment" />
+    <fragment
+        android:id="@+id/accidentStatementOverviewFragment"
+        android:name="com.inetum.realdolmen.crashkit.fragments.statement.AccidentStatementOverviewFragment"
+        android:label="AccidentStatementOverviewFragment" />
+    <fragment
+        android:id="@+id/accidentSketchFragment"
+        android:name="com.inetum.realdolmen.crashkit.fragments.statement.AccidentSketchFragment"
+        android:label="fragment_accident_sketch"
+        tools:layout="@layout/fragment_accident_sketch" />
 </navigation>

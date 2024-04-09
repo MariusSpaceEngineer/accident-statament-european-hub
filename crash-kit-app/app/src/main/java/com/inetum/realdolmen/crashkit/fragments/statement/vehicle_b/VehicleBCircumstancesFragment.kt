@@ -7,9 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleBCircumstancesBinding
-import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleADriverFragment
 import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
@@ -17,6 +18,7 @@ import com.inetum.realdolmen.crashkit.utils.printBackStack
 
 class VehicleBCircumstancesFragment : Fragment(), StatementDataHandler {
     private lateinit var model: NewStatementViewModel
+    private lateinit var navController: NavController
 
     private var _binding: FragmentVehicleBCircumstancesBinding? = null
     private val binding get() = _binding!!
@@ -47,6 +49,8 @@ class VehicleBCircumstancesFragment : Fragment(), StatementDataHandler {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        navController = findNavController()
+
         requireActivity().supportFragmentManager.printBackStack()
 
         updateUIFromViewModel(model)
@@ -54,17 +58,13 @@ class VehicleBCircumstancesFragment : Fragment(), StatementDataHandler {
         binding.btnStatementAccidentPrevious.setOnClickListener {
             updateViewModelFromUI(model)
 
-            fragmentNavigationHelper.popBackStackInclusive("vehicle_b_circumstances_fragment")
+            navController.popBackStack()
         }
 
         binding.btnStatementAccidentNext.setOnClickListener {
             updateViewModelFromUI(model)
 
-            fragmentNavigationHelper.navigateToFragment(
-                R.id.fragmentContainerView,
-                VehicleBMiscellaneousFragment(),
-                "vehicle_b_miscellaneous_fragment"
-            )
+            navController.navigate(R.id.vehicleBMiscellaneousFragment)
         }
     }
 

@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.inetum.realdolmen.crashkit.CrashKitApp
@@ -19,7 +20,6 @@ import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleANewStatementBi
 import com.inetum.realdolmen.crashkit.dto.InsuranceCertificate
 import com.inetum.realdolmen.crashkit.dto.PolicyHolderResponse
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
-import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
@@ -34,6 +34,7 @@ import retrofit2.Response
 
 class VehicleANewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigure {
     private lateinit var model: NewStatementViewModel
+    private lateinit var navController: NavController
 
     private var _binding: FragmentVehicleANewStatementBinding? = null
     private val binding get() = _binding!!
@@ -44,10 +45,6 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
     private var fields: List<TextView> = listOf()
     private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = listOf()
     private lateinit var formHelper: FormHelper
-
-    private val fragmentNavigationHelper by lazy {
-        FragmentNavigationHelper(requireActivity().supportFragmentManager)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,6 +80,9 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        navController= findNavController()
+
         formHelper = FormHelper(requireContext(), fields)
 
         setupValidation()
@@ -108,9 +108,7 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
         binding.btnStatementAccidentPrevious.setOnClickListener {
             updateViewModelFromUI(model)
 
-            findNavController().apply {
-                navigate(R.id.newStatementFragment)
-            }
+            navController.popBackStack()
         }
 
         binding.btnStatementAccidentNext.setOnClickListener {
@@ -121,11 +119,7 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
             formHelper.validateFields(validationRules)
 
             if (fields.none { it.error != null }) {
-                fragmentNavigationHelper.navigateToFragment(
-                    R.id.fragmentContainerView,
-                    VehicleAInsuranceFragment(),
-                    "vehicle_a_insurance_fragment"
-                )
+                navController.navigate(R.id.vehicleAInsuranceFragment)
             }
         }
     }

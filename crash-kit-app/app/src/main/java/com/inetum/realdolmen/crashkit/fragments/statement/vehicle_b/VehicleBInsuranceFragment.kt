@@ -9,11 +9,12 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleBInsuranceBinding
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
-import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
@@ -28,6 +29,7 @@ import java.time.ZoneId
 
 class VehicleBInsuranceFragment : Fragment(), StatementDataHandler, ValidationConfigure {
     private lateinit var model: NewStatementViewModel
+    private lateinit var navController: NavController
 
     private var _binding: FragmentVehicleBInsuranceBinding? = null
     private val binding get() = _binding!!
@@ -35,10 +37,6 @@ class VehicleBInsuranceFragment : Fragment(), StatementDataHandler, ValidationCo
     private var fields: List<TextView> = listOf()
     private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = listOf()
     private lateinit var formHelper: FormHelper
-
-    private val fragmentNavigationHelper by lazy {
-        FragmentNavigationHelper(requireActivity().supportFragmentManager)
-    }
 
     private val changeSupport = PropertyChangeSupport(this)
 
@@ -94,6 +92,8 @@ class VehicleBInsuranceFragment : Fragment(), StatementDataHandler, ValidationCo
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        navController = findNavController()
+
         formHelper = FormHelper(requireContext(), fields)
 
         setupValidation()
@@ -105,7 +105,7 @@ class VehicleBInsuranceFragment : Fragment(), StatementDataHandler, ValidationCo
         binding.btnStatementAccidentPrevious.setOnClickListener {
             updateViewModelFromUI(model)
 
-            fragmentNavigationHelper.popBackStackInclusive("vehicle_b_insurance_fragment")
+            navController.popBackStack()
         }
 
         binding.btnStatementAccidentNext.setOnClickListener {
@@ -116,11 +116,7 @@ class VehicleBInsuranceFragment : Fragment(), StatementDataHandler, ValidationCo
             formHelper.validateFields(validationRules)
 
             if (fields.none { it.error != null }) {
-                fragmentNavigationHelper.navigateToFragment(
-                    R.id.fragmentContainerView,
-                    VehicleBDriverFragment(),
-                    "vehicle_b_driver_fragment"
-                )
+                navController.navigate(R.id.vehicleBDriverFragment)
             }
         }
 

@@ -7,22 +7,20 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleACircumstancesBinding
-import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
+import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.printBackStack
 
 class VehicleACircumstancesFragment : Fragment(), StatementDataHandler {
     private lateinit var model: NewStatementViewModel
+    private lateinit var navController: NavController
 
     private var _binding: FragmentVehicleACircumstancesBinding? = null
     private val binding get() = _binding!!
-
-    private val fragmentNavigationHelper by lazy {
-        FragmentNavigationHelper(requireActivity().supportFragmentManager)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +42,8 @@ class VehicleACircumstancesFragment : Fragment(), StatementDataHandler {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        navController= findNavController()
+
         requireActivity().supportFragmentManager.printBackStack()
 
         updateUIFromViewModel(model)
@@ -51,17 +51,13 @@ class VehicleACircumstancesFragment : Fragment(), StatementDataHandler {
         binding.btnStatementAccidentPrevious.setOnClickListener {
             updateViewModelFromUI(model)
 
-            fragmentNavigationHelper.popBackStackInclusive("vehicle_a_circumstances_fragment")
+            navController.popBackStack()
         }
 
         binding.btnStatementAccidentNext.setOnClickListener {
             updateViewModelFromUI(model)
 
-            fragmentNavigationHelper.navigateToFragment(
-                R.id.fragmentContainerView,
-                VehicleAMiscellaneousFragment(),
-                "vehicle_a_miscellaneous_fragment"
-            )
+            navController.navigate(R.id.vehicleAMiscellaneousFragment)
         }
     }
 

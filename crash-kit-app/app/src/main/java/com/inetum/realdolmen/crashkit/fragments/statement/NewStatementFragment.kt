@@ -13,6 +13,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -22,9 +24,7 @@ import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentNewStatementBinding
 import com.inetum.realdolmen.crashkit.dto.LocationCoordinatesData
 import com.inetum.realdolmen.crashkit.dto.RequestResponse
-import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleANewStatementFragment
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
-import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
 import com.inetum.realdolmen.crashkit.utils.DateTimePicker
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
@@ -41,6 +41,7 @@ import retrofit2.Response
 import java.time.LocalDateTime
 
 class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigure {
+    private lateinit var navController: NavController
     private lateinit var model: NewStatementViewModel
     private lateinit var formHelper: FormHelper
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -50,10 +51,6 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
 
     private var fields: List<TextView> = listOf()
     private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = listOf()
-
-    private val fragmentNavigationHelper by lazy {
-        FragmentNavigationHelper(requireActivity().supportFragmentManager)
-    }
 
     private val dateTimePicker by lazy {
         DateTimePicker(requireContext())
@@ -93,6 +90,8 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        navController = findNavController()
+
         formHelper = FormHelper(requireContext(), fields)
 
         setupValidation()
@@ -114,11 +113,7 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
 
             if (fields.none { it.error != null }) {
                 // If no errors, navigate to the next fragment
-                fragmentNavigationHelper.navigateToFragment(
-                    R.id.fragmentContainerView,
-                    VehicleANewStatementFragment(),
-                    "vehicle_a_new_statement_fragment"
-                )
+                navController.navigate(R.id.vehicleANewStatementFragment)
             }
         }
 

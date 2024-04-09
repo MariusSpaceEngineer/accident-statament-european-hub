@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import com.inetum.realdolmen.crashkit.CrashKitApp
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentAccidentStatementOverviewBinding
@@ -54,6 +55,7 @@ import retrofit2.Response
 
 class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
     private lateinit var model: NewStatementViewModel
+    private lateinit var navController: NavController
 
     private var _binding: FragmentAccidentStatementOverviewBinding? = null
     private val binding get() = _binding!!

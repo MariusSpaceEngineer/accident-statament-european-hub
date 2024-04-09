@@ -12,6 +12,7 @@ import com.inetum.realdolmen.crashkit.databinding.ActivityHomeBinding
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding
+    private lateinit var navController: NavController
 
     private val securedPreferences = CrashKitApp.securedPreferences
 
@@ -22,8 +23,8 @@ class HomeActivity : AppCompatActivity() {
         setContentView(view)
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-        val navController = findNavController(R.id.fragmentContainerView)
-
+        navController = findNavController(R.id.fragmentContainerView)
+        navController.setGraph(R.navigation.bottom_navigation_bar)
         bottomNavigationView.setupWithNavController(navController)
 
         if (securedPreferences.isGuest()) {
@@ -32,6 +33,17 @@ class HomeActivity : AppCompatActivity() {
         }
 
         setupNavigation(navController, binding)
+
+        // Restore the NavController's state
+        savedInstanceState?.let {
+            navController.restoreState(it.getBundle("nav_state"))
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        // Save the NavController's state
+        outState.putBundle("nav_state", navController.saveState())
+        super.onSaveInstanceState(outState)
     }
 
     private fun setupNavigation(navController: NavController, binding: ActivityHomeBinding) {
@@ -56,6 +68,4 @@ class HomeActivity : AppCompatActivity() {
             }
         }
     }
-
 }
-

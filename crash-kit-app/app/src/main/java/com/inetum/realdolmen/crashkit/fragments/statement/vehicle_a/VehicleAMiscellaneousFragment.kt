@@ -14,21 +14,21 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
-import com.inetum.realdolmen.crashkit.adapters.ImageAdapter
 import com.inetum.realdolmen.crashkit.R
+import com.inetum.realdolmen.crashkit.adapters.ImageAdapter
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleAMiscellaneousBinding
-import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_b.VehicleBNewStatementFragment
 import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
-import com.inetum.realdolmen.crashkit.utils.printBackStack
 
 class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
     private lateinit var model: NewStatementViewModel
+    private lateinit var navController: NavController
 
     private var _binding: FragmentVehicleAMiscellaneousBinding? = null
     private val binding get() = _binding!!
@@ -103,29 +103,20 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().supportFragmentManager.printBackStack()
+        navController = findNavController()
 
         updateUIFromViewModel(model)
 
         binding.btnStatementAccidentPrevious.setOnClickListener {
             updateViewModelFromUI(model)
 
-            requireActivity().supportFragmentManager.apply {
-                popBackStack(
-                    "vehicle_a_miscellaneous_fragment",
-                    FragmentManager.POP_BACK_STACK_INCLUSIVE
-                )
-            }
+            navController.popBackStack()
         }
 
         binding.btnStatementAccidentNext.setOnClickListener {
             updateViewModelFromUI(model)
 
-            fragmentNavigationHelper.navigateToFragment(
-                R.id.fragmentContainerView,
-                VehicleBNewStatementFragment(),
-                "vehicle_b_new_statement_fragment"
-            )
+            navController.navigate(R.id.vehicleBNewStatementFragment)
         }
 
         binding.btnStatementAccidentPicture.setOnClickListener {

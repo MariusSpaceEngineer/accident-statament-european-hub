@@ -9,15 +9,15 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleADriverBinding
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
-import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
-import com.inetum.realdolmen.crashkit.utils.printBackStack
 import com.inetum.realdolmen.crashkit.utils.to24Format
 import com.inetum.realdolmen.crashkit.utils.toLocalDate
 import java.beans.PropertyChangeListener
@@ -28,6 +28,7 @@ import java.time.ZoneId
 
 class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfigure {
     private lateinit var model: NewStatementViewModel
+    private lateinit var navController: NavController
 
     private var _binding: FragmentVehicleADriverBinding? = null
     private val binding get() = _binding!!
@@ -36,9 +37,6 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
     private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = listOf()
     private lateinit var formHelper: FormHelper
 
-    private val fragmentNavigationHelper by lazy {
-        FragmentNavigationHelper(requireActivity().supportFragmentManager)
-    }
 
     private val changeSupport = PropertyChangeSupport(this)
 
@@ -94,19 +92,18 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        navController = findNavController()
+
         formHelper = FormHelper(requireContext(), fields)
 
         setupValidation()
-
-        requireActivity().supportFragmentManager.printBackStack()
 
         updateUIFromViewModel(model)
 
         binding.btnStatementAccidentPrevious.setOnClickListener {
             updateViewModelFromUI(model)
 
-            fragmentNavigationHelper.popBackStackInclusive("vehicle_a_driver_fragment")
-
+            navController.popBackStack()
         }
 
         binding.btnStatementAccidentNext.setOnClickListener {
@@ -118,11 +115,7 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
 
             if (fields.none { it.error != null }) {
                 // If no errors, navigate to the next fragment
-                fragmentNavigationHelper.navigateToFragment(
-                    R.id.fragmentContainerView,
-                    VehicleACircumstancesFragment(),
-                    "vehicle_a_circumstances_fragment"
-                )
+                navController.navigate(R.id.vehicleACircumstancesFragment)
             }
         }
 

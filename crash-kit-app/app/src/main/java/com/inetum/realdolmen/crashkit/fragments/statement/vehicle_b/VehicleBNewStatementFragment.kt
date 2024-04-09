@@ -16,6 +16,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.zxing.integration.android.IntentIntegrator
@@ -23,7 +25,6 @@ import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleBNewStatementBinding
 import com.inetum.realdolmen.crashkit.dto.PolicyHolderVehicleBResponse
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
-import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
@@ -33,6 +34,7 @@ import com.journeyapps.barcodescanner.CaptureActivity
 
 class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigure {
     private lateinit var model: NewStatementViewModel
+    private lateinit var navController: NavController
 
     private var _binding: FragmentVehicleBNewStatementBinding? = null
     private val binding get() = _binding!!
@@ -40,10 +42,6 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, Validatio
     private var fields: List<TextView> = listOf()
     private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = listOf()
     private lateinit var formHelper: FormHelper
-
-    private val fragmentNavigationHelper by lazy {
-        FragmentNavigationHelper(requireActivity().supportFragmentManager)
-    }
 
     private val cameraPermissionRequest = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -103,6 +101,8 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, Validatio
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        navController = findNavController()
+
         formHelper = FormHelper(requireContext(), fields)
 
         setupValidation()
@@ -114,7 +114,7 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, Validatio
         binding.btnStatementAccidentPrevious.setOnClickListener {
             updateViewModelFromUI(model)
 
-            fragmentNavigationHelper.popBackStackInclusive("vehicle_b_new_statement_fragment")
+            navController.popBackStack()
         }
 
         binding.btnStatementAccidentNext.setOnClickListener {
@@ -125,11 +125,7 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, Validatio
             formHelper.validateFields(validationRules)
 
             if (fields.none { it.error != null }) {
-                fragmentNavigationHelper.navigateToFragment(
-                    R.id.fragmentContainerView,
-                    VehicleBInsuranceFragment(),
-                    "vehicle_b_insurance_fragment"
-                )
+                navController.navigate(R.id.vehicleBInsuranceFragment)
             }
         }
 
