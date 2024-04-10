@@ -64,7 +64,10 @@
     <string name="share_insurance_generate_qr_code_button">Generate QR-Code</string>
     <string name="profile_change_insurance_button">Change Insurance</string>
     <string name="import_other_insurance_information_button">Import other driver insurance information</string>
-    <string name="take_picture">Take Picture</string>
+    <string name="take_picture_button">Take Picture</string>
+    <string name="search_shape_button">Search Shape</string>
+    <string name="delete_shape_button">Delete Shape</string>
+    <string name="change_address_button">Change Address</string>
     <string name="edit_button">Edit</string>
     <string name="cancel_button">Cancel</string>
     <string name="update_button">Update</string>
