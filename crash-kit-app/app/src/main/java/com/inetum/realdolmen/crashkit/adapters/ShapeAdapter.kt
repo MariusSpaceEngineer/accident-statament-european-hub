@@ -28,14 +28,17 @@ class ShapesAdapter(private val onShapeClicked: (Int, Int) -> Unit) :
     ).toList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val displayMetrics = parent.context.resources.displayMetrics
+        val screenWidth = displayMetrics.widthPixels
+        val imageViewWidth = screenWidth / 3 // for three images per row
+        val imageViewHeight = 600 // replace with desired height
+
         val imageView = ImageView(parent.context).apply {
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
+            layoutParams = ViewGroup.LayoutParams(imageViewWidth, imageViewHeight)
         }
         return ViewHolder(imageView)
     }
+
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val (resId, priority) = shapeResIds[position]

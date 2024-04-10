@@ -15,6 +15,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.accidentsketch.SketchView
 import com.inetum.realdolmen.crashkit.adapters.ShapesAdapter
+import com.inetum.realdolmen.crashkit.adapters.SpacesItemDecoration
 import com.inetum.realdolmen.crashkit.databinding.FragmentAccidentSketchBinding
 
 class AccidentSketchFragment : Fragment() {
@@ -74,6 +75,7 @@ class AccidentSketchFragment : Fragment() {
             val dialog = Dialog(requireContext(), R.style.Theme_CrashKit)
             val recyclerView = RecyclerView(requireContext())
             recyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
+            recyclerView.addItemDecoration(SpacesItemDecoration(20))
             recyclerView.adapter = ShapesAdapter { drawableResId, priority ->
                 sketchView.addShape(drawableResId, priority)
                 dialog.dismiss()
