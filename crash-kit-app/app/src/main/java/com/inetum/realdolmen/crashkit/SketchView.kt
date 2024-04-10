@@ -47,6 +47,7 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
             currentShape?.let { shapes.remove(it) }
             currentShape = null
             deleteButton.visibility = INVISIBLE // Make the button invisible
+            changeAddressButton.visibility = INVISIBLE // Make the button invisible
             invalidate() // Redraw the view
         }
         changeAddressButton = changeAddressBtn
@@ -67,6 +68,7 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
                     currentShape?.let {
                         currentShape?.third?.text = textView.text
+                        invalidate() // Redraw the view
                     }
 
                     // Dismiss the dialog
