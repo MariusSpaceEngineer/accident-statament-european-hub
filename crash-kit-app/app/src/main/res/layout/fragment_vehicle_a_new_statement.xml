@@ -59,7 +59,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:enabled="false"
                     android:text="@string/import_insurance_information_button"
                     android:textColor="@color/title" />
 

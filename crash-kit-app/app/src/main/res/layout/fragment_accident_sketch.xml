@@ -26,48 +26,76 @@
 
         </com.inetum.realdolmen.crashkit.accidentsketch.SketchView>
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_accident_sketch_search_shape"
-            android:layout_width="wrap_content"
+            style="@style/PrimaryRoundedButton"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:elevation="1dp"
-            android:text="search shape"
+            android:padding="10dp"
+            android:text="@string/search_shape_button"
+            android:textColor="@color/title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent" />
 
-        </Button>
+        <ImageView
+            android:id="@+id/iv_accident_sketch_previous"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            android:elevation="1dp"
+            android:src="@drawable/arrow_circle_left"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="ContentDescription" />
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:id="@+id/ll_accident_sketch"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
             android:elevation="1dp"
             android:gravity="center_horizontal"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintEnd_toStartOf="@id/iv_accident_sketch_next"
+            app:layout_constraintStart_toEndOf="@id/iv_accident_sketch_previous">
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_accident_sketch_delete"
-                android:layout_width="wrap_content"
+                style="@style/AccidentSketchTopRoundedDeleteButton"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="20dp"
-                android:text="delete shape"
-                android:visibility="gone">
+                android:layout_marginEnd="20dp"
+                android:padding="10dp"
+                android:text="@string/delete_shape_button"
+                android:textColor="@color/title"
+                android:visibility="gone" />
 
-            </Button>
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_accident_sketch_change_address"
-                android:layout_width="wrap_content"
+                style="@style/AccidentSketchTopRoundedChangeAddressButton"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:text="change address"
-                android:visibility="gone">
-
-            </Button>
+                android:padding="10dp"
+                android:text="@string/change_address_button"
+                android:textColor="@color/title"
+                android:visibility="gone" />
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_accident_sketch_next"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/arrow_circle_right"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="ContentDescription" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -85,7 +85,7 @@
                     android:layout_marginEnd="20sp"
                     android:paddingLeft="65dp"
                     android:paddingRight="65dp"
-                    android:text="@string/take_picture"
+                    android:text="@string/take_picture_button"
                     tools:ignore="ButtonStyle" />
 
                 <androidx.viewpager2.widget.ViewPager2
