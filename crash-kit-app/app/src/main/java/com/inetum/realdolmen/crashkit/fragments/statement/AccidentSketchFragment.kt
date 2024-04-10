@@ -2,11 +2,14 @@ package com.inetum.realdolmen.crashkit.fragments.statement
 
 import android.app.Dialog
 import android.content.pm.ActivityInfo
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -17,6 +20,7 @@ import com.inetum.realdolmen.crashkit.accidentsketch.SketchView
 import com.inetum.realdolmen.crashkit.adapters.ShapesAdapter
 import com.inetum.realdolmen.crashkit.adapters.SpacesItemDecoration
 import com.inetum.realdolmen.crashkit.databinding.FragmentAccidentSketchBinding
+import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 
 class AccidentSketchFragment : Fragment() {
 
@@ -28,13 +32,16 @@ class AccidentSketchFragment : Fragment() {
     private lateinit var sketchView: SketchView
     private lateinit var navBar: BottomNavigationView
 
+    private val viewModel: NewStatementViewModel by activityViewModels()
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        if(this::navController.isInitialized) {
+        if (this::navController.isInitialized) {
             // Save the NavController's state
             outState.putBundle("nav_state", navController.saveState())
         }
@@ -50,10 +57,20 @@ class AccidentSketchFragment : Fragment() {
         val view = binding.root
 
         sketchView = view.findViewById(R.id.sketchView)
+        sketchView.viewModel = viewModel
         sketchView.setupButtons(
             binding.btnAccidentSketchDelete,
             binding.btnAccidentSketchChangeAddress
         )
+        viewModel.accidentSketchShapes.observe(viewLifecycleOwner) { newShapes ->
+            // Only add new shapes
+            newShapes.forEach { newShape ->
+                if (newShape !in sketchView.shapes) {
+                    sketchView.shapes.add(newShape)
+                }
+            }
+            sketchView.invalidate()
+        }
 
         return view
     }
@@ -85,6 +102,25 @@ class AccidentSketchFragment : Fragment() {
             dialog.show()
         }
 
+        binding.ivAccidentSketchPrevious.setOnClickListener {
+            val sketch = createBitmapFromView(sketchView)
+            viewModel.statementData.value?.apply {
+                viewModel.statementData.value?.accidentSketch = sketch
+            }
+            navController.popBackStack()
+        }
+
+
+        binding.ivAccidentSketchNext.setOnClickListener {
+            val sketch = createBitmapFromView(sketchView)
+            viewModel.statementData.value?.apply {
+                viewModel.statementData.value?.accidentSketch = sketch
+            }
+            navController.navigate(R.id.accidentStatementOverviewFragment)
+        }
+
+
+
     }
 
     override fun onDestroyView() {
@@ -92,4 +128,12 @@ class AccidentSketchFragment : Fragment() {
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
 
     }
+
+    fun createBitmapFromView(view: View): Bitmap {
+        val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        view.draw(canvas)
+        return bitmap
+    }
+
 }

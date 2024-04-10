@@ -23,13 +23,14 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.inetum.realdolmen.crashkit.R
+import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.RotationGestureDetector
 import java.util.Locale
 import kotlin.math.max
 import kotlin.math.min
 
 class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
-    private val shapes = mutableListOf<Triple<IAccidentDrawable, Point, TextView?>>()
+    val shapes = mutableListOf<Triple<IAccidentDrawable, Point, TextView?>>()
     private var currentShape: Triple<IAccidentDrawable, Point, TextView?>? = null
 
     private var touchOffset = Point()
@@ -42,6 +43,10 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     private lateinit var deleteButton: Button
     private lateinit var changeAddressButton: Button
+
+    private lateinit var _viewModel: NewStatementViewModel
+
+    var viewModel: NewStatementViewModel? = null
 
     fun setupButtons(deleteBtn: Button, changeAddressBtn: Button) {
         deleteButton = deleteBtn
@@ -376,10 +381,12 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
             if (resId == R.drawable.road_90 || resId == R.drawable.road_180) {
                 shapes.add(Triple(accidentDrawable, position, TextView(context)))
+
             } else {
                 shapes.add(Triple(accidentDrawable, position, null))
-
             }
+
+            viewModel?.accidentSketchShapes?.value = shapes
         }
         invalidate() // Redraw the view
     }

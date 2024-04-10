@@ -1,14 +1,21 @@
 package com.inetum.realdolmen.crashkit.utils
 
 import android.graphics.Bitmap
+import android.graphics.Point
+import android.widget.TextView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.inetum.realdolmen.crashkit.accidentsketch.IAccidentDrawable
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 class NewStatementViewModel : ViewModel() {
     val statementData: MutableLiveData<StatementData> by lazy {
         MutableLiveData<StatementData>(StatementData())
+    }
+
+    val accidentSketchShapes: MutableLiveData<List<Triple<IAccidentDrawable, Point, TextView?>>> by lazy {
+        MutableLiveData<List<Triple<IAccidentDrawable, Point, TextView?>>>()
     }
 }
 
@@ -118,5 +125,6 @@ data class StatementData(
     var vehicleBNotObservedSignRedLight: Boolean = false,
     var vehicleBAccidentPhotos: MutableList<Bitmap>? = null,
     var vehicleBRemarks: String = "",
-    var vehicleBDamageDescription: String = ""
+    var vehicleBDamageDescription: String = "",
+    var accidentSketch: Bitmap? = null
 )
