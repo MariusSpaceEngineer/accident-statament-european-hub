@@ -92,9 +92,7 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
         updateUIFromViewModel(model)
 
         //Disable button if user is not logged in
-        if (!securedPreferences.isGuest()) {
-            binding.btnStatementVehicleAImportInsuranceInformation.isEnabled = true
-        }
+        binding.btnStatementVehicleAImportInsuranceInformation.isEnabled = !securedPreferences.isGuest()
 
         binding.btnStatementVehicleAImportInsuranceInformation.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
