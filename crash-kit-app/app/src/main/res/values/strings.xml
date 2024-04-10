@@ -128,4 +128,8 @@
     <string name="company_name">Company Name:</string>
     <string name="agency_name">Agency Name:</string>
 
+<!--    Dialogs-->
+    <string name="accident_sketch_change_address_dialog">Enter Address</string>
+    <string name="ok">OK</string>
+
 </resources>
