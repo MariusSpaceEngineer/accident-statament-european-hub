@@ -5,6 +5,7 @@
 
     <color name="primary">#2D5C7E</color>
     <color name="primary900">#1F3C52</color>
+    <color name="primary900_disabled">#801F3C52</color>
     <color name="primary800">#2A4F6B</color>
     <color name="primary700">#386283</color>
     <color name="primary600">#4A769A</color>
@@ -20,6 +21,7 @@
     <color name="secondary800">#803307</color>
     <color name="secondary700">#9D420F</color>
     <color name="secondary600">#B8541F</color>
+    <color name="secondary600_disabled">#80B8541F</color>
     <color name="secondary500">#D06934</color>
     <color name="secondary400">#E3804E</color>
     <color name="secondary300">#F39A6E</color>
