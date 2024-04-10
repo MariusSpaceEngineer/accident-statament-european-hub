@@ -1,4 +1,4 @@
-package com.inetum.realdolmen.crashkit
+package com.inetum.realdolmen.crashkit.accidentsketch
 
 import android.content.Context
 import android.graphics.Canvas
@@ -8,6 +8,7 @@ import android.graphics.Path
 import android.graphics.Point
 import android.graphics.RectF
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
@@ -21,13 +22,15 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.inetum.realdolmen.crashkit.R
+import com.inetum.realdolmen.crashkit.utils.RotationGestureDetector
 import java.util.Locale
 import kotlin.math.max
 import kotlin.math.min
 
 class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
-    private val shapes = mutableListOf<Triple<RotatableDrawable, Point, TextView?>>()
-    private var currentShape: Triple<RotatableDrawable, Point, TextView?>? = null
+    private val shapes = mutableListOf<Triple<IAccidentDrawable, Point, TextView?>>()
+    private var currentShape: Triple<IAccidentDrawable, Point, TextView?>? = null
 
     private var touchOffset = Point()
     private var mScaleFactor = 1f
@@ -97,7 +100,8 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                 mScaleFactor = max(0.1f, min(mScaleFactor, 5.0f))
 
                 Log.d("SketchView", "onScale called with scale factor ${detector.scaleFactor}")
-                currentShape?.let { (drawable, position) ->
+                currentShape?.let { (accidentDrawable, position) ->
+                    val drawable = accidentDrawable as Drawable
 
                     // Calculate the new size of the drawable
                     var newWidth = (drawable.intrinsicWidth * mScaleFactor).toInt()
@@ -127,12 +131,14 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
             override fun onRotation(detector: RotationGestureDetector?): Boolean {
                 Log.i("rotate", "rotation tiggered")
                 currentShape?.let { (drawable, _) ->
-                    // Update the rotation angle of the drawable
-                    val rotation = detector?.angle ?: 0f
-                    Log.i("angle", rotation.toString())
-                    drawable.setRotation(rotation)
+                    if (drawable is RotatableDrawable) {
+                        // Update the rotation angle of the drawable
+                        val rotation = detector?.angle ?: 0f
+                        Log.i("angle", rotation.toString())
+                        drawable.setRotation(rotation)
 
-                    invalidate()
+                        invalidate()
+                    }
                 }
                 return true
             }
@@ -146,19 +152,21 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                     // One finger down, start a move gesture
                     currentShape = findShapeAt(event.x.toInt(), event.y.toInt())
                     currentShape?.let { (drawable, position) ->
+
                         touchOffset.set(event.x.toInt() - position.x, event.y.toInt() - position.y)
-                        deleteButton.visibility = View.VISIBLE // Make the delete button visible
-                        if (drawable.resId == R.drawable.street) {
+                        deleteButton.visibility = VISIBLE // Make the delete button visible
+
+                        if (drawable.resId == R.drawable.road_90 || drawable.resId == R.drawable.road_180) {
                             changeAddressButton.visibility =
-                                View.VISIBLE // Make the change address button visible
+                                VISIBLE // Make the change address button visible
                         } else {
                             changeAddressButton.visibility =
-                                View.INVISIBLE // Make the change address button invisible
+                                INVISIBLE // Make the change address button invisible
                         }
                     } ?: run {
-                        deleteButton.visibility = View.INVISIBLE // Make the delete button invisible
+                        deleteButton.visibility = INVISIBLE // Make the delete button invisible
                         changeAddressButton.visibility =
-                            View.INVISIBLE // Make the change address button invisible
+                            INVISIBLE // Make the change address button invisible
                     }
 
 
@@ -171,12 +179,12 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                         (isNearEdge(
                             event.getX(0).toInt(),
                             event.getY(0).toInt(),
-                            firstFingerShape.first
+                            firstFingerShape.first as Drawable
                         ) ||
                                 isNearEdge(
                                     event.getX(1).toInt(),
                                     event.getY(1).toInt(),
-                                    firstFingerShape.first
+                                    firstFingerShape.first as Drawable
                                 ))
                     ) {
                         Log.i("Figure", "at least one finger near the edge of the shape")
@@ -185,7 +193,7 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                         isScaling = true
                         isRotating = false
                         scaleGestureDetector.onTouchEvent(event)
-                    } else if (currentShape != null) {
+                    } else if (currentShape != null && currentShape!!.first is RotatableDrawable) {
                         // Two fingers down, but not near the edge, start a rotation gesture
                         isScaling = false
                         isRotating = true
@@ -197,7 +205,10 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
             MotionEvent.ACTION_MOVE -> {
                 if (event.pointerCount == 1 && !isScaling && !isRotating) {
                     // One finger is moving, move the shape
-                    currentShape?.let { (drawable, position) ->
+                    currentShape?.let { (accidentDrawable, position) ->
+
+                        val drawable = accidentDrawable as Drawable
+
                         // Calculate the new position
                         val newX = event.x.toInt() - touchOffset.x
                         val newY = event.y.toInt() - touchOffset.y
@@ -239,7 +250,10 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        for ((drawable, _, textView) in shapes) {
+        for ((accidentDrawable, _, textView) in shapes) {
+            val resId = accidentDrawable.resId
+            val drawable = accidentDrawable as Drawable
+
             // Save the current state of the canvas
             val saveCount = canvas.save()
 
@@ -257,18 +271,26 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                 val text = it.text.toString().uppercase(Locale.getDefault())
 
                 // Adjust the text size based on the drawable size
-                val textSize = min(drawable.bounds.width(), drawable.bounds.height()) / 6f // Adjust this value as needed
+                val textSize = min(
+                    drawable.bounds.width(),
+                    drawable.bounds.height()
+                ) / 8f // Adjust this value as needed
 
                 val textPaint = TextPaint().apply {
                     color = Color.BLUE
                     this.textSize = textSize
                     textAlign = Paint.Align.CENTER
-                    typeface= Typeface.DEFAULT_BOLD
-
+                    typeface = Typeface.DEFAULT_BOLD
                 }
 
                 // Create a StaticLayout for the text
-                val layout = StaticLayout.Builder.obtain(text, 0, text.length, textPaint, drawable.bounds.width())
+                val layout = StaticLayout.Builder.obtain(
+                    text,
+                    0,
+                    text.length,
+                    textPaint,
+                    drawable.bounds.width()
+                )
                     .setAlignment(Layout.Alignment.ALIGN_NORMAL)
                     .setLineSpacing(0.0f, 1.0f)
                     .setIncludePad(false)
@@ -276,22 +298,22 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
                 // Draw the text
                 canvas.save()
-                val textWidth = textPaint.measureText(text)
-                canvas.translate(centerX, centerY - (layout.height / 2f))
+
+                if (resId == R.drawable.road_180) {
+                    // Position the text on the left side of the drawable
+                    canvas.translate(
+                        centerX - (drawable.bounds.width()),
+                        centerY - (layout.height / 2f)
+                    )
+                } else if (resId == R.drawable.road_90) {
+                    // Position the text under the drawable
+                    canvas.translate(centerX, centerY + (drawable.bounds.height() / 2))
+                }
+
                 layout.draw(canvas)
                 canvas.restore()
-
-
-                // Draw a border around the StaticLayout
-                val borderPaint = Paint().apply {
-                    color = Color.BLUE
-                    style = Paint.Style.STROKE
-                    strokeWidth = 3f
-                }
-                canvas.drawRect(centerX - (layout.width / 2), drawable.bounds.top + (drawable.bounds.height() - layout.height) / 2.0f, centerX + (layout.width / 2), drawable.bounds.bottom - (drawable.bounds.height() - layout.height) / 2.0f, borderPaint)
-
-                canvas.restore()
             }
+
 
             // Create a path that represents the rotated rectangle
             val path = Path()
@@ -310,8 +332,10 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
         }
     }
 
-    private fun findShapeAt(x: Int, y: Int): Triple<RotatableDrawable, Point, TextView?>? {
-        val shapesAtPoint = shapes.filter { (drawable, _) ->
+    private fun findShapeAt(x: Int, y: Int): Triple<IAccidentDrawable, Point, TextView?>? {
+        val shapesAtPoint = shapes.filter { (accidentDrawable, _) ->
+            val drawable = accidentDrawable as Drawable
+
             // Check if the point is within the current bounds of the drawable
             drawable.bounds.contains(x, y)
         }
@@ -331,20 +355,29 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
     fun addShape(resId: Int, priority: Int) {
         val drawable = ContextCompat.getDrawable(context, resId)
         if (drawable != null) {
-            val rotatableDrawable = RotatableDrawable(drawable, resId, priority)
+
+            val accidentDrawable =
+                if (resId == R.drawable.road_90 || resId == R.drawable.road_180 ||
+                    resId == R.drawable.four_road_junction || resId == R.drawable.roundabout
+                ) {
+                    NonRotatableDrawable(drawable, resId, priority)
+                } else {
+                    RotatableDrawable(drawable, resId, priority)
+                }
+
             val position = Point(width / 2, height / 2)
             // Set the initial bounds of the drawable to its intrinsic size at the specified position
-            rotatableDrawable.setBounds(
-                position.x - drawable.intrinsicWidth / 2,
-                position.y - drawable.intrinsicHeight / 2,
-                position.x + drawable.intrinsicWidth / 2,
-                position.y + drawable.intrinsicHeight / 2
+            accidentDrawable.setBounds(
+                position.x - accidentDrawable.intrinsicWidth / 2,
+                position.y - accidentDrawable.intrinsicHeight / 2,
+                position.x + accidentDrawable.intrinsicWidth / 2,
+                position.y + accidentDrawable.intrinsicHeight / 2
             )
 
-            if (resId == R.drawable.street) {
-                shapes.add(Triple(rotatableDrawable, position, TextView(context)))
+            if (resId == R.drawable.road_90 || resId == R.drawable.road_180) {
+                shapes.add(Triple(accidentDrawable, position, TextView(context)))
             } else {
-                shapes.add(Triple(rotatableDrawable, position, null))
+                shapes.add(Triple(accidentDrawable, position, null))
 
             }
         }
@@ -355,7 +388,7 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
     private fun isNearEdge(
         x: Int,
         y: Int,
-        drawable: RotatableDrawable,
+        drawable: Drawable,
         thresholdPercentage: Float = 0.2f
     ): Boolean {
         val bounds = drawable.bounds
