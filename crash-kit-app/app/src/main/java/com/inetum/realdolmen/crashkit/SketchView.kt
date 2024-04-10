@@ -275,7 +275,6 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                     .build()
 
                 // Draw the text
-                // Draw the text
                 canvas.save()
                 val textWidth = textPaint.measureText(text)
                 canvas.translate(centerX, centerY - (layout.height / 2f))
@@ -312,22 +311,27 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
     }
 
     private fun findShapeAt(x: Int, y: Int): Triple<RotatableDrawable, Point, TextView?>? {
-        val shape = shapes.find { (drawable, _) ->
+        val shapesAtPoint = shapes.filter { (drawable, _) ->
             // Check if the point is within the current bounds of the drawable
             drawable.bounds.contains(x, y)
         }
-        if (shape != null)
-            Log.i("Shape", "Shape found at ${shape.second.x} -${shape.second.y}")
-        else {
+        if (shapesAtPoint.isNotEmpty()) {
+            // Find the shape with the highest priority
+            val shape = shapesAtPoint.maxByOrNull { (drawable, _) ->
+                drawable.priority
+            }
+            Log.i("Shape", "Shape found at ${shape?.second?.x} -${shape?.second?.y}")
+            return shape
+        } else {
             Log.i("Shape", "Shape not found")
+            return null
         }
-        return shape
     }
 
-    fun addShape(resId: Int) {
+    fun addShape(resId: Int, priority: Int) {
         val drawable = ContextCompat.getDrawable(context, resId)
         if (drawable != null) {
-            val rotatableDrawable = RotatableDrawable(drawable, resId)
+            val rotatableDrawable = RotatableDrawable(drawable, resId, priority)
             val position = Point(width / 2, height / 2)
             // Set the initial bounds of the drawable to its intrinsic size at the specified position
             rotatableDrawable.setBounds(

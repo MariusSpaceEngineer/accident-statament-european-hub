@@ -74,14 +74,15 @@ class AccidentSketchFragment : Fragment() {
             val dialog = Dialog(requireContext(), R.style.Theme_CrashKit)
             val recyclerView = RecyclerView(requireContext())
             recyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
-            recyclerView.adapter = ShapesAdapter { drawableResId ->
-                sketchView.addShape(drawableResId)
+            recyclerView.adapter = ShapesAdapter { drawableResId, priority ->
+                sketchView.addShape(drawableResId, priority)
                 dialog.dismiss()
             }
 
             dialog.setContentView(recyclerView)
             dialog.show()
         }
+
     }
 
     override fun onDestroyView() {
