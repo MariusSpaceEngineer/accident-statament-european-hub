@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.inetum.realdolmen.crashkit.R
-import com.inetum.realdolmen.crashkit.SketchView
+import com.inetum.realdolmen.crashkit.accidentsketch.SketchView
 import com.inetum.realdolmen.crashkit.adapters.ShapesAdapter
 import com.inetum.realdolmen.crashkit.databinding.FragmentAccidentSketchBinding
 

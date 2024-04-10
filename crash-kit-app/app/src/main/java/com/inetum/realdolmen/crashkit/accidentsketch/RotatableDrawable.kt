@@ -1,11 +1,16 @@
-package com.inetum.realdolmen.crashkit
+package com.inetum.realdolmen.crashkit.accidentsketch
 
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.DrawableWrapper
 import android.util.Log
 
-class RotatableDrawable(private val drawable: Drawable, val resId: Int, val priority: Int) : DrawableWrapper(drawable) {
+class RotatableDrawable(
+    private val drawable: Drawable,
+    override val resId: Int,
+    override val priority: Int
+) :
+    DrawableWrapper(drawable), IAccidentDrawable {
     private var rotation = 0f
 
 
