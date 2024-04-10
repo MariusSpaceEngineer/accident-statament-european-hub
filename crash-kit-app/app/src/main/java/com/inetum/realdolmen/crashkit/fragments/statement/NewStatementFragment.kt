@@ -104,6 +104,7 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.btnStatementAccidentPrevious.isEnabled= false
 
         formHelper = FormHelper(requireContext(), fields)
 
@@ -118,6 +119,7 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
 
     private fun setupButtonClickListeners() {
         binding.btnStatementAccidentNext.setOnClickListener {
+
             formHelper.clearErrors()
 
             updateViewModelFromUI(model)
