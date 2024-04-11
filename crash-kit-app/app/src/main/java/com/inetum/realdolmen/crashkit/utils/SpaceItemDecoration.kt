@@ -1,4 +1,4 @@
-package com.inetum.realdolmen.crashkit.adapters
+package com.inetum.realdolmen.crashkit.utils
 
 import android.graphics.Rect
 import android.view.View

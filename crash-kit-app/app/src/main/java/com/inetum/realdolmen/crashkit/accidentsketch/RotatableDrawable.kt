@@ -13,7 +13,6 @@ class RotatableDrawable(
     DrawableWrapper(drawable), IAccidentDrawable {
     private var rotation = 0f
 
-
     fun setRotation(rotation: Float) {
         Log.d("RotatableDrawable", "Setting rotation to $rotation")
         this.rotation = rotation
