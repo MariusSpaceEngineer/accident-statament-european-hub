@@ -22,7 +22,6 @@ import androidx.viewpager2.widget.ViewPager2
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.adapters.ImageAdapter
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleAMiscellaneousBinding
-import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 
@@ -32,10 +31,6 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
 
     private var _binding: FragmentVehicleAMiscellaneousBinding? = null
     private val binding get() = _binding!!
-
-    private val fragmentNavigationHelper by lazy {
-        FragmentNavigationHelper(requireActivity().supportFragmentManager)
-    }
 
     private var accidentImages = mutableListOf<Bitmap>()
     private val requestImageCapture = registerForActivityResult(
@@ -169,7 +164,6 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
 
     override fun updateViewModelFromUI(model: NewStatementViewModel) {
         model.statementData.value?.apply {
-            //this.vehicleAAccidentPhoto = accidentImage
             this.vehicleARemarks = binding.etStatementVehicleADriverRemarks.text.toString()
             this.vehicleADamageDescription =
                 binding.etStatementVehicleADamageDescription.text.toString()
