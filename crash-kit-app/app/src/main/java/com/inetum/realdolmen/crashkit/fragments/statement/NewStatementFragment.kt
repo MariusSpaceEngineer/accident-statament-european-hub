@@ -30,7 +30,6 @@ import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.createSimpleDialog
-import com.inetum.realdolmen.crashkit.utils.printBackStack
 import com.inetum.realdolmen.crashkit.utils.to24Format
 import com.inetum.realdolmen.crashkit.utils.toLocalDateTime
 import kotlinx.coroutines.CoroutineScope
@@ -94,7 +93,7 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        if(this::navController.isInitialized) {
+        if (this::navController.isInitialized) {
             // Save the NavController's state
             outState.putBundle("nav_state", navController.saveState())
         }
@@ -104,15 +103,13 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.btnStatementAccidentPrevious.isEnabled= false
+        binding.btnStatementAccidentPrevious.isEnabled = false
 
         formHelper = FormHelper(requireContext(), fields)
 
         setupValidation()
 
         updateUIFromViewModel(model)
-
-        requireActivity().supportFragmentManager.printBackStack()
 
         setupButtonClickListeners()
     }
@@ -126,11 +123,11 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
 
             formHelper.validateFields(validationRules)
 
-//            if (fields.none { it.error != null }) {
-            // If no errors, navigate to the next fragment
-            //navController.navigate(R.id.vehicleANewStatementFragment)
-            navController.navigate(R.id.accidentSketchFragment)
-//            }
+            if (fields.none { it.error != null }) {
+                //If no errors, navigate to the next fragment
+                navController.navigate(R.id.vehicleANewStatementFragment)
+                navController.navigate(R.id.accidentSketchFragment)
+            }
         }
 
         binding.btnDateTimePicker.setOnClickListener {
