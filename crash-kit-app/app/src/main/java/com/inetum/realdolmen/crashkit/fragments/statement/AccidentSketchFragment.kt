@@ -19,11 +19,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.accidentsketch.SketchView
 import com.inetum.realdolmen.crashkit.adapters.ShapesAdapter
-import com.inetum.realdolmen.crashkit.utils.SpacesItemDecoration
 import com.inetum.realdolmen.crashkit.databinding.FragmentAccidentSketchBinding
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
+import com.inetum.realdolmen.crashkit.utils.SpacesItemDecoration
+import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 
-class AccidentSketchFragment : Fragment() {
+class AccidentSketchFragment : Fragment(), StatementDataHandler {
     private lateinit var navController: NavController
     private lateinit var navBar: BottomNavigationView
 
@@ -33,11 +34,20 @@ class AccidentSketchFragment : Fragment() {
     private var _binding: FragmentAccidentSketchBinding? = null
     private val binding get() = _binding!!
 
+    private var sketchBitmap: Bitmap? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //Make orientation landscape
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE
     }
+
+    override fun onResume() {
+        super.onResume()
+        //Make orientation landscape
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,12 +84,6 @@ class AccidentSketchFragment : Fragment() {
         super.onSaveInstanceState(outState)
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        //Restore orientation
-        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-    }
-
     private fun setUpSketchView(view: FrameLayout) {
         sketchView = view.findViewById(R.id.sketchView)
         sketchView.viewModel = viewModel
@@ -114,18 +118,22 @@ class AccidentSketchFragment : Fragment() {
         }
 
         binding.ivAccidentSketchPrevious.setOnClickListener {
-            val sketch = createBitmapFromView(sketchView)
-            viewModel.statementData.value?.apply {
-                viewModel.statementData.value?.accidentSketch = sketch
+            sketchBitmap = if (sketchView.shapes.isNotEmpty()) {
+                createBitmapFromView(sketchView)
+            } else {
+                null
             }
+            updateViewModelFromUI(viewModel)
             navController.popBackStack()
         }
 
         binding.ivAccidentSketchNext.setOnClickListener {
-            val sketch = createBitmapFromView(sketchView)
-            viewModel.statementData.value?.apply {
-                viewModel.statementData.value?.accidentSketch = sketch
+            sketchBitmap = if (sketchView.shapes.isNotEmpty()) {
+                createBitmapFromView(sketchView)
+            } else {
+                null
             }
+            updateViewModelFromUI(viewModel)
             navController.navigate(R.id.accidentStatementOverviewFragment)
         }
     }
@@ -141,6 +149,19 @@ class AccidentSketchFragment : Fragment() {
         val canvas = Canvas(bitmap)
         view.draw(canvas)
         return bitmap
+    }
+
+    override fun updateUIFromViewModel(model: NewStatementViewModel) {
+        TODO()
+    }
+
+    override fun updateViewModelFromUI(model: NewStatementViewModel) {
+        model.statementData.value?.apply {
+            viewModel.statementData.value?.accidentSketch = sketchBitmap
+        }
+        model.accidentSketchShapes.value?.apply {
+            viewModel.accidentSketchShapes.value = sketchView.shapes
+        }
     }
 
 }
