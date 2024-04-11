@@ -1,5 +1,6 @@
 package com.inetum.realdolmen.crashkit.fragments.statement
 
+import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.Typeface
 import android.os.Bundle
@@ -24,6 +25,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.inetum.realdolmen.crashkit.CrashKitApp
 import com.inetum.realdolmen.crashkit.R
+import com.inetum.realdolmen.crashkit.adapters.ImageAdapter
 import com.inetum.realdolmen.crashkit.databinding.FragmentAccidentStatementOverviewBinding
 import com.inetum.realdolmen.crashkit.dto.AccidentImageDTO
 import com.inetum.realdolmen.crashkit.dto.AccidentStatementData
@@ -35,7 +37,6 @@ import com.inetum.realdolmen.crashkit.dto.MotorDTO
 import com.inetum.realdolmen.crashkit.dto.PolicyHolderDTO
 import com.inetum.realdolmen.crashkit.dto.RequestResponse
 import com.inetum.realdolmen.crashkit.dto.WitnessDTO
-import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementData
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
@@ -55,15 +56,17 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
     private var _binding: FragmentAccidentStatementOverviewBinding? = null
     private val binding get() = _binding!!
 
-    private val fragmentNavigationHelper by lazy {
-        FragmentNavigationHelper(requireActivity().supportFragmentManager)
-    }
     private val apiService = CrashKitApp.apiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         model = ViewModelProvider(requireActivity())[NewStatementViewModel::class.java]
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Reset orientation
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
     }
 
     override fun onCreateView(
@@ -88,6 +91,10 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
 
         binding.tvStatementOverviewGeneralCardEdit.setOnClickListener {
             navController.navigate(R.id.newStatementFragment)
+        }
+
+        binding.tvStatementOverviewGeneralCardSketchEdit.setOnClickListener {
+            navController.navigate(R.id.accidentSketchFragment)
         }
 
         binding.ibStatementVehicleACardExpandButton.setOnClickListener {
@@ -407,7 +414,7 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
         setBoldAndNormalText(
             binding.tvStatementOverviewGeneralCardLabelLocation,
             binding.tvStatementOverviewGeneralCardLabelLocation.text.toString(),
-            statementData.accidentLocation.ifEmpty { "" }
+            statementData.accidentLocation
         )
 
         setBoldAndNormalText(
@@ -435,447 +442,441 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
         setBoldAndNormalText(
             binding.tvStatementOverviewGeneralCardWitnessName,
             binding.tvStatementOverviewGeneralCardWitnessName.text.toString(),
-            statementData.witnessName.ifEmpty { "" }
+            statementData.witnessName
         )
 
         setBoldAndNormalText(
             binding.tvStatementOverviewGeneralCardWitnessAddress,
             binding.tvStatementOverviewGeneralCardWitnessAddress.text.toString(),
-            statementData.witnessAddress.ifEmpty { "" }
+            statementData.witnessAddress
         )
 
         setBoldAndNormalText(
             binding.tvStatementOverviewGeneralCardWitnessPhoneNumber,
             binding.tvStatementOverviewGeneralCardWitnessPhoneNumber.text.toString(),
-            statementData.witnessPhoneNumber.ifEmpty { "" }
+            statementData.witnessPhoneNumber
         )
+
+        if (statementData.accidentSketch != null) {
+            binding.tvStatementOverviewSketchLabel.visibility = View.VISIBLE
+            binding.ivStatementOverviewSketch.setImageBitmap(statementData.accidentSketch)
+            binding.ivStatementOverviewSketch.visibility = View.VISIBLE
+            binding.tvStatementOverviewGeneralCardSketchEdit.visibility = View.VISIBLE
+        }
     }
 
     private fun updateVehicleACardFromViewModel(
         statementData: StatementData
     ) {
 
-
         //Vehicle A page one
-        binding.tvStatementVehicleACardPolicyHolderLastName.text = buildString {
-            append(binding.tvStatementVehicleACardPolicyHolderLastName.text.toString())
-            append(": ")
-            append(statementData.policyHolderALastName)
-        }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardPolicyHolderLastName,
+            binding.tvStatementVehicleACardPolicyHolderLastName.text.toString(),
+            statementData.policyHolderALastName
+        )
 
-        binding.tvStatementVehicleACardPolicyHolderFirstName.text = buildString {
-            append(binding.tvStatementVehicleACardPolicyHolderFirstName.text.toString())
-            append(": ")
-            append(statementData.policyHolderAFirstName)
-        }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardPolicyHolderFirstName,
+            binding.tvStatementVehicleACardPolicyHolderFirstName.text.toString(),
+            statementData.policyHolderAFirstName
+        )
 
-        binding.tvStatementVehicleACardPolicyHolderAddress.text = buildString {
-            append(binding.tvStatementVehicleACardPolicyHolderAddress.text.toString())
-            append(": ")
-            append(statementData.policyHolderAAddress)
-        }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardPolicyHolderAddress,
+            binding.tvStatementVehicleACardPolicyHolderAddress.text.toString(),
+            statementData.policyHolderAAddress
+        )
 
-        binding.tvStatementVehicleACardPolicyHolderPostalCode.text = buildString {
-            append(binding.tvStatementVehicleACardPolicyHolderPostalCode.text.toString())
-            append(": ")
-            append(statementData.policyHolderAPostalCode)
-        }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardPolicyHolderPostalCode,
+            binding.tvStatementVehicleACardPolicyHolderPostalCode.text.toString(),
+            statementData.policyHolderAPostalCode
+        )
 
-        binding.tvStatementVehicleACardPolicyHolderPhoneNumber.text = buildString {
-            append(binding.tvStatementVehicleACardPolicyHolderPhoneNumber.text.toString())
-            append(": ")
-            append(statementData.policyHolderAPhoneNumber)
-        }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardPolicyHolderPhoneNumber,
+            binding.tvStatementVehicleACardPolicyHolderPhoneNumber.text.toString(),
+            statementData.policyHolderAPhoneNumber
+        )
 
-        binding.tvStatementVehicleACardPolicyHolderEmail.text = buildString {
-            append(binding.tvStatementVehicleACardPolicyHolderEmail.text.toString())
-            append(": ")
-            append(statementData.policyHolderAEmail)
-        }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardPolicyHolderEmail,
+            binding.tvStatementVehicleACardPolicyHolderEmail.text.toString(),
+            statementData.policyHolderAEmail
+        )
 
-        binding.tvStatementVehicleACardMotorMarkType.text = buildString {
-            append(binding.tvStatementVehicleACardMotorMarkType.text.toString())
-            append(": ")
-            append(statementData.vehicleAMarkType)
-        }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardMotorMarkType,
+            binding.tvStatementVehicleACardMotorMarkType.text.toString(),
+            statementData.vehicleAMarkType
+        )
 
-        binding.tvStatementVehicleACardMotorRegistrationNumber.text = buildString {
-            append(binding.tvStatementVehicleACardMotorRegistrationNumber.text.toString())
-            append(if (statementData.vehicleARegistrationNumber.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleARegistrationNumber.ifEmpty { "" })
-        }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardMotorRegistrationNumber,
+            binding.tvStatementVehicleACardMotorRegistrationNumber.text.toString(),
+            statementData.vehicleARegistrationNumber
+        )
 
-        binding.tvStatementVehicleACardMotorCountry.text = buildString {
-            append(binding.tvStatementVehicleACardMotorCountry.text.toString())
-            append(if (statementData.vehicleACountryOfRegistration.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleACountryOfRegistration.ifEmpty { "" })
-        }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardMotorCountry,
+            binding.tvStatementVehicleACardMotorCountry.text.toString(),
+            statementData.vehicleACountryOfRegistration
+        )
 
         //Vehicle A page two
-        binding.tvStatementVehicleACardInsuranceCompanyName.text = buildString {
-            append(binding.tvStatementVehicleACardInsuranceCompanyName.text.toString())
-            append(": ")
-            append(statementData.vehicleAInsuranceCompanyName)
-        }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardInsuranceCompanyName,
+            binding.tvStatementVehicleACardInsuranceCompanyName.text.toString(),
+            statementData.vehicleAInsuranceCompanyName
+        )
 
-        binding.tvStatementVehicleACardInsurancePolicyNumber.text = buildString {
-            append(binding.tvStatementVehicleACardInsurancePolicyNumber.text.toString())
-            append(if (statementData.vehicleAInsuranceCompanyPolicyNumber.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleAInsuranceCompanyPolicyNumber.ifEmpty { "" })
-        }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardInsurancePolicyNumber,
+            binding.tvStatementVehicleACardInsurancePolicyNumber.text.toString(),
+            statementData.vehicleAInsuranceCompanyPolicyNumber
+        )
 
-        binding.tvStatementVehicleACardInsuranceGreenCardNumber.text = buildString {
-            append(binding.tvStatementVehicleACardInsuranceGreenCardNumber.text.toString())
-            append(if (statementData.vehicleAInsuranceCompanyGreenCardNumber.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleAInsuranceCompanyGreenCardNumber.ifEmpty { "" })
-        }
-
-        binding.tvStatementVehicleACardInsuranceCertificateAvailabilityDate.text =
-            buildString {
-                append(binding.tvStatementVehicleACardInsuranceCertificateAvailabilityDate.text.toString())
-                statementData.vehicleAInsuranceCertificateAvailabilityDate?.let { date ->
-                    val formattedDate = date.to24Format()
-                    if (formattedDate.isNotEmpty()) {
-                        append("\n $formattedDate")
-                    }
-                } ?: append(":")
-            }
-        binding.tvStatementVehicleACardInsuranceCertificateExpirationDate.text =
-            buildString {
-                append(binding.tvStatementVehicleACardInsuranceCertificateExpirationDate.text.toString())
-                statementData.vehicleAInsuranceCertificateExpirationDate?.let { date ->
-                    val formattedDate = date.to24Format()
-                    if (formattedDate.isNotEmpty()) {
-                        append("\n $formattedDate")
-                    }
-                } ?: append(":")
-            }
-
-        binding.tvStatementVehicleACardInsuranceAgencyName.text = buildString {
-            append(binding.tvStatementVehicleACardInsuranceAgencyName.text.toString())
-            append(": ")
-            append(statementData.vehicleAInsuranceAgencyName)
-        }
-
-        binding.tvStatementVehicleACardInsuranceAgencyAddress.text = buildString {
-            append(binding.tvStatementVehicleACardInsuranceAgencyAddress.text.toString())
-            append(if (statementData.vehicleAInsuranceAgencyAddress.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleAInsuranceAgencyAddress.ifEmpty { "" })
-        }
-
-        binding.tvStatementVehicleACardInsuranceAgencyCountry.text = buildString {
-            append(binding.tvStatementVehicleACardInsuranceAgencyCountry.text.toString())
-            append(": ")
-            append(statementData.vehicleAInsuranceAgencyCountry)
-        }
-
-        binding.tvStatementVehicleACardInsuranceAgencyPhoneNumber.text = buildString {
-            append(binding.tvStatementVehicleACardInsuranceAgencyPhoneNumber.text.toString())
-            append(if (statementData.vehicleAInsuranceAgencyPhoneNumber.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleAInsuranceAgencyPhoneNumber.ifEmpty { "" })
-        }
-
-        binding.tvStatementVehicleACardInsuranceAgencyEmail.text = buildString {
-            append(binding.tvStatementVehicleACardInsuranceAgencyEmail.text.toString())
-            append(if (statementData.vehicleAInsuranceAgencyEmail.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleAInsuranceAgencyEmail.ifEmpty { "" })
-        }
-
-        binding.tvStatementVehicleACardInsuranceDamageCovered.text = buildString {
-            append(binding.tvStatementVehicleACardInsuranceDamageCovered.text.toString())
-            append(": ")
-            append(if (statementData.vehicleAMaterialDamageCovered) "Yes" else "No")
-        }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardInsuranceGreenCardNumber,
+            binding.tvStatementVehicleACardInsuranceGreenCardNumber.text.toString(),
+            statementData.vehicleAInsuranceCompanyGreenCardNumber
+        )
 
         //Vehicle A page three
-        binding.tvStatementVehicleACardDriverLastName.text = buildString {
-            append(binding.tvStatementVehicleACardDriverLastName.text.toString())
-            append(": ")
-            append(statementData.vehicleADriverLastName)
-        }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardInsuranceCertificateAvailabilityDate,
+            binding.tvStatementVehicleACardInsuranceCertificateAvailabilityDate.text.toString(),
+            statementData.vehicleAInsuranceCertificateAvailabilityDate?.to24Format()
+        )
 
-        binding.tvStatementVehicleACardDriverFirstName.text = buildString {
-            append(binding.tvStatementVehicleACardDriverFirstName.text.toString())
-            append(": ")
-            append(statementData.vehicleADriverFirstName)
-        }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardInsuranceCertificateExpirationDate,
+            binding.tvStatementVehicleACardInsuranceCertificateExpirationDate.text.toString(),
+            statementData.vehicleAInsuranceCertificateExpirationDate?.to24Format()
+        )
 
-        binding.tvStatementVehicleACardDriverDateOfBirth.text =
-            buildString {
-                append(binding.tvStatementVehicleACardDriverDateOfBirth.text.toString())
-                statementData.vehicleADriverDateOfBirth?.let { date ->
-                    val formattedDate = date.to24Format()
-                    if (formattedDate.isNotEmpty()) {
-                        append("\n $formattedDate")
-                    }
-                } ?: append(":")
-            }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardInsuranceAgencyName,
+            binding.tvStatementVehicleACardInsuranceAgencyName.text.toString(),
+            statementData.vehicleAInsuranceAgencyName
+        )
 
-        binding.tvStatementVehicleACardDriverAddress.text = buildString {
-            append(binding.tvStatementVehicleACardDriverAddress.text.toString())
-            append(if (statementData.vehicleADriverAddress.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleADriverAddress.ifEmpty { "" })
-        }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardInsuranceAgencyAddress,
+            binding.tvStatementVehicleACardInsuranceAgencyAddress.text.toString(),
+            statementData.vehicleAInsuranceAgencyAddress
+        )
 
-        binding.tvStatementVehicleACardDriverCountry.text = buildString {
-            append(binding.tvStatementVehicleACardDriverCountry.text.toString())
-            append(if (statementData.vehicleADriverCountry.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleADriverCountry.ifEmpty { "" })
-        }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardInsuranceAgencyCountry,
+            binding.tvStatementVehicleACardInsuranceAgencyCountry.text.toString(),
+            statementData.vehicleAInsuranceAgencyCountry
+        )
 
-        binding.tvStatementVehicleACardDriverPhoneNumber.text = buildString {
-            append(binding.tvStatementVehicleACardDriverPhoneNumber.text.toString())
-            append(if (statementData.vehicleADriverPhoneNumber.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleADriverPhoneNumber.ifEmpty { "" })
-        }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardInsuranceAgencyPhoneNumber,
+            binding.tvStatementVehicleACardInsuranceAgencyPhoneNumber.text.toString(),
+            statementData.vehicleAInsuranceAgencyPhoneNumber
+        )
 
-        binding.tvStatementVehicleACardDriverEmail.text = buildString {
-            append(binding.tvStatementVehicleACardDriverEmail.text.toString())
-            append(if (statementData.vehicleADriverEmail.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleADriverEmail.ifEmpty { "" })
-        }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardInsuranceAgencyEmail,
+            binding.tvStatementVehicleACardInsuranceAgencyEmail.text.toString(),
+            statementData.vehicleAInsuranceAgencyEmail
+        )
 
-        binding.tvStatementVehicleACardDriverDrivingLicenseNumber.text = buildString {
-            append(binding.tvStatementVehicleACardDriverDrivingLicenseNumber.text.toString())
-            append(if (statementData.vehicleADriverDrivingLicenseNr.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleADriverDrivingLicenseNr.ifEmpty { "" })
-        }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardInsuranceDamageCovered,
+            binding.tvStatementVehicleACardInsuranceDamageCovered.text.toString(),
+            if (statementData.vehicleAMaterialDamageCovered) requireContext().getString(R.string.yes) else requireContext().getString(
+                R.string.no
+            )
+        )
 
-        binding.tvStatementVehicleACardDriverDrivingLicenseExpirationDate.text =
-            buildString {
-                append(binding.tvStatementVehicleACardDriverDrivingLicenseExpirationDate.text.toString())
-                statementData.vehicleADriverDrivingLicenseExpirationDate?.let { date ->
-                    val formattedDate = date.to24Format()
-                    if (formattedDate.isNotEmpty()) {
-                        append("\n $formattedDate")
-                    }
-                } ?: append(":")
-            }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardDriverLastName,
+            binding.tvStatementVehicleACardDriverLastName.text.toString(),
+            statementData.vehicleADriverLastName
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardDriverFirstName,
+            binding.tvStatementVehicleACardDriverFirstName.text.toString(),
+            statementData.vehicleADriverFirstName
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardDriverDateOfBirth,
+            binding.tvStatementVehicleACardDriverDateOfBirth.text.toString(),
+            statementData.vehicleADriverDateOfBirth?.to24Format()
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardDriverAddress,
+            binding.tvStatementVehicleACardDriverAddress.text.toString(),
+            statementData.vehicleADriverAddress
+        )
+
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardDriverCountry,
+            binding.tvStatementVehicleACardDriverCountry.text.toString(),
+            statementData.vehicleADriverCountry
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardDriverPhoneNumber,
+            binding.tvStatementVehicleACardDriverPhoneNumber.text.toString(),
+            statementData.vehicleADriverPhoneNumber
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardDriverEmail,
+            binding.tvStatementVehicleACardDriverEmail.text.toString(),
+            statementData.vehicleADriverEmail
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardDriverDrivingLicenseNumber,
+            binding.tvStatementVehicleACardDriverDrivingLicenseNumber.text.toString(),
+            statementData.vehicleADriverDrivingLicenseNr
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleACardDriverDrivingLicenseExpirationDate,
+            binding.tvStatementVehicleACardDriverDrivingLicenseExpirationDate.text.toString(),
+            statementData.vehicleADriverDrivingLicenseExpirationDate?.to24Format()
+        )
 
         //Vehicle A page five
-        binding.tvStatementVehicleARemarks.text = buildString {
-            append(binding.tvStatementVehicleARemarks.text.toString())
-            append(if (statementData.vehicleARemarks.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleARemarks.ifEmpty { "" })
+        if (!statementData.vehicleAAccidentPhotos.isNullOrEmpty()) {
+            binding.tvStatementVehicleAPointOfImpactTitle.visibility = View.VISIBLE
+
+            val accidentImages = statementData.vehicleAAccidentPhotos!!
+            val viewPager = binding.vpStatementOverviewVehicleAAccidentPhotos
+            viewPager.visibility = View.VISIBLE
+            viewPager.adapter = ImageAdapter(accidentImages, this.requireContext())
         }
 
-        binding.tvStatementVehicleADamageDescription.text = buildString {
-            append(binding.tvStatementVehicleADamageDescription.text.toString())
-            append(if (statementData.vehicleADamageDescription.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleADamageDescription.ifEmpty { "" })
-        }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleARemarks,
+            binding.tvStatementVehicleARemarks.text.toString(),
+            statementData.vehicleARemarks
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleADamageDescription,
+            binding.tvStatementVehicleADamageDescription.text.toString(),
+            statementData.vehicleADamageDescription
+        )
 
     }
 
     private fun updateVehicleBCardFromViewModel(statementData: StatementData) {
 
         //Vehicle B page one
-        binding.tvStatementVehicleBCardPolicyHolderLastName.text = buildString {
-            append(binding.tvStatementVehicleBCardPolicyHolderLastName.text.toString())
-            append(": ")
-            append(statementData.policyHolderBLastName)
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardPolicyHolderLastName,
+            binding.tvStatementVehicleBCardPolicyHolderLastName.text.toString(),
+            statementData.policyHolderBLastName
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardPolicyHolderFirstName,
+            binding.tvStatementVehicleBCardPolicyHolderFirstName.text.toString(),
+            statementData.policyHolderBFirstName
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardPolicyHolderAddress,
+            binding.tvStatementVehicleBCardPolicyHolderAddress.text.toString(),
+            statementData.policyHolderBAddress
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardPolicyHolderPostalCode,
+            binding.tvStatementVehicleBCardPolicyHolderPostalCode.text.toString(),
+            statementData.policyHolderBPostalCode
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardPolicyHolderPhoneNumber,
+            binding.tvStatementVehicleBCardPolicyHolderPhoneNumber.text.toString(),
+            statementData.policyHolderBPhoneNumber
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardPolicyHolderEmail,
+            binding.tvStatementVehicleBCardPolicyHolderEmail.text.toString(),
+            statementData.policyHolderBEmail
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardMotorMarkType,
+            binding.tvStatementVehicleBCardMotorMarkType.text.toString(),
+            statementData.vehicleBMarkType
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardMotorRegistrationNumber,
+            binding.tvStatementVehicleBCardMotorRegistrationNumber.text.toString(),
+            statementData.vehicleBRegistrationNumber
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardMotorCountry,
+            binding.tvStatementVehicleBCardMotorCountry.text.toString(),
+            statementData.vehicleBCountryOfRegistration
+        )
+
+        //Vehicle B page two
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardInsuranceCompanyName,
+            binding.tvStatementVehicleBCardInsuranceCompanyName.text.toString(),
+            statementData.vehicleBInsuranceCompanyName
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardInsurancePolicyNumber,
+            binding.tvStatementVehicleBCardInsurancePolicyNumber.text.toString(),
+            statementData.vehicleBInsuranceCompanyPolicyNumber
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardInsuranceGreenCardNumber,
+            binding.tvStatementVehicleBCardInsuranceGreenCardNumber.text.toString(),
+            statementData.vehicleBInsuranceCompanyGreenCardNumber
+        )
+
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardInsuranceCertificateAvailabilityDate,
+            binding.tvStatementVehicleBCardInsuranceCertificateAvailabilityDate.text.toString(),
+            statementData.vehicleBInsuranceCertificateAvailabilityDate?.to24Format()
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardInsuranceCertificateExpirationDate,
+            binding.tvStatementVehicleBCardInsuranceCertificateExpirationDate.text.toString(),
+            statementData.vehicleBInsuranceCertificateExpirationDate?.to24Format()
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardInsuranceAgencyName,
+            binding.tvStatementVehicleBCardInsuranceAgencyName.text.toString(),
+            statementData.vehicleBInsuranceAgencyName
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardInsuranceAgencyAddress,
+            binding.tvStatementVehicleBCardInsuranceAgencyAddress.text.toString(),
+            statementData.vehicleBInsuranceAgencyAddress
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardInsuranceAgencyCountry,
+            binding.tvStatementVehicleBCardInsuranceAgencyCountry.text.toString(),
+            statementData.vehicleBInsuranceAgencyCountry
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardInsuranceAgencyPhoneNumber,
+            binding.tvStatementVehicleBCardInsuranceAgencyPhoneNumber.text.toString(),
+            statementData.vehicleBInsuranceAgencyPhoneNumber
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardInsuranceAgencyEmail,
+            binding.tvStatementVehicleBCardInsuranceAgencyEmail.text.toString(),
+            statementData.vehicleBInsuranceAgencyEmail
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardInsuranceDamageCovered,
+            binding.tvStatementVehicleBCardInsuranceDamageCovered.text.toString(),
+            if (statementData.vehicleBMaterialDamageCovered)
+                requireContext().getString(R.string.yes) else requireContext().getString(
+                R.string.no
+            )
+        )
+
+        //Vehicle B page three
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardDriverLastName,
+            binding.tvStatementVehicleBCardDriverLastName.text.toString(),
+            statementData.vehicleBDriverLastName
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardDriverFirstName,
+            binding.tvStatementVehicleBCardDriverFirstName.text.toString(),
+            statementData.vehicleBDriverFirstName
+        )
+
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardDriverDateOfBirth,
+            binding.tvStatementVehicleBCardDriverDateOfBirth.text.toString(),
+            statementData.vehicleBDriverDateOfBirth?.to24Format()
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardDriverAddress,
+            binding.tvStatementVehicleBCardDriverAddress.text.toString(),
+            statementData.vehicleBDriverAddress
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardDriverCountry,
+            binding.tvStatementVehicleBCardDriverCountry.text.toString(),
+            statementData.vehicleBDriverCountry
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardDriverPhoneNumber,
+            binding.tvStatementVehicleBCardDriverPhoneNumber.text.toString(),
+            statementData.vehicleBDriverPhoneNumber
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardDriverEmail,
+            binding.tvStatementVehicleBCardDriverEmail.text.toString(),
+            statementData.vehicleBDriverEmail
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardDriverDrivingLicenseNumber,
+            binding.tvStatementVehicleBCardDriverDrivingLicenseNumber.text.toString(),
+            statementData.vehicleBDriverDrivingLicenseNr
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardDriverDrivingLicenseExpirationDate,
+            binding.tvStatementVehicleBCardDriverDrivingLicenseExpirationDate.text.toString(),
+            statementData.vehicleBDriverDrivingLicenseExpirationDate?.to24Format()
+        )
+
+        //Vehicle B page five
+        if (!statementData.vehicleBAccidentPhotos.isNullOrEmpty()) {
+            binding.tvStatementVehicleBPointOfImpactTitle.visibility = View.VISIBLE
+
+            val accidentImages = statementData.vehicleBAccidentPhotos!!
+            val viewPager = binding.vpStatementOverviewVehicleBAccidentPhotos
+            viewPager.visibility = View.VISIBLE
+            viewPager.adapter = ImageAdapter(accidentImages, this.requireContext())
         }
 
-        binding.tvStatementVehicleBCardPolicyHolderFirstName.text = buildString {
-            append(binding.tvStatementVehicleBCardPolicyHolderFirstName.text.toString())
-            append(": ")
-            append(statementData.policyHolderBFirstName)
-        }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBRemarks,
+            binding.tvStatementVehicleBRemarks.text.toString(),
+            statementData.vehicleBRemarks
+        )
 
-        binding.tvStatementVehicleBCardPolicyHolderAddress.text = buildString {
-            append(binding.tvStatementVehicleBCardPolicyHolderAddress.text.toString())
-            append(": ")
-            append(statementData.policyHolderBAddress)
-        }
-
-        binding.tvStatementVehicleBCardPolicyHolderPostalCode.text = buildString {
-            append(binding.tvStatementVehicleBCardPolicyHolderPostalCode.text.toString())
-            append(": ")
-            append(statementData.policyHolderBPostalCode)
-        }
-
-        binding.tvStatementVehicleBCardPolicyHolderPhoneNumber.text = buildString {
-            append(binding.tvStatementVehicleBCardPolicyHolderPhoneNumber.text.toString())
-            append(": ")
-            append(statementData.policyHolderBPhoneNumber)
-        }
-
-        binding.tvStatementVehicleBCardPolicyHolderEmail.text = buildString {
-            append(binding.tvStatementVehicleBCardPolicyHolderEmail.text.toString())
-            append(": ")
-            append(statementData.policyHolderBEmail)
-        }
-
-        binding.tvStatementVehicleBCardMotorMarkType.text = buildString {
-            append(binding.tvStatementVehicleBCardMotorMarkType.text.toString())
-            append(": ")
-            append(statementData.vehicleBMarkType)
-        }
-
-        binding.tvStatementVehicleBCardMotorRegistrationNumber.text = buildString {
-            append(binding.tvStatementVehicleBCardMotorRegistrationNumber.text.toString())
-            append(if (statementData.vehicleBRegistrationNumber.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleBRegistrationNumber.ifEmpty { "" })
-        }
-
-        binding.tvStatementVehicleBCardMotorCountry.text = buildString {
-            append(binding.tvStatementVehicleBCardMotorCountry.text.toString())
-            append(if (statementData.vehicleBCountryOfRegistration.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleBCountryOfRegistration.ifEmpty { "" })
-        }
-
-        //Vehicle A page two
-        binding.tvStatementVehicleBCardInsuranceCompanyName.text = buildString {
-            append(binding.tvStatementVehicleBCardInsuranceCompanyName.text.toString())
-            append(": ")
-            append(statementData.vehicleBInsuranceCompanyName)
-        }
-
-        binding.tvStatementVehicleBCardInsurancePolicyNumber.text = buildString {
-            append(binding.tvStatementVehicleBCardInsurancePolicyNumber.text.toString())
-            append(if (statementData.vehicleBInsuranceCompanyPolicyNumber.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleBInsuranceCompanyPolicyNumber.ifEmpty { "" })
-        }
-
-        binding.tvStatementVehicleBCardInsuranceGreenCardNumber.text = buildString {
-            append(binding.tvStatementVehicleBCardInsuranceGreenCardNumber.text.toString())
-            append(if (statementData.vehicleBInsuranceCompanyGreenCardNumber.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleBInsuranceCompanyGreenCardNumber.ifEmpty { "" })
-        }
-
-        binding.tvStatementVehicleBCardInsuranceCertificateAvailabilityDate.text =
-            buildString {
-                append(binding.tvStatementVehicleBCardInsuranceCertificateAvailabilityDate.text.toString())
-                statementData.vehicleBInsuranceCertificateAvailabilityDate?.let { date ->
-                    val formattedDate = date.to24Format()
-                    if (formattedDate.isNotEmpty()) {
-                        append("\n $formattedDate")
-                    }
-                } ?: append(":")
-            }
-        binding.tvStatementVehicleBCardInsuranceCertificateExpirationDate.text =
-            buildString {
-                append(binding.tvStatementVehicleBCardInsuranceCertificateExpirationDate.text.toString())
-                statementData.vehicleBInsuranceCertificateExpirationDate?.let { date ->
-                    val formattedDate = date.to24Format()
-                    if (formattedDate.isNotEmpty()) {
-                        append("\n $formattedDate")
-                    }
-                } ?: append(":")
-            }
-
-        binding.tvStatementVehicleBCardInsuranceAgencyName.text = buildString {
-            append(binding.tvStatementVehicleBCardInsuranceAgencyName.text.toString())
-            append(": ")
-            append(statementData.vehicleBInsuranceAgencyName)
-        }
-
-        binding.tvStatementVehicleBCardInsuranceAgencyAddress.text = buildString {
-            append(binding.tvStatementVehicleBCardInsuranceAgencyAddress.text.toString())
-            append(if (statementData.vehicleBInsuranceAgencyAddress.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleBInsuranceAgencyAddress.ifEmpty { "" })
-        }
-
-        binding.tvStatementVehicleBCardInsuranceAgencyCountry.text = buildString {
-            append(binding.tvStatementVehicleBCardInsuranceAgencyCountry.text.toString())
-            append(": ")
-            append(statementData.vehicleBInsuranceAgencyCountry)
-        }
-
-        binding.tvStatementVehicleBCardInsuranceAgencyPhoneNumber.text = buildString {
-            append(binding.tvStatementVehicleBCardInsuranceAgencyPhoneNumber.text.toString())
-            append(if (statementData.vehicleBInsuranceAgencyPhoneNumber.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleBInsuranceAgencyPhoneNumber.ifEmpty { "" })
-        }
-
-        binding.tvStatementVehicleBCardInsuranceAgencyEmail.text = buildString {
-            append(binding.tvStatementVehicleBCardInsuranceAgencyEmail.text.toString())
-            append(if (statementData.vehicleBInsuranceAgencyEmail.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleBInsuranceAgencyEmail.ifEmpty { "" })
-        }
-
-        binding.tvStatementVehicleBCardInsuranceDamageCovered.text = buildString {
-            append(binding.tvStatementVehicleBCardInsuranceDamageCovered.text.toString())
-            append(": ")
-            append(if (statementData.vehicleBMaterialDamageCovered) "Yes" else "No")
-        }
-
-        //Vehicle A page three
-        binding.tvStatementVehicleBCardDriverLastName.text = buildString {
-            append(binding.tvStatementVehicleBCardDriverLastName.text.toString())
-            append(": ")
-            append(statementData.vehicleBDriverLastName)
-        }
-
-        binding.tvStatementVehicleBCardDriverFirstName.text = buildString {
-            append(binding.tvStatementVehicleBCardDriverFirstName.text.toString())
-            append(": ")
-            append(statementData.vehicleBDriverFirstName)
-        }
-
-        binding.tvStatementVehicleBCardDriverDateOfBirth.text =
-            buildString {
-                append(binding.tvStatementVehicleBCardDriverDateOfBirth.text.toString())
-                statementData.vehicleBDriverDateOfBirth?.let { date ->
-                    val formattedDate = date.to24Format()
-                    if (formattedDate.isNotEmpty()) {
-                        append("\n $formattedDate")
-                    }
-                } ?: append(":")
-            }
-
-        binding.tvStatementVehicleBCardDriverAddress.text = buildString {
-            append(binding.tvStatementVehicleBCardDriverAddress.text.toString())
-            append(if (statementData.vehicleBDriverAddress.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleBDriverAddress.ifEmpty { "" })
-        }
-
-        binding.tvStatementVehicleBCardDriverCountry.text = buildString {
-            append(binding.tvStatementVehicleBCardDriverCountry.text.toString())
-            append(if (statementData.vehicleBDriverCountry.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleBDriverCountry.ifEmpty { "" })
-        }
-
-        binding.tvStatementVehicleBCardDriverPhoneNumber.text = buildString {
-            append(binding.tvStatementVehicleBCardDriverPhoneNumber.text.toString())
-            append(if (statementData.vehicleBDriverPhoneNumber.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleBDriverPhoneNumber.ifEmpty { "" })
-        }
-
-        binding.tvStatementVehicleBCardDriverEmail.text = buildString {
-            append(binding.tvStatementVehicleBCardDriverEmail.text.toString())
-            append(if (statementData.vehicleBDriverEmail.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleBDriverEmail.ifEmpty { "" })
-        }
-
-        binding.tvStatementVehicleBCardDriverDrivingLicenseNumber.text = buildString {
-            append(binding.tvStatementVehicleBCardDriverDrivingLicenseNumber.text.toString())
-            append(if (statementData.vehicleBDriverDrivingLicenseNr.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleBDriverDrivingLicenseNr.ifEmpty { "" })
-        }
-
-        binding.tvStatementVehicleBCardDriverDrivingLicenseExpirationDate.text =
-            buildString {
-                append(binding.tvStatementVehicleBCardDriverDrivingLicenseExpirationDate.text.toString())
-                statementData.vehicleBDriverDrivingLicenseExpirationDate?.let { date ->
-                    val formattedDate = date.to24Format()
-                    if (formattedDate.isNotEmpty()) {
-                        append("\n $formattedDate")
-                    }
-                } ?: append(":")
-            }
-
-        //Vehicle A page five
-        binding.tvStatementVehicleBRemarks.text = buildString {
-            append(binding.tvStatementVehicleBRemarks.text.toString())
-            append(if (statementData.vehicleBRemarks.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleBRemarks.ifEmpty { "" })
-        }
-
-        binding.tvStatementVehicleBDamageDescription.text = buildString {
-            append(binding.tvStatementVehicleBDamageDescription.text.toString())
-            append(if (statementData.vehicleBDamageDescription.isNotEmpty()) ":\n" else ":")
-            append(statementData.vehicleBDamageDescription.ifEmpty { "" })
-        }
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBDamageDescription,
+            binding.tvStatementVehicleBDamageDescription.text.toString(),
+            statementData.vehicleBDamageDescription
+        )
     }
 }

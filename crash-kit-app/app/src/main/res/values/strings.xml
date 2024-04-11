@@ -23,6 +23,7 @@
     <string name="statement_driver_title">Driver</string>
     <string name="statement_vehicle_b_title">Vehicle B</string>
     <string name="share_insurance_information_title">Share insurance information</string>
+    <string name="statement_circumstances_title">Circumstances</string>
 
     <!--    Labels-->
     <string name="label_email">Email</string>
@@ -53,6 +54,10 @@
     <string name="label_driving_license_number">Driving License Number</string>
     <string name="label_driving_license_expiration_date">Driving License Expiration Date</string>
     <string name="label_amount_of_crosses">Amount of Crosses:</string>
+    <string name="label_accident_sketch">Accident Sketch:</string>
+    <string name="label_other_objects">Other Objects</string>
+    <string name="label_other_cars">Other Cars</string>
+    <string name="label_injured">Injured</string>
     <string name="label_pick_date">Pick Date</string>
 
     <!--    Buttons-->
@@ -70,6 +75,8 @@
     <string name="search_shape_button">Search Shape</string>
     <string name="delete_shape_button">Delete Shape</string>
     <string name="change_address_button">Change Address</string>
+    <string name="see_circumstances_button">See circumstances</string>
+    <string name="edit_sketch_button">Edit Sketch</string>
     <string name="edit_button">Edit</string>
     <string name="cancel_button">Cancel</string>
     <string name="update_button">Update</string>

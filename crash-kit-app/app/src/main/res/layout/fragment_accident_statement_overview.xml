@@ -59,8 +59,8 @@
                         android:layout_marginTop="16dp"
                         android:text="@string/label_date_of_accident"
                         android:textAllCaps="true"
+                        android:textColor="@color/black"
                         android:textSize="25sp" />
-
 
                     <TextView
                         android:id="@+id/tv_statement_overview_general_card_label_location"
@@ -71,8 +71,8 @@
                         android:layout_marginEnd="64dp"
                         android:text="@string/label_location"
                         android:textAllCaps="true"
+                        android:textColor="@color/black"
                         android:textSize="25sp" />
-
 
                     <TextView
                         android:id="@+id/tv_statement_overview_general_card_label_injured"
@@ -81,8 +81,9 @@
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="64dp"
-                        android:text="Injured"
+                        android:text="@string/label_injured"
                         android:textAllCaps="true"
+                        android:textColor="@color/black"
                         android:textSize="25sp" />
 
                     <TextView
@@ -94,6 +95,7 @@
                         android:layout_marginEnd="64dp"
                         android:text="@string/label_material_damage"
                         android:textAllCaps="true"
+                        android:textColor="@color/black"
                         android:textSize="25sp"
                         android:textStyle="bold"
                         android:visibility="gone" />
@@ -105,8 +107,9 @@
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="64dp"
-                        android:text="Other Cars"
+                        android:text="@string/label_other_cars"
                         android:textAllCaps="true"
+                        android:textColor="@color/black"
                         android:textSize="20sp"
                         android:visibility="gone" />
 
@@ -117,8 +120,9 @@
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="64dp"
-                        android:text="Other Objects"
+                        android:text="@string/label_other_objects"
                         android:textAllCaps="true"
+                        android:textColor="@color/black"
                         android:textSize="20sp"
                         android:visibility="gone" />
 
@@ -131,6 +135,7 @@
                         android:layout_marginEnd="64dp"
                         android:text="@string/label_witness"
                         android:textAllCaps="true"
+                        android:textColor="@color/black"
                         android:textSize="25sp"
                         android:textStyle="bold"
                         android:visibility="gone" />
@@ -144,6 +149,7 @@
                         android:layout_marginEnd="20dp"
                         android:text="@string/name"
                         android:textAllCaps="true"
+                        android:textColor="@color/black"
                         android:textSize="20sp" />
 
                     <TextView
@@ -155,6 +161,7 @@
                         android:layout_marginEnd="20dp"
                         android:text="@string/label_address"
                         android:textAllCaps="true"
+                        android:textColor="@color/black"
                         android:textSize="20sp" />
 
                     <TextView
@@ -166,6 +173,7 @@
                         android:layout_marginEnd="20dp"
                         android:text="@string/label_phone_number"
                         android:textAllCaps="true"
+                        android:textColor="@color/black"
                         android:textSize="20sp" />
 
                     <TextView
@@ -174,10 +182,47 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="36dp"
+                        android:layout_marginBottom="16dp"
                         android:text="@string/edit_button"
                         android:textAllCaps="true"
+                        android:textColor="@color/black"
                         android:textSize="20sp"
                         android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_statement_overview_sketch_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="20dp"
+                        android:text="@string/label_accident_sketch"
+                        android:textAllCaps="true"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/iv_statement_overview_sketch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:ignore="ContentDescription" />
+
+                    <TextView
+                        android:id="@+id/tv_statement_overview_general_card_sketch_edit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="36dp"
+                        android:text="@string/edit_sketch_button"
+                        android:textAllCaps="true"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
@@ -209,29 +254,11 @@
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="64dp"
                         android:text="@string/statement_vehicle_a_title"
-
                         android:textAllCaps="true"
                         android:textColor="@color/black"
                         android:textSize="25sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/tv_statement_vehicle_a_card_edit"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginEnd="56dp"
-
-                        android:gravity="center"
-                        android:text="@string/edit_button"
-                        android:textAllCaps="true"
-                        android:textColor="@color/black"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-
-                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <ImageButton
@@ -270,6 +297,7 @@
                             android:gravity="center"
                             android:text="@string/statement_policy_holder_title"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="25sp"
                             android:textStyle="bold" />
 
@@ -280,8 +308,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/name"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_policy_holder_first_name"
@@ -290,8 +318,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_first_name"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_policy_holder_address"
@@ -300,8 +328,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_address"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_policy_holder_postal_code"
@@ -310,8 +338,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_postal_code"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_policy_holder_phone_number"
@@ -320,8 +348,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_phone_number"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_policy_holder_email"
@@ -330,8 +358,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_email"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:layout_width="match_parent"
@@ -341,6 +369,7 @@
                             android:gravity="center"
                             android:text="@string/statement_vehicle_title"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="25sp"
                             android:textStyle="bold" />
 
@@ -351,8 +380,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_mark_type"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_motor_registration_number"
@@ -361,8 +390,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_registration_number"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_motor_country"
@@ -371,8 +400,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_country_of_registration"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
 
                         <TextView
@@ -384,6 +413,7 @@
                             android:gravity="center"
                             android:text="@string/edit_button"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -395,6 +425,7 @@
                             android:gravity="center"
                             android:text="@string/statement_insurance_company_title"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="25sp"
                             android:textStyle="bold" />
 
@@ -405,8 +436,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/name"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_insurance_policy_number"
@@ -415,8 +446,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_policy_number"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
 
                         <TextView
@@ -426,8 +457,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_green_card_number"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
 
                         <TextView
@@ -437,8 +468,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_insurance_cert_availability_date"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
 
                         <TextView
@@ -448,8 +479,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_insurance_cert_expiration_date"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
 
                         <TextView
@@ -460,6 +491,7 @@
                             android:gravity="center"
                             android:text="@string/statement_insurance_agency_title"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="25sp"
                             android:textStyle="bold" />
 
@@ -471,8 +503,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/name"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_insurance_agency_address"
@@ -481,8 +513,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_address"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_insurance_agency_country"
@@ -491,8 +523,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_country"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_insurance_agency_phone_number"
@@ -501,8 +533,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_phone_number"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_insurance_agency_email"
@@ -511,8 +543,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_email"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_insurance_damage_covered"
@@ -521,8 +553,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/material_damage_covered_checkbox"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_page_two_edit"
@@ -533,6 +565,7 @@
                             android:gravity="center"
                             android:text="@string/edit_button"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -544,6 +577,7 @@
                             android:gravity="center"
                             android:text="@string/statement_driver_title"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="25sp"
                             android:textStyle="bold" />
 
@@ -554,8 +588,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/name"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_driver_first_name"
@@ -564,8 +598,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_first_name"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_driver_date_of_birth"
@@ -574,8 +608,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_date_of_birth"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_driver_address"
@@ -584,8 +618,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_address"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_driver_country"
@@ -594,8 +628,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_country"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_driver_phone_number"
@@ -604,8 +638,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_phone_number"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_driver_email"
@@ -614,8 +648,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_email"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_driver_driving_license_number"
@@ -624,8 +658,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_driving_license_number"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_driver_driving_license_expiration_date"
@@ -634,8 +668,8 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_driving_license_expiration_date"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_page_three_edit"
@@ -646,6 +680,7 @@
                             android:gravity="center"
                             android:text="@string/edit_button"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -655,8 +690,9 @@
                             android:layout_marginTop="16dp"
                             android:layout_marginBottom="16dp"
                             android:gravity="center"
-                            android:text="Circumstances"
+                            android:text="@string/statement_circumstances_title"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="25sp"
                             android:textStyle="bold" />
 
@@ -669,6 +705,7 @@
                             android:gravity="center"
                             android:text="@string/label_amount_of_crosses"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -679,10 +716,34 @@
                             android:layout_gravity="center_horizontal"
                             android:layout_marginTop="16dp"
                             android:gravity="center"
-                            android:text="See circumstances"
+                            android:text="@string/see_circumstances_button"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_statement_vehicle_a_point_of_impact_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginBottom="16dp"
+                            android:gravity="center"
+                            android:text="@string/label_point_of_impact"
+                            android:textAllCaps="true"
+                            android:textColor="@color/black"
+                            android:textSize="25sp"
+                            android:textStyle="bold"
+                            android:visibility="gone" />
+
+                        <androidx.viewpager2.widget.ViewPager2
+                            android:id="@+id/vp_statement_overview_vehicle_a_accident_photos"
+                            android:layout_width="match_parent"
+                            android:layout_height="250dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginBottom="16dp"
+                            android:visibility="gone" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_remarks"
@@ -693,8 +754,8 @@
                             android:gravity="center"
                             android:text="@string/label_remarks"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_damage_description"
@@ -705,8 +766,8 @@
                             android:gravity="center"
                             android:text="@string/label_visible_damage_description"
                             android:textAllCaps="true"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_page_five_edit"
@@ -717,9 +778,9 @@
                             android:gravity="center"
                             android:text="@string/edit_button"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
-
 
                     </LinearLayout>
 
@@ -759,23 +820,6 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
-                        android:id="@+id/tv_statement_vehicle_b_card_edit"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginEnd="56dp"
-                        android:gravity="center"
-
-                        android:text="@string/edit_button"
-                        android:textAllCaps="true"
-                        android:textColor="@color/black"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
                     <ImageButton
                         android:id="@+id/ib_statement_vehicle_b_card_expand_button"
                         android:layout_width="26dp"
@@ -812,6 +856,7 @@
                             android:gravity="center"
                             android:text="@string/statement_policy_holder_title"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="25sp"
                             android:textStyle="bold" />
 
@@ -822,6 +867,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/name"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -832,8 +878,10 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_first_name"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            tools:ignore="TooManyViews" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_b_card_policy_holder_address"
@@ -842,6 +890,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_address"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -852,6 +901,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_postal_code"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -862,6 +912,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_phone_number"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -872,6 +923,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_email"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -883,6 +935,7 @@
                             android:gravity="center"
                             android:text="@string/statement_vehicle_title"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="25sp"
                             android:textStyle="bold" />
 
@@ -893,6 +946,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_mark_type"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -903,6 +957,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_registration_number"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -913,9 +968,9 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_country_of_registration"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
-
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_b_page_one_edit"
@@ -926,6 +981,7 @@
                             android:gravity="center"
                             android:text="@string/edit_button"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -937,6 +993,7 @@
                             android:gravity="center"
                             android:text="@string/statement_insurance_company_title"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="25sp"
                             android:textStyle="bold" />
 
@@ -947,6 +1004,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/name"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -957,6 +1015,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_policy_number"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -968,6 +1027,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_green_card_number"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -979,6 +1039,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_insurance_cert_availability_date"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -990,9 +1051,9 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_insurance_cert_expiration_date"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
-
 
                         <TextView
                             android:layout_width="match_parent"
@@ -1002,6 +1063,7 @@
                             android:gravity="center"
                             android:text="@string/statement_insurance_agency_title"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="25sp"
                             android:textStyle="bold" />
 
@@ -1013,6 +1075,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/name"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -1023,6 +1086,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_address"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -1033,6 +1097,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_country"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -1043,6 +1108,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_phone_number"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -1053,6 +1119,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_email"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -1063,6 +1130,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/material_damage_covered_checkbox"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -1075,6 +1143,7 @@
                             android:gravity="center"
                             android:text="@string/edit_button"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -1086,6 +1155,7 @@
                             android:gravity="center"
                             android:text="@string/statement_driver_title"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="25sp"
                             android:textStyle="bold" />
 
@@ -1096,6 +1166,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/name"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -1106,6 +1177,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_first_name"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -1116,6 +1188,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_date_of_birth"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -1126,6 +1199,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_address"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -1136,6 +1210,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_country"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -1146,6 +1221,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_phone_number"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -1156,6 +1232,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_email"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -1166,6 +1243,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_driving_license_number"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -1176,6 +1254,7 @@
                             android:layout_marginTop="16dp"
                             android:text="@string/label_driving_license_expiration_date"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -1188,6 +1267,7 @@
                             android:gravity="center"
                             android:text="@string/edit_button"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -1197,8 +1277,9 @@
                             android:layout_marginTop="16dp"
                             android:layout_marginBottom="16dp"
                             android:gravity="center"
-                            android:text="Circumstances"
+                            android:text="@string/statement_circumstances_title"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="25sp"
                             android:textStyle="bold" />
 
@@ -1211,6 +1292,7 @@
                             android:gravity="center"
                             android:text="@string/label_amount_of_crosses"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -1221,10 +1303,34 @@
                             android:layout_gravity="center_horizontal"
                             android:layout_marginTop="16dp"
                             android:gravity="center"
-                            android:text="See circumstances"
+                            android:text="@string/see_circumstances_button"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_statement_vehicle_b_point_of_impact_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginBottom="16dp"
+                            android:gravity="center"
+                            android:text="@string/label_point_of_impact"
+                            android:textAllCaps="true"
+                            android:textColor="@color/black"
+                            android:textSize="25sp"
+                            android:textStyle="bold"
+                            android:visibility="gone" />
+
+                        <androidx.viewpager2.widget.ViewPager2
+                            android:id="@+id/vp_statement_overview_vehicle_b_accident_photos"
+                            android:layout_width="match_parent"
+                            android:layout_height="250dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginBottom="16dp"
+                            android:visibility="gone" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_b_remarks"
@@ -1235,6 +1341,7 @@
                             android:gravity="center"
                             android:text="@string/label_remarks"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -1247,6 +1354,7 @@
                             android:gravity="center"
                             android:text="@string/label_visible_damage_description"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -1259,9 +1367,9 @@
                             android:gravity="center"
                             android:text="@string/edit_button"
                             android:textAllCaps="true"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
-
 
                     </LinearLayout>
 
@@ -1300,6 +1408,7 @@
                     tools:ignore="ButtonStyle" />
 
             </LinearLayout>
+
         </LinearLayout>
     </FrameLayout>
 </ScrollView>
