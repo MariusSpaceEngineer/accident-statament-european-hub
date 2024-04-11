@@ -56,11 +56,24 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        navController = findNavController()
+        savedInstanceState?.let {
+            navController.restoreState(it.getBundle("nav_state"))
+        }
+
         // Inflate the layout for this fragment
         _binding = FragmentVehicleANewStatementBinding.inflate(inflater, container, false)
         val view = binding.root
 
         return view
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        if (this::navController.isInitialized) {
+            // Save the NavController's state
+            outState.putBundle("nav_state", navController.saveState())
+        }
+        super.onSaveInstanceState(outState)
     }
 
     private fun handlePolicyHolderProfileResponse(response: Response<PolicyHolderResponse>) {
@@ -80,8 +93,6 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        navController= findNavController()
 
         formHelper = FormHelper(requireContext(), fields)
 

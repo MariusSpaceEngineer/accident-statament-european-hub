@@ -13,7 +13,6 @@ import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleACircumstancesBinding
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
-import com.inetum.realdolmen.crashkit.utils.printBackStack
 
 class VehicleACircumstancesFragment : Fragment(), StatementDataHandler {
     private lateinit var model: NewStatementViewModel
@@ -32,6 +31,11 @@ class VehicleACircumstancesFragment : Fragment(), StatementDataHandler {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        navController = findNavController()
+
+        savedInstanceState?.let {
+            navController.restoreState(it.getBundle("nav_state"))
+        }
         // Inflate the layout for this fragment
         _binding = FragmentVehicleACircumstancesBinding.inflate(inflater, container, false)
         val view = binding.root
@@ -39,13 +43,17 @@ class VehicleACircumstancesFragment : Fragment(), StatementDataHandler {
         return view
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        if (this::navController.isInitialized) {
+            // Save the NavController's state
+            outState.putBundle("nav_state", navController.saveState())
+        }
+        super.onSaveInstanceState(outState)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        navController= findNavController()
-
-        requireActivity().supportFragmentManager.printBackStack()
-
+        
         updateUIFromViewModel(model)
 
         binding.btnStatementAccidentPrevious.setOnClickListener {

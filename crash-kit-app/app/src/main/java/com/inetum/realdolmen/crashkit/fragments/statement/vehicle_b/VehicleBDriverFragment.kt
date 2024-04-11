@@ -83,12 +83,25 @@ class VehicleBDriverFragment : Fragment(), StatementDataHandler, ValidationConfi
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        navController = findNavController()
+
+        savedInstanceState?.let {
+            navController.restoreState(it.getBundle("nav_state"))
+        }
         // Inflate the layout for this fragment
         _binding =
             FragmentVehicleBDriverBinding.inflate(inflater, container, false)
         val view = binding.root
 
         return view
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        if (this::navController.isInitialized) {
+            // Save the NavController's state
+            outState.putBundle("nav_state", navController.saveState())
+        }
+        super.onSaveInstanceState(outState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

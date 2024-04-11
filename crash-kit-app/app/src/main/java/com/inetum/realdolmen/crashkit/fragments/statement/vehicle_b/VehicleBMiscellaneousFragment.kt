@@ -86,6 +86,11 @@ class VehicleBMiscellaneousFragment : Fragment(), StatementDataHandler {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        navController = findNavController()
+
+        savedInstanceState?.let {
+            navController.restoreState(it.getBundle("nav_state"))
+        }
         // Inflate the layout for this fragment
         _binding =
             FragmentVehicleBMiscellaneousBinding.inflate(inflater, container, false)
@@ -94,10 +99,17 @@ class VehicleBMiscellaneousFragment : Fragment(), StatementDataHandler {
         return view
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        if (this::navController.isInitialized) {
+            // Save the NavController's state
+            outState.putBundle("nav_state", navController.saveState())
+        }
+        super.onSaveInstanceState(outState)
+    }
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        navController = findNavController()
 
         updateUIFromViewModel(model)
 
@@ -110,7 +122,7 @@ class VehicleBMiscellaneousFragment : Fragment(), StatementDataHandler {
         binding.btnStatementAccidentNext.setOnClickListener {
             updateViewModelFromUI(model)
 
-            navController.navigate(R.id.accidentStatementOverviewFragment)
+            navController.navigate(R.id.accidentSketchFragment)
         }
 
         binding.btnStatementAccidentPicture.setOnClickListener {
