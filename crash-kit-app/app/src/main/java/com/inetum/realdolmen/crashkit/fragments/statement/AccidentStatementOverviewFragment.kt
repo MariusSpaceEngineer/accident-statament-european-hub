@@ -1,7 +1,11 @@
 package com.inetum.realdolmen.crashkit.fragments.statement
 
 import android.graphics.Bitmap
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
 import android.transition.ChangeTransform
 import android.transition.TransitionManager
 import android.util.Log
@@ -10,12 +14,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.inetum.realdolmen.crashkit.CrashKitApp
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentAccidentStatementOverviewBinding
@@ -29,21 +35,10 @@ import com.inetum.realdolmen.crashkit.dto.MotorDTO
 import com.inetum.realdolmen.crashkit.dto.PolicyHolderDTO
 import com.inetum.realdolmen.crashkit.dto.RequestResponse
 import com.inetum.realdolmen.crashkit.dto.WitnessDTO
-import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleACircumstancesFragment
-import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleADriverFragment
-import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleAInsuranceFragment
-import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleAMiscellaneousFragment
-import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleANewStatementFragment
-import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_b.VehicleBCircumstancesFragment
-import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_b.VehicleBDriverFragment
-import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_b.VehicleBInsuranceFragment
-import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_b.VehicleBMiscellaneousFragment
-import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_b.VehicleBNewStatementFragment
 import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementData
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
-import com.inetum.realdolmen.crashkit.utils.printBackStack
 import com.inetum.realdolmen.crashkit.utils.to24Format
 import com.inetum.realdolmen.crashkit.utils.toByteArray
 import com.inetum.realdolmen.crashkit.utils.toIsoString
@@ -74,6 +69,11 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
+        navController = findNavController()
+
+        savedInstanceState?.let {
+            navController.restoreState(it.getBundle("nav_state"))
+        }
         // Inflate the layout for this fragment
         _binding = FragmentAccidentStatementOverviewBinding.inflate(inflater, container, false)
         val view = binding.root
@@ -84,16 +84,10 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().supportFragmentManager.printBackStack()
-
         updateUIFromViewModel(model)
 
         binding.tvStatementOverviewGeneralCardEdit.setOnClickListener {
-            fragmentNavigationHelper.navigateToFragment(
-                R.id.fragmentContainerView,
-                NewStatementFragment(),
-                "new_statement_fragment"
-            )
+            navController.navigate(R.id.newStatementFragment)
         }
 
         binding.ibStatementVehicleACardExpandButton.setOnClickListener {
@@ -107,46 +101,26 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
         }
 
         binding.tvStatementVehicleAPageOneEdit.setOnClickListener {
-            fragmentNavigationHelper.navigateToFragment(
-                R.id.fragmentContainerView,
-                VehicleANewStatementFragment(),
-                "vehicle_a_new_statement_fragment"
-            )
+            navController.navigate(R.id.vehicleANewStatementFragment)
         }
 
         binding.tvStatementVehicleAPageTwoEdit.setOnClickListener {
-            fragmentNavigationHelper.navigateToFragment(
-                R.id.fragmentContainerView,
-                VehicleAInsuranceFragment(),
-                "vehicle_a_insurance_fragment"
-            )
+            navController.navigate(R.id.vehicleAInsuranceFragment)
         }
 
         binding.tvStatementVehicleAPageThreeEdit.setOnClickListener {
-            fragmentNavigationHelper.navigateToFragment(
-                R.id.fragmentContainerView,
-                VehicleADriverFragment(),
-                "vehicle_a_driver_fragment"
-            )
+            navController.navigate(R.id.vehicleADriverFragment)
         }
 
         binding.tvStatementVehicleAPageFourEdit.setOnClickListener {
-            fragmentNavigationHelper.navigateToFragment(
-                R.id.fragmentContainerView,
-                VehicleACircumstancesFragment(),
-                "vehicle_a_circumstances_fragment"
-            )
+            navController.navigate(R.id.vehicleACircumstancesFragment)
         }
 
         binding.tvStatementVehicleAPageFiveEdit.setOnClickListener {
-            fragmentNavigationHelper.navigateToFragment(
-                R.id.fragmentContainerView,
-                VehicleAMiscellaneousFragment(),
-                "vehicle_a_miscellaneous_fragment"
-            )
+            navController.navigate(R.id.vehicleAMiscellaneousFragment)
         }
 
-        //
+
         binding.ibStatementVehicleBCardExpandButton.setOnClickListener {
             toggleCardFields(
                 binding.clStatementVehicleBCard,
@@ -158,43 +132,23 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
         }
 
         binding.tvStatementVehicleBPageOneEdit.setOnClickListener {
-            fragmentNavigationHelper.navigateToFragment(
-                R.id.fragmentContainerView,
-                VehicleBNewStatementFragment(),
-                "vehicle_b_new_statement_fragment"
-            )
+            navController.navigate(R.id.vehicleBNewStatementFragment)
         }
 
         binding.tvStatementVehicleBPageTwoEdit.setOnClickListener {
-            fragmentNavigationHelper.navigateToFragment(
-                R.id.fragmentContainerView,
-                VehicleBInsuranceFragment(),
-                "vehicle_b_insurance_fragment"
-            )
+            navController.navigate(R.id.vehicleBInsuranceFragment)
         }
 
         binding.tvStatementVehicleBPageThreeEdit.setOnClickListener {
-            fragmentNavigationHelper.navigateToFragment(
-                R.id.fragmentContainerView,
-                VehicleBDriverFragment(),
-                "vehicle_b_driver_fragment"
-            )
+            navController.navigate(R.id.vehicleBDriverFragment)
         }
 
         binding.tvStatementVehicleBPageFourEdit.setOnClickListener {
-            fragmentNavigationHelper.navigateToFragment(
-                R.id.fragmentContainerView,
-                VehicleBCircumstancesFragment(),
-                "vehicle_b_circumstances_fragment"
-            )
+            navController.navigate(R.id.vehicleBCircumstancesFragment)
         }
 
         binding.tvStatementVehicleBPageFiveEdit.setOnClickListener {
-            fragmentNavigationHelper.navigateToFragment(
-                R.id.fragmentContainerView,
-                VehicleBMiscellaneousFragment(),
-                "vehicle_b_miscellaneous_fragment"
-            )
+            navController.navigate(R.id.vehicleBMiscellaneousFragment)
         }
 
         binding.btnStatementAccidentNext.setOnClickListener {
@@ -234,14 +188,14 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             statementData?.vehicleBDriverDrivingLicenseExpirationDate?.toIsoString()
         )
 
-        val drivers = listOf<DriverDTO>(driverA, driverB)
+        val drivers = listOf(driverA, driverB)
 
         val witness = WitnessDTO(
             statementData?.witnessName,
             statementData?.witnessAddress, statementData?.witnessPhoneNumber
         )
 
-        val witnesses = listOf<WitnessDTO>(witness)
+        val witnesses = listOf(witness)
 
         val motorA = MotorDTO(
             statementData?.vehicleAMarkType,
@@ -257,7 +211,7 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             statementData?.vehicleBCountryOfRegistration
         )
 
-        val motors = listOf<MotorDTO>(motorA, motorB)
+        val motors = listOf(motorA, motorB)
 
 
         val insuranceCompanyVehicleA =
@@ -289,7 +243,7 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             statementData?.policyHolderAPhoneNumber,
             statementData?.policyHolderAAddress,
             statementData?.policyHolderAPostalCode,
-            listOf<InsuranceCertificate>(insuranceCertificateVehicleA)
+            listOf(insuranceCertificateVehicleA)
         )
 
         val insuranceCompanyVehicleB =
@@ -321,10 +275,10 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             statementData?.policyHolderBPhoneNumber,
             statementData?.policyHolderBAddress,
             statementData?.policyHolderBPostalCode,
-            listOf<InsuranceCertificate>(insuranceCertificateVehicleB)
+            listOf(insuranceCertificateVehicleB)
         )
 
-        val policyHolders = listOf<PolicyHolderDTO>(policyHolderVehicleA, policyHolderVehicleB)
+        val policyHolders = listOf(policyHolderVehicleA, policyHolderVehicleB)
 
         val vehicleAAccidentPhotos = mutableListOf<AccidentImageDTO>()
 
@@ -420,53 +374,81 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
         )
     }
 
+    fun setBoldAndNormalText(view: TextView, label: String, appendedText: String?) {
+        val spannable = SpannableStringBuilder(label)
+        spannable.setSpan(
+            StyleSpan(Typeface.BOLD),
+            0,
+            spannable.length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        appendedText?.let { text ->
+            val start = spannable.length
+            spannable.append(":\n$text")
+            val end = spannable.length
+            spannable.setSpan(
+                StyleSpan(Typeface.NORMAL),
+                start,
+                end,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        } ?: spannable.append(":")
+        view.text = spannable
+    }
+
     private fun updateGeneralInformationCardFromViewModel(statementData: StatementData) {
         //General information
-        binding.tvStatementOverviewGeneralCardLabelDateOfAccident.text = buildString {
-            append(binding.tvStatementOverviewGeneralCardLabelDateOfAccident.text.toString())
-            statementData.dateOfAccident?.let { dateTime ->
-                val formattedDateTime = dateTime.to24Format()
-                if (formattedDateTime.isNotEmpty()) {
-                    append(":\n$formattedDateTime")
-                }
-            } ?: append(":")
+        setBoldAndNormalText(
+            binding.tvStatementOverviewGeneralCardLabelDateOfAccident,
+            binding.tvStatementOverviewGeneralCardLabelDateOfAccident.text.toString(),
+            statementData.dateOfAccident?.to24Format()
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementOverviewGeneralCardLabelLocation,
+            binding.tvStatementOverviewGeneralCardLabelLocation.text.toString(),
+            statementData.accidentLocation.ifEmpty { "" }
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementOverviewGeneralCardLabelInjured,
+            binding.tvStatementOverviewGeneralCardLabelInjured.text.toString(),
+            if (statementData.injured) requireContext().getString(R.string.yes) else requireContext().getString(
+                R.string.no
+            )
+        )
+
+        if (statementData.materialDamageToOtherVehicles || statementData.materialDamageToObjects) {
+            binding.tvStatementOverviewGeneralCardLabelMaterialDamage.visibility = View.VISIBLE
+            if (statementData.materialDamageToOtherVehicles)
+                binding.tvStatementOverviewGeneralCardMaterialDamageOtherCars.visibility =
+                    View.VISIBLE
+            if (statementData.materialDamageToObjects)
+                binding.tvStatementOverviewGeneralCardMaterialDamageOtherObjects.visibility =
+                    View.VISIBLE
         }
 
-        binding.tvStatementOverviewGeneralCardLabelLocation.text = buildString {
-            append(binding.tvStatementOverviewGeneralCardLabelLocation.text.toString())
-            append(if (statementData.accidentLocation.isNotEmpty()) ":\n" else ":")
-            append(statementData.accidentLocation.ifEmpty { "" })
+        if (statementData.witnessName.isNotEmpty()) {
+            binding.tvStatementOverviewGeneralCardLabelWitness.visibility = View.VISIBLE
         }
 
-        binding.tvStatementOverviewGeneralCardLabelInjured.text = buildString {
-            append(binding.tvStatementOverviewGeneralCardLabelInjured.text.toString())
-            append(": ")
-            append(if (statementData.injured) "Yes" else "No")
-        }
+        setBoldAndNormalText(
+            binding.tvStatementOverviewGeneralCardWitnessName,
+            binding.tvStatementOverviewGeneralCardWitnessName.text.toString(),
+            statementData.witnessName.ifEmpty { "" }
+        )
 
-        if (statementData.materialDamageToOtherVehicles) {
-            binding.tvStatementOverviewGeneralCardMaterialDamageOtherCars.visibility =
-                View.VISIBLE
-        }
-        if (statementData.materialDamageToObjects) {
-            binding.tvStatementOverviewGeneralCardMaterialDamageOtherObjects.visibility =
-                View.VISIBLE
-        }
-        binding.tvStatementOverviewGeneralCardWitnessName.text = buildString {
-            append(binding.tvStatementOverviewGeneralCardWitnessName.text.toString())
-            append(": ")
-            append(statementData.witnessName.ifEmpty { "" })
-        }
-        binding.tvStatementOverviewGeneralCardWitnessAddress.text = buildString {
-            append(binding.tvStatementOverviewGeneralCardWitnessAddress.text.toString())
-            append(": ")
-            append(statementData.witnessAddress.ifEmpty { "" })
-        }
-        binding.tvStatementOverviewGeneralCardWitnessPhoneNumber.text = buildString {
-            append(binding.tvStatementOverviewGeneralCardWitnessPhoneNumber.text.toString())
-            append(": ")
-            append(statementData.witnessPhoneNumber.ifEmpty { "" })
-        }
+        setBoldAndNormalText(
+            binding.tvStatementOverviewGeneralCardWitnessAddress,
+            binding.tvStatementOverviewGeneralCardWitnessAddress.text.toString(),
+            statementData.witnessAddress.ifEmpty { "" }
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementOverviewGeneralCardWitnessPhoneNumber,
+            binding.tvStatementOverviewGeneralCardWitnessPhoneNumber.text.toString(),
+            statementData.witnessPhoneNumber.ifEmpty { "" }
+        )
     }
 
     private fun updateVehicleACardFromViewModel(

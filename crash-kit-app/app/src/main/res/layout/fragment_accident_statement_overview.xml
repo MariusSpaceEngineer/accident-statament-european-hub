@@ -59,21 +59,19 @@
                         android:layout_marginTop="16dp"
                         android:text="@string/label_date_of_accident"
                         android:textAllCaps="true"
-                        android:textSize="25sp"
-                        android:textStyle="bold" />
+                        android:textSize="25sp" />
 
 
                     <TextView
                         android:id="@+id/tv_statement_overview_general_card_label_location"
-                        android:layout_width="180dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="64dp"
                         android:text="@string/label_location"
                         android:textAllCaps="true"
-                        android:textSize="25sp"
-                        android:textStyle="bold" />
+                        android:textSize="25sp" />
 
 
                     <TextView
@@ -85,8 +83,7 @@
                         android:layout_marginEnd="64dp"
                         android:text="Injured"
                         android:textAllCaps="true"
-                        android:textSize="25sp"
-                        android:textStyle="bold" />
+                        android:textSize="25sp" />
 
                     <TextView
                         android:id="@+id/tv_statement_overview_general_card_label_material_damage"
@@ -95,10 +92,11 @@
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="64dp"
-                        android:text="@string/statement_material_damage_title"
+                        android:text="@string/label_material_damage"
                         android:textAllCaps="true"
                         android:textSize="25sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:visibility="gone" />
 
                     <TextView
                         android:id="@+id/tv_statement_overview_general_card_material_damage_other_cars"
@@ -131,10 +129,11 @@
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="64dp"
-                        android:text="@string/statement_witness_title"
+                        android:text="@string/label_witness"
                         android:textAllCaps="true"
                         android:textSize="25sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:visibility="gone" />
 
                     <TextView
                         android:id="@+id/tv_statement_overview_general_card_witness_name"
@@ -145,8 +144,7 @@
                         android:layout_marginEnd="20dp"
                         android:text="@string/name"
                         android:textAllCaps="true"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
+                        android:textSize="20sp" />
 
                     <TextView
                         android:id="@+id/tv_statement_overview_general_card_witness_address"
@@ -157,8 +155,7 @@
                         android:layout_marginEnd="20dp"
                         android:text="@string/label_address"
                         android:textAllCaps="true"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
+                        android:textSize="20sp" />
 
                     <TextView
                         android:id="@+id/tv_statement_overview_general_card_witness_phone_number"
@@ -169,8 +166,7 @@
                         android:layout_marginEnd="20dp"
                         android:text="@string/label_phone_number"
                         android:textAllCaps="true"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
+                        android:textSize="20sp" />
 
                     <TextView
                         android:id="@+id/tv_statement_overview_general_card_edit"
