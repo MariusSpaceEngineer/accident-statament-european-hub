@@ -7,10 +7,10 @@ import android.view.MotionEvent
 import kotlin.math.atan2
 
 class RotationGestureDetector(private val mListener: OnRotationGestureListener) {
-    private var mStartPoint = PointF()
-    private var mEndPoint = PointF()
-    private var mPivotPoint = PointF()
-    private var mMatrix = Matrix()
+    private var startPoint = PointF()
+    private var endPoint = PointF()
+    private var pivotPoint = PointF()
+    private var matrix = Matrix()
 
     interface OnRotationGestureListener {
         fun onRotation(rotationDetector: RotationGestureDetector?): Boolean
@@ -22,15 +22,16 @@ class RotationGestureDetector(private val mListener: OnRotationGestureListener) 
     fun onTouchEvent(event: MotionEvent): Boolean {
         Log.d("RotationGestureDetector", "Touch event: ${event.actionMasked}")
         when (event.actionMasked) {
+            //When one pointer is down it sets that as the start point for the rotation
             MotionEvent.ACTION_DOWN -> {
-                mStartPoint.set(event.x, event.y)
+                startPoint.set(event.x, event.y)
             }
-
+            //When a pointer moves it adjusts the angle of the figure
             MotionEvent.ACTION_MOVE -> {
-                mEndPoint.set(event.x, event.y)
-                mPivotPoint.set(mStartPoint)
-                angle = calculateAngle(event) // Update the angle here
-                mMatrix.setRotate(angle, mPivotPoint.x, mPivotPoint.y)
+                endPoint.set(event.x, event.y)
+                pivotPoint.set(startPoint)
+                angle = calculateAngle(event)
+                matrix.setRotate(angle, pivotPoint.x, pivotPoint.y)
                 mListener.onRotation(this)
             }
         }
