@@ -31,11 +31,6 @@ class VehicleACircumstancesFragment : Fragment(), StatementDataHandler {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        navController = findNavController()
-
-        savedInstanceState?.let {
-            navController.restoreState(it.getBundle("nav_state"))
-        }
         // Inflate the layout for this fragment
         _binding = FragmentVehicleACircumstancesBinding.inflate(inflater, container, false)
         val view = binding.root
@@ -53,7 +48,8 @@ class VehicleACircumstancesFragment : Fragment(), StatementDataHandler {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+        navController = findNavController()
+
         updateUIFromViewModel(model)
 
         binding.btnStatementAccidentPrevious.setOnClickListener {

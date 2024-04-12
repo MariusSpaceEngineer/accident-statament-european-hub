@@ -68,12 +68,6 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-
-        navController = findNavController()
-
-        savedInstanceState?.let {
-            navController.restoreState(it.getBundle("nav_state"))
-        }
         // Inflate the layout for this fragment
         _binding = FragmentNewStatementBinding.inflate(inflater, container, false)
         val view = binding.root
@@ -103,6 +97,8 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        navController = findNavController()
+
         binding.btnStatementAccidentPrevious.isEnabled = false
 
         formHelper = FormHelper(requireContext(), fields)

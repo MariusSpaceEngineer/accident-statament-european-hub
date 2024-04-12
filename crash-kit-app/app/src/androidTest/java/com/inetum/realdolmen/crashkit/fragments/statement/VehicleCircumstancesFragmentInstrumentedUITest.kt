@@ -1,6 +1,8 @@
 package com.inetum.realdolmen.crashkit.fragments.statement
 
 import androidx.fragment.app.testing.launchFragmentInContainer
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.scrollTo
@@ -13,6 +15,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleACircumstancesFragment
+import io.mockk.clearMocks
+import io.mockk.mockk
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -25,7 +29,9 @@ class VehicleCircumstancesFragmentInstrumentedUITest {
     private var originalTransitionAnimationScale: String = ""
     private var originalAnimatorDurationScale: String = ""
 
-    //Disable animations on device as required
+    private val mockNavController = mockk<NavController>(relaxed = true)
+
+    //Disable animations on device and set up navController as required
     @Before
     fun setup() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
@@ -39,6 +45,20 @@ class VehicleCircumstancesFragmentInstrumentedUITest {
         device.executeShellCommand("settings put global window_animation_scale 0")
         device.executeShellCommand("settings put global transition_animation_scale 0")
         device.executeShellCommand("settings put global animator_duration_scale 0")
+
+        launchFragmentInContainer<VehicleACircumstancesFragment>(themeResId = R.style.Theme_CrashKit) {
+            VehicleACircumstancesFragment().also { fragment ->
+                // In addition to returning a new instance of our Fragment,
+                // get a callback whenever the fragment’s view is created
+                // or destroyed so that we can set the mock NavController
+                fragment.viewLifecycleOwnerLiveData.observeForever { viewLifecycleOwner ->
+                    if (viewLifecycleOwner != null) {
+                        // The fragment’s view has just been created
+                        Navigation.setViewNavController(fragment.requireView(), mockNavController)
+                    }
+                }
+            }
+        }
     }
 
     //Restore animations
@@ -47,13 +67,11 @@ class VehicleCircumstancesFragmentInstrumentedUITest {
         device.executeShellCommand("settings put global window_animation_scale $originalWindowAnimationScale")
         device.executeShellCommand("settings put global transition_animation_scale $originalTransitionAnimationScale")
         device.executeShellCommand("settings put global animator_duration_scale $originalAnimatorDurationScale")
+        clearMocks(mockNavController)
     }
 
     @Test
     fun testVehicleCircumstancesUIElements() {
-        // Launch the fragment in a test container
-        launchFragmentInContainer<VehicleACircumstancesFragment>(themeResId = R.style.Theme_CrashKit)
-
         // Check to see if the fields are displayed on the screen
         onView(withId(R.id.cb_statement_circumstances_vehicle_a_parked_stopped))
             .check(matches(isDisplayed()))

@@ -82,11 +82,6 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        navController = findNavController()
-
-        savedInstanceState?.let {
-            navController.restoreState(it.getBundle("nav_state"))
-        }
         // Inflate the layout for this fragment
         _binding = FragmentVehicleADriverBinding.inflate(inflater, container, false)
         val view = binding.root
@@ -104,6 +99,7 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        navController = findNavController()
 
         formHelper = FormHelper(requireContext(), fields)
 

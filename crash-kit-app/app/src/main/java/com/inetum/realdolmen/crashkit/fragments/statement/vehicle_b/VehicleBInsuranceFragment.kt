@@ -80,11 +80,6 @@ class VehicleBInsuranceFragment : Fragment(), StatementDataHandler, ValidationCo
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        navController = findNavController()
-
-        savedInstanceState?.let {
-            navController.restoreState(it.getBundle("nav_state"))
-        }
         // Inflate the layout for this fragment
         _binding =
             FragmentVehicleBInsuranceBinding.inflate(inflater, container, false)
@@ -103,6 +98,7 @@ class VehicleBInsuranceFragment : Fragment(), StatementDataHandler, ValidationCo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        navController = findNavController()
 
         formHelper = FormHelper(requireContext(), fields)
 
