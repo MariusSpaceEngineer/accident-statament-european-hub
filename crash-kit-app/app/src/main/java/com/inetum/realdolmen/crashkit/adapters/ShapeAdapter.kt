@@ -17,6 +17,7 @@ class ShapesAdapter(private val onShapeClicked: (Int, Int) -> Unit) :
         R.drawable.truck_vehicle_a to 1,
         R.drawable.truck_vehicle_b to 1,
         R.drawable.four_road_junction to 0,
+        R.drawable.t_junction to 0,
         R.drawable.roundabout to 0,
         R.drawable.road_180 to 0,
         R.drawable.road_90 to 0,
