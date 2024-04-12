@@ -169,8 +169,6 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                 drawText(it, drawable, canvas, resId, centerX, centerY)
             }
 
-            drawShapeRectangle(drawable, canvas)
-
             // Restore the canvas to its previous state
             canvas.restoreToCount(saveCount)
         }
