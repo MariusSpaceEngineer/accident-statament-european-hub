@@ -126,7 +126,6 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
             if (fields.none { it.error != null }) {
                 //If no errors, navigate to the next fragment
                 navController.navigate(R.id.vehicleANewStatementFragment)
-                navController.navigate(R.id.accidentSketchFragment)
             }
         }
 
@@ -239,14 +238,31 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
                 .addOnSuccessListener { location ->
                     Log.d("Location", "location is found: $location")
                     CoroutineScope(Dispatchers.IO).launch {
-                        val response = apiService.getLocationAddress(
-                            LocationCoordinatesData(
-                                location.latitude,
-                                location.longitude
+                        try {
+                            val response = apiService.getLocationAddress(
+                                LocationCoordinatesData(
+                                    location.latitude,
+                                    location.longitude
+                                )
                             )
-                        )
-                        withContext(Dispatchers.Main) {
-                            handleAccidentLocationResponse(response)
+                            withContext(Dispatchers.Main) {
+                                handleAccidentLocationResponse(response)
+                            }
+                        } catch (e: Exception) {
+                            Log.e("NetworkRequest", "Exception occurred: ", e)
+                            withContext(Dispatchers.Main) {
+                                val message = when (e) {
+                                    is java.net.SocketTimeoutException -> requireContext().getString(
+                                        R.string.error_network
+                                    )
+
+                                    else -> requireContext().getString(R.string.unknown_error)
+                                }
+                                requireContext().createSimpleDialog(
+                                    getString(R.string.error),
+                                    message
+                                )
+                            }
                         }
                     }
                 }
@@ -254,7 +270,11 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
                     Log.d("Location", "Coordinates fetch failed with exception: $exception")
                 }
         } catch (securityException: SecurityException) {
-            Toast.makeText(requireContext(), "Location permission denied", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                requireContext(),
+                requireContext().getString(R.string.location_permission_denied),
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -272,4 +292,5 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
             }
         }
     }
+
 }

@@ -107,6 +107,8 @@
     <string name="past_date">Date is in the past</string>
     <string name="invalid_email">Invalid email</string>
     <string name="error_network">A network error occurred. Please try again.</string>
+    <string name="unknown_error">An unknown error occurred. Please try again.</string>
+    <string name="location_permission_denied">Location permission denied.</string>
     <string name="error">Error</string>
 
     <!--    Checkboxes-->
