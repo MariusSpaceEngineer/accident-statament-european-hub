@@ -19,6 +19,8 @@ class NewStatementViewModel : ViewModel() {
     }
 }
 
+//TODO look which properties can't be null
+
 data class StatementData(
     var dateOfAccident: LocalDateTime? = null,
     var accidentLocation: String = "",
@@ -37,6 +39,8 @@ data class StatementData(
     var vehicleAMarkType: String = "",
     var vehicleARegistrationNumber: String = "",
     var vehicleACountryOfRegistration: String = "",
+    var vehicleATrailerRegistrationNumber: String= "",
+    var vehicleATrailerCountryOfRegistration: String = "",
     var vehicleAInsuranceCompanyName: String = "",
     var vehicleAInsuranceCompanyPolicyNumber: String = "",
     var vehicleAInsuranceCompanyGreenCardNumber: String = "",
