@@ -15,6 +15,7 @@
     <string name="statement_material_damage_title">Material Damage</string>
     <string name="statement_witness_title">Witness</string>
     <string name="statement_vehicle_a_title">Vehicle A</string>
+    <string name="trailer_title">Trailer</string>
     <string name="statement_insurance_company_title">Insurance Company</string>
     <string name="statement_insurance_agency_title">Insurance Agency</string>
     <string name="statement_policy_holder_title">Policy Holder</string>
@@ -68,6 +69,7 @@
     <string name="statement_front_button">Next</string>
     <string name="import_insurance_information_button">Import own Insurance information</string>
     <string name="add_trailer_button">Add Trailer</string>
+    <string name="remove_trailer_button">Remove Trailer</string>
     <string name="share_insurance_generate_qr_code_button">Generate QR-Code</string>
     <string name="profile_change_insurance_button">Change Insurance</string>
     <string name="import_other_insurance_information_button">Import other driver insurance information</string>
@@ -116,6 +118,7 @@
     <string name="statement_injured_checkbox">Injured</string>
     <string name="statement_material_damage_other_vehicles_checkbox">Other vehicles than vehicle A and B</string>
     <string name="statement_material_damage_other_than_vehicles_checkbox">Objects other than vehicles</string>
+    <string name="trailer_needs_registration_checkbox">Trailer is over 750kg (has registration)</string>
     <string name="material_damage_covered_checkbox">Material Damage Covered</string>
     <string name="parked_stopped_checkbox">Parked/Stopped</string>
     <string name="leaving_parking_place_opening_the_door_checkbox">Leaving a parking place/ opening the door</string>
@@ -144,5 +147,6 @@
     <string name="ok">OK</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+
 
 </resources>
