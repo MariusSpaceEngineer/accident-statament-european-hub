@@ -119,6 +119,7 @@
     <string name="statement_injured_checkbox">Injured</string>
     <string name="statement_material_damage_other_vehicles_checkbox">Other vehicles than vehicle A and B</string>
     <string name="statement_material_damage_other_than_vehicles_checkbox">Objects other than vehicles</string>
+    <string name="no_witness_checkbox">No Witness</string>
     <string name="trailer_needs_registration_checkbox">Trailer is over 750kg (has registration)</string>
     <string name="driver_is_policy_holder_checkbox">Driver is policy holder</string>
     <string name="material_damage_covered_checkbox">Material Damage Covered</string>
