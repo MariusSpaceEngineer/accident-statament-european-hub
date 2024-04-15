@@ -165,60 +165,75 @@
                 android:background="@drawable/border_outlined_black"
                 android:orientation="vertical">
 
-                <com.google.android.material.textfield.TextInputLayout
+                <CheckBox
+                    android:id="@+id/cb_statement_witness_present"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@string/no_witness" />
+
+                <LinearLayout
+                    android:id="@+id/ll_statement_witness_fields"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="25dp"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginEnd="25dp"
-                    android:layout_marginBottom="8dp"
-                    android:hint="@string/name"
-                    app:boxBackgroundColor="@color/input_field_background"
-                    app:boxStrokeColor="@color/primary800">
+                    android:orientation="vertical">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_witness_name"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/input_hint" />
+                        android:layout_marginStart="25dp"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginEnd="25dp"
+                        android:layout_marginBottom="8dp"
+                        android:hint="@string/name"
+                        app:boxBackgroundColor="@color/input_field_background"
+                        app:boxStrokeColor="@color/primary800">
 
-                </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_statement_witness_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/input_hint" />
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="25dp"
-                    android:layout_marginEnd="25dp"
-                    android:layout_marginBottom="8dp"
-                    android:hint="@string/label_address"
-                    app:boxBackgroundColor="@color/input_field_background"
-                    app:boxStrokeColor="@color/primary800">
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_witness_address"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/input_hint" />
+                        android:layout_marginStart="25dp"
+                        android:layout_marginEnd="25dp"
+                        android:layout_marginBottom="8dp"
+                        android:hint="@string/label_address"
+                        app:boxBackgroundColor="@color/input_field_background"
+                        app:boxStrokeColor="@color/primary800">
 
-                </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_statement_witness_address"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/input_hint" />
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="25dp"
-                    android:layout_marginEnd="25dp"
-                    android:layout_marginBottom="15dp"
-                    android:hint="@string/label_phone_number"
-                    app:boxBackgroundColor="@color/input_field_background"
-                    app:boxStrokeColor="@color/primary800">
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_witness_phone"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/input_hint" />
+                        android:layout_marginStart="25dp"
+                        android:layout_marginEnd="25dp"
+                        android:layout_marginBottom="15dp"
+                        android:hint="@string/label_phone_number"
+                        app:boxBackgroundColor="@color/input_field_background"
+                        app:boxStrokeColor="@color/primary800">
 
-                </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_statement_witness_phone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/input_hint" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
 
             </LinearLayout>
 

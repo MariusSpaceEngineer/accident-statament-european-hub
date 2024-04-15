@@ -48,8 +48,8 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
     private var _binding: FragmentNewStatementBinding? = null
     private val binding get() = _binding!!
 
-    private var fields: List<TextView> = listOf()
-    private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = listOf()
+    private var fields: List<TextView> = mutableListOf()
+    private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = mutableListOf()
 
     private val dateTimePicker by lazy {
         DateTimePicker(requireContext())
@@ -94,6 +94,64 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
         super.onSaveInstanceState(outState)
     }
 
+    private fun setWitnessFieldsToValidation() {
+        (fields as MutableList).apply {
+            add(binding.etStatementWitnessName)
+            add(binding.etStatementWitnessAddress)
+            add(binding.etStatementWitnessPhone)
+        }
+
+        (validationRules as MutableList).apply {
+            add(
+                Triple(
+                    binding.etStatementWitnessName,
+                    { value -> value.isNullOrEmpty() },
+                    formHelper.errors.fieldRequired
+                )
+            )
+            add(
+                Triple(
+                    binding.etStatementWitnessName,
+                    { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
+                    formHelper.errors.noDigitsAllowed
+                )
+            )
+            add(
+                Triple(
+                    binding.etStatementWitnessAddress,
+                    { value -> value.isNullOrEmpty() },
+                    formHelper.errors.fieldRequired
+                )
+            )
+            add(
+                Triple(
+                    binding.etStatementWitnessPhone,
+                    { value -> value.isNullOrEmpty() },
+                    formHelper.errors.fieldRequired
+                )
+            )
+        }
+    }
+
+    private fun removeWitnessFieldsFromValidation() {
+        // Remove trailer fields from validationRules
+        (validationRules as MutableList<Triple<EditText, (String?) -> Boolean, String>>).removeAll { rule ->
+            rule.first == binding.etStatementWitnessName || rule.first == binding.etStatementWitnessAddress
+                    || rule.first == binding.etStatementWitnessPhone
+        }
+
+        // Remove trailer fields from fields
+        (fields as MutableList<TextView>).removeAll { field ->
+            if (field == binding.etStatementWitnessName || field == binding.etStatementWitnessAddress ||
+                field == binding.etStatementWitnessPhone
+            ) {
+                (field as EditText).error = null
+                true
+            } else {
+                false
+            }
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -106,6 +164,20 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
         setupValidation()
 
         updateUIFromViewModel(model)
+
+        binding.cbStatementWitnessPresent.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.llStatementWitnessFields.visibility = View.GONE
+                binding.etStatementWitnessName.text= null
+                binding.etStatementWitnessAddress.text= null
+                binding.etStatementWitnessPhone.text= null
+                removeWitnessFieldsFromValidation()
+
+            } else {
+                binding.llStatementWitnessFields.visibility = View.VISIBLE
+                setWitnessFieldsToValidation()
+            }
+        }
 
         setupButtonClickListeners()
     }
@@ -156,6 +228,7 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
             binding.etStatementWitnessName.setText(statementData.witnessName)
             binding.etStatementWitnessAddress.setText(statementData.witnessAddress)
             binding.etStatementWitnessPhone.setText(statementData.witnessPhoneNumber)
+            binding.cbStatementWitnessPresent.isChecked= !statementData.witnessIsPresent
         })
     }
 
@@ -171,12 +244,15 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
             this.witnessName = binding.etStatementWitnessName.text.toString()
             this.witnessAddress = binding.etStatementWitnessAddress.text.toString()
             this.witnessPhoneNumber = binding.etStatementWitnessPhone.text.toString()
+            Log.i("witness",witnessIsPresent.toString())
+            this.witnessIsPresent= !binding.cbStatementWitnessPresent.isChecked
+            Log.i("witness",witnessIsPresent.toString())
         }
     }
 
     override fun setupValidation(
     ) {
-        this.fields = listOf(
+        this.fields = mutableListOf(
             binding.etStatementAccidentDate,
             binding.etStatementAccidentLocation,
             binding.cbStatementAccidentMaterialDamageOtherVehicles,
@@ -186,7 +262,7 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
             binding.etStatementWitnessPhone
         )
 
-        this.validationRules = listOf<Triple<EditText, (String?) -> Boolean, String>>(
+        this.validationRules = mutableListOf<Triple<EditText, (String?) -> Boolean, String>>(
             Triple(
                 binding.etStatementAccidentDate,
                 { value -> value.isNullOrEmpty() },
