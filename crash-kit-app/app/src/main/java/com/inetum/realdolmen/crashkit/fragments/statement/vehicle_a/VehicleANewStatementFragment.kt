@@ -24,7 +24,6 @@ import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.createSimpleDialog
-import com.inetum.realdolmen.crashkit.utils.printBackStack
 import com.inetum.realdolmen.crashkit.utils.toLocalDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -42,9 +41,12 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
     private val apiService = CrashKitApp.apiService
     private val securedPreferences = CrashKitApp.securedPreferences
 
-    private var fields: List<TextView> = listOf()
-    private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = listOf()
+    private var fields: List<TextView> = mutableListOf()
+    private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> =
+        mutableListOf()
     private lateinit var formHelper: FormHelper
+
+    private var hasTrailer = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,6 +88,73 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
         }
     }
 
+    private fun updateTrailerButton(hasTrailer: Boolean): Boolean {
+        var value = hasTrailer
+        value = !hasTrailer
+
+        if (!value) {
+            binding.btnStatementVehicleAAddTrailer.text =
+                requireContext().getString(R.string.add_trailer_button)
+            binding.tvStatementVehicleATrailerTitle.visibility = View.GONE
+            binding.cbStatementTrailerNeedsRegistration.visibility = View.GONE
+        } else {
+            binding.btnStatementVehicleAAddTrailer.text = requireContext().getString(R.string.remove_trailer_button)
+            binding.cbStatementTrailerNeedsRegistration.isChecked = false
+            binding.tvStatementVehicleATrailerTitle.visibility = View.VISIBLE
+            binding.cbStatementTrailerNeedsRegistration.visibility = View.VISIBLE
+        }
+        return value
+    }
+
+    private fun removeTrailerFieldsFromValidation() {
+        // Remove trailer fields from validationRules
+        (validationRules as MutableList<Triple<EditText, (String?) -> Boolean, String>>).removeAll { rule ->
+            rule.first == binding.etStatementTrailerARegistrationNumber || rule.first == binding.etStatementTrailerACountry
+        }
+
+        // Remove trailer fields from fields
+        (fields as MutableList<TextView>).removeAll { field ->
+            if (field == binding.etStatementTrailerARegistrationNumber || field == binding.etStatementTrailerACountry) {
+                (field as EditText).error = null
+                true
+            } else {
+                false
+            }
+        }
+    }
+
+
+    private fun setTrailerFieldsToValidation() {
+        (fields as MutableList).apply {
+            add(binding.etStatementTrailerARegistrationNumber)
+            add(binding.etStatementTrailerACountry)
+        }
+
+        (validationRules as MutableList).apply {
+            add(
+                Triple(
+                    binding.etStatementTrailerARegistrationNumber,
+                    { value -> value.isNullOrEmpty() },
+                    formHelper.errors.fieldRequired
+                )
+            )
+            add(
+                Triple(
+                    binding.etStatementTrailerACountry,
+                    { value -> value.isNullOrEmpty() },
+                    formHelper.errors.fieldRequired
+                )
+            )
+            add(
+                Triple(
+                    binding.etStatementTrailerACountry,
+                    { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
+                    formHelper.errors.noDigitsAllowed
+                )
+            )
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = findNavController()
@@ -94,12 +163,11 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
 
         setupValidation()
 
-        requireActivity().supportFragmentManager.printBackStack()
-
         updateUIFromViewModel(model)
 
         //Disable button if user is not logged in
-        binding.btnStatementVehicleAImportInsuranceInformation.isEnabled = !securedPreferences.isGuest()
+        binding.btnStatementVehicleAImportInsuranceInformation.isEnabled =
+            !securedPreferences.isGuest()
 
         binding.btnStatementVehicleAImportInsuranceInformation.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
@@ -107,6 +175,22 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
                 withContext(Dispatchers.Main) {
                     handlePolicyHolderProfileResponse(response)
                 }
+            }
+        }
+
+        binding.btnStatementVehicleAAddTrailer.setOnClickListener {
+            hasTrailer = updateTrailerButton(hasTrailer)
+        }
+
+        binding.cbStatementTrailerNeedsRegistration.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.llStatementTrailerAFields.visibility = View.VISIBLE
+                setTrailerFieldsToValidation()
+            } else {
+                binding.llStatementTrailerAFields.visibility = View.GONE
+                removeTrailerFieldsFromValidation()
+                binding.etStatementTrailerACountry.text = null
+                binding.etStatementTrailerARegistrationNumber.text = null
             }
         }
 
@@ -119,11 +203,12 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
         binding.btnStatementAccidentNext.setOnClickListener {
             formHelper.clearErrors()
 
-            updateViewModelFromUI(model)
+            Log.i("fields to validate", validationRules.toString())
 
             formHelper.validateFields(validationRules)
 
             if (fields.none { it.error != null }) {
+                updateViewModelFromUI(model)
                 navController.navigate(R.id.vehicleAInsuranceFragment)
             }
         }
@@ -140,6 +225,14 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
             binding.etStatementVehicleAMarkType.setText(statementData.vehicleAMarkType)
             binding.etStatementVehicleARegistrationNumber.setText(statementData.vehicleARegistrationNumber)
             binding.etStatementVehicleACountry.setText(statementData.vehicleACountryOfRegistration)
+            if (statementData.vehicleATrailerRegistrationNumber.isNotEmpty() && statementData.vehicleATrailerCountryOfRegistration.isNotEmpty()) {
+                hasTrailer = false
+                hasTrailer = updateTrailerButton(hasTrailer)
+                Log.i("hasTrailer", hasTrailer.toString())
+                binding.cbStatementTrailerNeedsRegistration.isChecked = true
+                binding.etStatementTrailerARegistrationNumber.setText(statementData.vehicleATrailerRegistrationNumber)
+                binding.etStatementTrailerACountry.setText(statementData.vehicleATrailerCountryOfRegistration)
+            }
         })
     }
 
@@ -158,12 +251,19 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
                 binding.etStatementVehicleARegistrationNumber.text.toString()
             this.vehicleACountryOfRegistration =
                 binding.etStatementVehicleACountry.text.toString()
+            this.vehicleATrailerRegistrationNumber =
+                binding.etStatementTrailerARegistrationNumber.text.toString()
+            this.vehicleATrailerCountryOfRegistration =
+                binding.etStatementTrailerACountry.text.toString()
         }
+        Log.i("model", model.statementData.value?.vehicleATrailerRegistrationNumber ?: "empty ")
+        Log.i("model", model.statementData.value?.vehicleATrailerCountryOfRegistration ?: "empty ")
+
     }
 
     override fun setupValidation(
     ) {
-        this.fields = listOf(
+        this.fields = mutableListOf(
             binding.etStatementPolicyHolderName,
             binding.etStatementPolicyHolderFirstName,
             binding.etStatementPolicyHolderAddress,
@@ -176,7 +276,7 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
         )
 
 
-        this.validationRules = listOf<Triple<EditText, (String?) -> Boolean, String>>(
+        this.validationRules = mutableListOf<Triple<EditText, (String?) -> Boolean, String>>(
             Triple(
                 binding.etStatementPolicyHolderName,
                 { value -> value.isNullOrEmpty() },
