@@ -73,6 +73,15 @@
                     android:textSize="20sp"
                     android:textStyle="italic" />
 
+                <CheckBox
+                    android:id="@+id/cb_statement_vehicle_a_driver_is_policy_holder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@string/driver_is_policy_holder_checkbox"
+
+                    />
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

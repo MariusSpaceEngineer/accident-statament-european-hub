@@ -120,6 +120,7 @@
     <string name="statement_material_damage_other_vehicles_checkbox">Other vehicles than vehicle A and B</string>
     <string name="statement_material_damage_other_than_vehicles_checkbox">Objects other than vehicles</string>
     <string name="trailer_needs_registration_checkbox">Trailer is over 750kg (has registration)</string>
+    <string name="driver_is_policy_holder_checkbox">Driver is policy holder</string>
     <string name="material_damage_covered_checkbox">Material Damage Covered</string>
     <string name="parked_stopped_checkbox">Parked/Stopped</string>
     <string name="leaving_parking_place_opening_the_door_checkbox">Leaving a parking place/ opening the door</string>

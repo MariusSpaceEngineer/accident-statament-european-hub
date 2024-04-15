@@ -33,10 +33,10 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
     private var _binding: FragmentVehicleADriverBinding? = null
     private val binding get() = _binding!!
 
-    private var fields: List<TextView> = listOf()
-    private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = listOf()
+    private var fields: List<TextView> = mutableListOf()
+    private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> =
+        mutableListOf()
     private lateinit var formHelper: FormHelper
-
 
     private val changeSupport = PropertyChangeSupport(this)
 
@@ -97,6 +97,41 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
         super.onSaveInstanceState(outState)
     }
 
+    private fun updateDriverFields(checked: Boolean) {
+        if (checked) {
+            model.statementData.observe(viewLifecycleOwner, Observer { statementData ->
+                // Update the UI here based on the new statementData
+                binding.etStatementVehicleADriverName.setText(statementData.policyHolderALastName)
+                binding.etStatementVehicleADriverFirstName.setText(statementData.policyHolderAFirstName)
+                binding.etStatementVehicleADriverAddress.setText(statementData.policyHolderAAddress)
+                binding.etStatementVehicleADriverPhoneNumber.setText(statementData.policyHolderAPhoneNumber)
+                binding.etStatementVehicleADriverEmail.setText(statementData.policyHolderAEmail)
+            })
+
+        } else {
+            binding.etStatementVehicleADriverName.text = null
+            binding.etStatementVehicleADriverFirstName.text = null
+            binding.etStatementVehicleADriverAddress.text = null
+            binding.etStatementVehicleADriverPhoneNumber.text = null
+            binding.etStatementVehicleADriverEmail.text = null
+        }
+    }
+
+    private fun removePolicyHolderDriverErrors() {
+
+        // Remove error messages from fields
+        (fields as MutableList<TextView>).forEach { field ->
+            if (field == binding.etStatementVehicleADriverName || field == binding.etStatementVehicleADriverFirstName
+                || field == binding.etStatementVehicleADriverAddress || field == binding.etStatementVehicleADriverPhoneNumber
+                || field == binding.etStatementVehicleADriverEmail
+            ) {
+                (field as EditText).error = null
+            }
+        }
+
+
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = findNavController()
@@ -113,14 +148,18 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
             navController.popBackStack()
         }
 
+        binding.cbStatementVehicleADriverIsPolicyHolder.setOnCheckedChangeListener { buttonView, isChecked ->
+            updateDriverFields(isChecked)
+            removePolicyHolderDriverErrors()
+        }
+
         binding.btnStatementAccidentNext.setOnClickListener {
             formHelper.clearErrors()
-
-            updateViewModelFromUI(model)
 
             formHelper.validateFields(validationRules)
 
             if (fields.none { it.error != null }) {
+                updateViewModelFromUI(model)
                 // If no errors, navigate to the next fragment
                 navController.navigate(R.id.vehicleACircumstancesFragment)
             }
@@ -177,6 +216,8 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
                 statementData.vehicleADriverDrivingLicenseExpirationDate?.to24Format()
                     ?: ""
             )
+            binding.cbStatementVehicleADriverIsPolicyHolder.isChecked =
+                statementData.vehicleADriverIsPolicyHolder
         })
     }
 
@@ -197,6 +238,8 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
             this.vehicleADriverDrivingLicenseNr =
                 binding.etStatementVehicleADriverDrivingLicenseNumber.text.toString()
             this.vehicleADriverDrivingLicenseExpirationDate = drivingLicenseExpirationDate
+            this.vehicleADriverIsPolicyHolder =
+                binding.cbStatementVehicleADriverIsPolicyHolder.isChecked
         }
     }
 
@@ -206,7 +249,7 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
 
     override fun setupValidation(
     ) {
-        this.fields = listOf(
+        this.fields = mutableListOf(
             binding.etStatementVehicleADriverName,
             binding.etStatementVehicleADriverFirstName,
             binding.etStatementVehicleADriverDateOfBirth,
@@ -219,7 +262,7 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
         )
 
 
-        this.validationRules = listOf<Triple<EditText, (String?) -> Boolean, String>>(
+        this.validationRules = mutableListOf<Triple<EditText, (String?) -> Boolean, String>>(
             Triple(
                 binding.etStatementVehicleADriverName,
                 { value -> value.isNullOrEmpty() },

@@ -54,6 +54,7 @@ data class StatementData(
     var vehicleAInsuranceAgencyPhoneNumber: String = "",
     var vehicleAInsuranceAgencyEmail: String = "",
     var vehicleAMaterialDamageCovered: Boolean = false,
+    var vehicleADriverIsPolicyHolder: Boolean= false,
     var vehicleADriverLastName: String = "",
     var vehicleADriverFirstName: String = "",
     var vehicleADriverDateOfBirth: LocalDate? = null,
