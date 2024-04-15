@@ -39,6 +39,7 @@ data class StatementData(
     var vehicleAMarkType: String = "",
     var vehicleARegistrationNumber: String = "",
     var vehicleACountryOfRegistration: String = "",
+    var vehicleATrailerPresent: Boolean= false,
     var vehicleATrailerRegistrationNumber: String= "",
     var vehicleATrailerCountryOfRegistration: String = "",
     var vehicleAInsuranceCompanyName: String = "",
