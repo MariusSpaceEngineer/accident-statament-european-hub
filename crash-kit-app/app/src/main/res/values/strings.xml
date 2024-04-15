@@ -95,6 +95,7 @@
     <string name="statement_insurance_description">(see insurance certificate)</string>
     <string name="statement_driver_description">(see driving license)</string>
     <string name="share_insurance_qr_code_description">Scan this QR-code with another driver’s phone to share your insurance details instantly.</string>
+    <string name="trailer_under_750kg_description">Trailers weighing less than 750kg don’t require registration</string>
 
     <!--    Field Validation-->
     <string name="warning_email_required">Email is required!</string>
@@ -147,6 +148,4 @@
     <string name="ok">OK</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-
-
 </resources>
