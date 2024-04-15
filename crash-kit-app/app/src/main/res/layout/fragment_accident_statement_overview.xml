@@ -137,8 +137,21 @@
                         android:textAllCaps="true"
                         android:textColor="@color/black"
                         android:textSize="25sp"
-                        android:textStyle="bold"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_statement_overview_general_card_witness_no_witness"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="20dp"
+                        android:text="@string/no_witness"
+                        android:textAllCaps="true"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
                         android:visibility="gone" />
+
 
                     <TextView
                         android:id="@+id/tv_statement_overview_general_card_witness_name"
@@ -150,7 +163,8 @@
                         android:text="@string/name"
                         android:textAllCaps="true"
                         android:textColor="@color/black"
-                        android:textSize="20sp" />
+                        android:textSize="20sp"
+                        android:visibility="gone" />
 
                     <TextView
                         android:id="@+id/tv_statement_overview_general_card_witness_address"
@@ -162,7 +176,8 @@
                         android:text="@string/label_address"
                         android:textAllCaps="true"
                         android:textColor="@color/black"
-                        android:textSize="20sp" />
+                        android:textSize="20sp"
+                        android:visibility="gone" />
 
                     <TextView
                         android:id="@+id/tv_statement_overview_general_card_witness_phone_number"
@@ -174,7 +189,8 @@
                         android:text="@string/label_phone_number"
                         android:textAllCaps="true"
                         android:textColor="@color/black"
-                        android:textSize="20sp" />
+                        android:textSize="20sp"
+                        android:visibility="gone" />
 
                     <TextView
                         android:id="@+id/tv_statement_overview_general_card_edit"
@@ -465,7 +481,6 @@
                             android:textColor="@color/black"
                             android:textSize="20sp"
                             android:visibility="gone" />
-
 
 
                         <TextView

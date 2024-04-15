@@ -381,7 +381,7 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
         )
     }
 
-    fun setBoldAndNormalText(view: TextView, label: String, appendedText: String?) {
+    private fun setBoldAndNormalText(view: TextView, label: String, appendedText: String?) {
         val spannable = SpannableStringBuilder(label)
         spannable.setSpan(
             StyleSpan(Typeface.BOLD),
@@ -435,27 +435,42 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
                     View.VISIBLE
         }
 
-        if (statementData.witnessName.isNotEmpty()) {
-            binding.tvStatementOverviewGeneralCardLabelWitness.visibility = View.VISIBLE
+        if (statementData.witnessIsPresent) {
+
+            Log.i("witnessName", statementData.witnessName)
+
+            if (statementData.witnessName.isNotEmpty()) {
+                binding.tvStatementOverviewGeneralCardWitnessName.visibility = View.VISIBLE
+                setBoldAndNormalText(
+                    binding.tvStatementOverviewGeneralCardWitnessName,
+                    binding.tvStatementOverviewGeneralCardWitnessName.text.toString(),
+                    statementData.witnessName
+                )
+            }
+
+            if (statementData.witnessAddress.isNotEmpty()) {
+                binding.tvStatementOverviewGeneralCardWitnessAddress.visibility = View.VISIBLE
+                setBoldAndNormalText(
+                    binding.tvStatementOverviewGeneralCardWitnessAddress,
+                    binding.tvStatementOverviewGeneralCardWitnessAddress.text.toString(),
+                    statementData.witnessAddress
+                )
+            }
+
+            if (statementData.witnessPhoneNumber.isNotEmpty()) {
+                binding.tvStatementOverviewGeneralCardWitnessPhoneNumber.visibility = View.VISIBLE
+                setBoldAndNormalText(
+                    binding.tvStatementOverviewGeneralCardWitnessPhoneNumber,
+                    binding.tvStatementOverviewGeneralCardWitnessPhoneNumber.text.toString(),
+                    statementData.witnessPhoneNumber
+                )
+            }
+
+        } else {
+            binding.tvStatementOverviewGeneralCardWitnessNoWitness.visibility = View.VISIBLE
         }
 
-        setBoldAndNormalText(
-            binding.tvStatementOverviewGeneralCardWitnessName,
-            binding.tvStatementOverviewGeneralCardWitnessName.text.toString(),
-            statementData.witnessName
-        )
 
-        setBoldAndNormalText(
-            binding.tvStatementOverviewGeneralCardWitnessAddress,
-            binding.tvStatementOverviewGeneralCardWitnessAddress.text.toString(),
-            statementData.witnessAddress
-        )
-
-        setBoldAndNormalText(
-            binding.tvStatementOverviewGeneralCardWitnessPhoneNumber,
-            binding.tvStatementOverviewGeneralCardWitnessPhoneNumber.text.toString(),
-            statementData.witnessPhoneNumber
-        )
 
         if (statementData.accidentSketch != null) {
             binding.tvStatementOverviewSketchLabel.visibility = View.VISIBLE
