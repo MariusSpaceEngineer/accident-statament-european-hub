@@ -36,6 +36,7 @@ data class StatementData(
     var policyHolderAPostalCode: String = "",
     var policyHolderAPhoneNumber: String = "",
     var policyHolderAEmail: String = "",
+    var vehicleAMotorPresent: Boolean= false,
     var vehicleAMarkType: String = "",
     var vehicleARegistrationNumber: String = "",
     var vehicleACountryOfRegistration: String = "",

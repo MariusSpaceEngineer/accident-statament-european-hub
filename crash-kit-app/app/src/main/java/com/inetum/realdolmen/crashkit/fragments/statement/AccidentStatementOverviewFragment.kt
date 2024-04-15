@@ -506,23 +506,60 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             statementData.policyHolderAEmail
         )
 
-        setBoldAndNormalText(
-            binding.tvStatementVehicleACardMotorMarkType,
-            binding.tvStatementVehicleACardMotorMarkType.text.toString(),
-            statementData.vehicleAMarkType
-        )
+        if (statementData.vehicleAMarkType.isNotEmpty()) {
+            binding.tvStatementVehicleACardMotorTitle.visibility = View.VISIBLE
+            binding.tvStatementVehicleACardMotorMarkType.visibility = View.VISIBLE
+            setBoldAndNormalText(
+                binding.tvStatementVehicleACardMotorMarkType,
+                binding.tvStatementVehicleACardMotorMarkType.text.toString(),
+                statementData.vehicleAMarkType
+            )
+        }
 
-        setBoldAndNormalText(
-            binding.tvStatementVehicleACardMotorRegistrationNumber,
-            binding.tvStatementVehicleACardMotorRegistrationNumber.text.toString(),
-            statementData.vehicleARegistrationNumber
-        )
+        if (statementData.vehicleARegistrationNumber.isNotEmpty()) {
+            binding.tvStatementVehicleACardMotorRegistrationNumber.visibility = View.VISIBLE
+            setBoldAndNormalText(
+                binding.tvStatementVehicleACardMotorRegistrationNumber,
+                binding.tvStatementVehicleACardMotorRegistrationNumber.text.toString(),
+                statementData.vehicleARegistrationNumber
+            )
+        }
 
-        setBoldAndNormalText(
-            binding.tvStatementVehicleACardMotorCountry,
-            binding.tvStatementVehicleACardMotorCountry.text.toString(),
-            statementData.vehicleACountryOfRegistration
-        )
+        if (statementData.vehicleACountryOfRegistration.isNotEmpty()) {
+            binding.tvStatementVehicleACardMotorCountry.visibility = View.VISIBLE
+            setBoldAndNormalText(
+                binding.tvStatementVehicleACardMotorCountry,
+                binding.tvStatementVehicleACardMotorCountry.text.toString(),
+                statementData.vehicleACountryOfRegistration
+            )
+        }
+
+        if (statementData.vehicleATrailerPresent) {
+            binding.tvStatementVehicleACardTrailerTitle.visibility = View.VISIBLE
+
+            if (statementData.vehicleATrailerRegistrationNumber.isNotEmpty()) {
+                binding.tvStatementVehicleACardTrailerRegistrationNumber.visibility = View.VISIBLE
+                setBoldAndNormalText(
+                    binding.tvStatementVehicleACardTrailerRegistrationNumber,
+                    binding.tvStatementVehicleACardTrailerRegistrationNumber.text.toString(),
+                    statementData.vehicleATrailerRegistrationNumber
+                )
+            }
+
+            if (statementData.vehicleATrailerCountryOfRegistration.isNotEmpty()) {
+                binding.tvStatementVehicleACardTrailerCountry.visibility = View.VISIBLE
+                setBoldAndNormalText(
+                    binding.tvStatementVehicleACardTrailerCountry,
+                    binding.tvStatementVehicleACardTrailerCountry.text.toString(),
+                    statementData.vehicleATrailerCountryOfRegistration
+                )
+            }
+
+            if (statementData.vehicleATrailerRegistrationNumber.isEmpty() && statementData.vehicleATrailerCountryOfRegistration.isEmpty()) {
+                binding.tvStatementVehicleACardTrailerNoRegistration.visibility = View.VISIBLE
+            }
+
+        }
 
         //Vehicle A page two
         setBoldAndNormalText(

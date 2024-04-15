@@ -281,7 +281,6 @@
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="24dp"
                         android:orientation="vertical"
-                        android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
@@ -374,6 +373,20 @@
                             android:textStyle="bold" />
 
                         <TextView
+                            android:id="@+id/tv_statement_vehicle_a_card_motor_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginBottom="16dp"
+                            android:gravity="center"
+                            android:text="Motor"
+                            android:textAllCaps="true"
+                            android:textColor="@color/black"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:visibility="gone" />
+
+                        <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_motor_mark_type"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -381,7 +394,8 @@
                             android:text="@string/label_mark_type"
                             android:textAllCaps="true"
                             android:textColor="@color/black"
-                            android:textSize="20sp" />
+                            android:textSize="20sp"
+                            android:visibility="gone" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_motor_registration_number"
@@ -391,7 +405,8 @@
                             android:text="@string/label_registration_number"
                             android:textAllCaps="true"
                             android:textColor="@color/black"
-                            android:textSize="20sp" />
+                            android:textSize="20sp"
+                            android:visibility="gone" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_motor_country"
@@ -401,7 +416,56 @@
                             android:text="@string/label_country_of_registration"
                             android:textAllCaps="true"
                             android:textColor="@color/black"
-                            android:textSize="20sp" />
+                            android:textSize="20sp"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/tv_statement_vehicle_a_card_trailer_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginBottom="16dp"
+                            android:gravity="center"
+                            android:text="@string/trailer_title"
+                            android:textAllCaps="true"
+                            android:textColor="@color/black"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/tv_statement_vehicle_a_card_trailer_registration_number"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:text="@string/label_registration_number"
+                            android:textAllCaps="true"
+                            android:textColor="@color/black"
+                            android:textSize="20sp"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/tv_statement_vehicle_a_card_trailer_country"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:text="@string/label_country_of_registration"
+                            android:textAllCaps="true"
+                            android:textColor="@color/black"
+                            android:textSize="20sp"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/tv_statement_vehicle_a_card_trailer_no_registration"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:text="@string/trailer_under_750kg_description"
+                            android:textAllCaps="true"
+                            android:textColor="@color/black"
+                            android:textSize="20sp"
+                            android:visibility="gone" />
+
 
 
                         <TextView
