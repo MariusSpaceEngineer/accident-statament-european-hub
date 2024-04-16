@@ -139,5 +139,7 @@ data class StatementData(
     var vehicleBAccidentPhotos: MutableList<Bitmap>? = null,
     var vehicleBRemarks: String = "",
     var vehicleBDamageDescription: String = "",
-    var accidentSketch: Bitmap? = null
+    var accidentSketch: Bitmap? = null,
+    var driverASignature: Bitmap?= null,
+    var driverBSignature: Bitmap?= null
 )
