@@ -9,7 +9,6 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
@@ -34,6 +33,7 @@ import retrofit2.Response
 class VehicleANewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigure {
     private lateinit var model: NewStatementViewModel
     private lateinit var navController: NavController
+    private lateinit var formHelper: FormHelper
 
     private var _binding: FragmentVehicleANewStatementBinding? = null
     private val binding get() = _binding!!
@@ -44,7 +44,6 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
     private var fields: List<TextView> = mutableListOf()
     private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> =
         mutableListOf()
-    private lateinit var formHelper: FormHelper
 
     private var hasTrailer: Boolean = false
 
@@ -57,12 +56,11 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = FragmentVehicleANewStatementBinding.inflate(inflater, container, false)
-        val view = binding.root
 
-        return view
+        return binding.root
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -71,148 +69,6 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
             outState.putBundle("nav_state", navController.saveState())
         }
         super.onSaveInstanceState(outState)
-    }
-
-    private fun handlePolicyHolderProfileResponse(response: Response<PolicyHolderResponse>) {
-        Log.i("Request", "Request code: ${response.code()}")
-        if (response.isSuccessful) {
-            val personalInformationResponse = response.body()
-            if (personalInformationResponse != null) {
-                importInsuranceInformation(personalInformationResponse.insuranceCertificates)
-                bindPolicyHolderInformationToUI(binding, personalInformationResponse)
-            }
-        } else {
-
-            val errorMessage = "Error while fetching insurance information"
-            requireContext().createSimpleDialog(getString(R.string.error), errorMessage)
-        }
-    }
-
-    private fun updateTrailerButton(hasTrailer: Boolean): Boolean {
-        var value = hasTrailer
-        value = !hasTrailer
-
-        if (!value) {
-            binding.btnStatementVehicleAAddTrailer.text =
-                requireContext().getString(R.string.remove_trailer_button)
-            binding.cbStatementTrailerNeedsRegistration.isChecked = false
-            binding.tvStatementVehicleATrailerTitle.visibility = View.VISIBLE
-            binding.cbStatementTrailerNeedsRegistration.visibility = View.VISIBLE
-        } else {
-            binding.btnStatementVehicleAAddTrailer.text =
-                requireContext().getString(R.string.add_trailer_button)
-            binding.tvStatementVehicleATrailerTitle.visibility = View.GONE
-            binding.cbStatementTrailerNeedsRegistration.visibility = View.GONE
-        }
-        return value
-    }
-
-    private fun removeTrailerFieldsFromValidation() {
-        // Remove trailer fields from validationRules
-        (validationRules as MutableList<Triple<EditText, (String?) -> Boolean, String>>).removeAll { rule ->
-            rule.first == binding.etStatementTrailerARegistrationNumber || rule.first == binding.etStatementTrailerACountry
-        }
-
-        // Remove trailer fields from fields
-        (fields as MutableList<TextView>).removeAll { field ->
-            if (field == binding.etStatementTrailerARegistrationNumber || field == binding.etStatementTrailerACountry) {
-                (field as EditText).error = null
-                true
-            } else {
-                false
-            }
-        }
-    }
-
-
-    private fun setTrailerFieldsToValidation() {
-        (fields as MutableList).apply {
-            add(binding.etStatementTrailerARegistrationNumber)
-            add(binding.etStatementTrailerACountry)
-        }
-
-        (validationRules as MutableList).apply {
-            add(
-                Triple(
-                    binding.etStatementTrailerARegistrationNumber,
-                    { value -> value.isNullOrEmpty() },
-                    formHelper.errors.fieldRequired
-                )
-            )
-            add(
-                Triple(
-                    binding.etStatementTrailerACountry,
-                    { value -> value.isNullOrEmpty() },
-                    formHelper.errors.fieldRequired
-                )
-            )
-            add(
-                Triple(
-                    binding.etStatementTrailerACountry,
-                    { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                    formHelper.errors.noDigitsAllowed
-                )
-            )
-        }
-    }
-
-    private fun setMotorFieldsToValidation() {
-        (fields as MutableList).apply {
-            add(binding.etStatementVehicleAMarkType)
-            add(binding.etStatementVehicleARegistrationNumber)
-            add(binding.etStatementVehicleACountry)
-        }
-
-        (validationRules as MutableList).apply {
-            add(
-                Triple(
-                    binding.etStatementVehicleAMarkType,
-                    { value -> value.isNullOrEmpty() },
-                    formHelper.errors.fieldRequired
-                )
-            )
-            add(
-                Triple(
-                    binding.etStatementVehicleACountry,
-                    { value -> value.isNullOrEmpty() },
-                    formHelper.errors.fieldRequired
-                )
-            )
-            add(
-                Triple(
-                    binding.etStatementVehicleACountry,
-                    { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                    formHelper.errors.noDigitsAllowed
-                )
-            )
-            add(
-                Triple(
-                    binding.etStatementVehicleARegistrationNumber,
-                    { value -> value.isNullOrEmpty() },
-                    formHelper.errors.fieldRequired
-                )
-            )
-        }
-    }
-
-    private fun removeMotorFieldsFromValidation() {
-        // Remove trailer fields from validationRules
-        (validationRules as MutableList<Triple<EditText, (String?) -> Boolean, String>>).removeAll { rule ->
-            rule.first == binding.etStatementVehicleAMarkType || rule.first == binding.etStatementVehicleARegistrationNumber
-                    || rule.first == binding.etStatementVehicleACountry
-        }
-
-        // Remove trailer fields from fields
-        (fields as MutableList<TextView>).removeAll { field ->
-            if (field == binding.etStatementVehicleAMarkType || field == binding.etStatementVehicleARegistrationNumber ||
-                field == binding.etStatementVehicleACountry
-            ) {
-                (field as EditText).error = null
-                true
-            } else {
-                false
-            }
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -229,6 +85,38 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
         binding.btnStatementVehicleAImportInsuranceInformation.isEnabled =
             !securedPreferences.isGuest()
 
+        setupButtonClickListeners()
+        setupCheckboxListeners()
+    }
+
+    private fun setupCheckboxListeners() {
+        binding.cbStatementTrailerNeedsRegistration.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                binding.llStatementTrailerAFields.visibility = View.VISIBLE
+                addTrailerFields()
+                addTrailerFieldsForValidation()
+            } else {
+                binding.llStatementTrailerAFields.visibility = View.GONE
+                binding.etStatementTrailerACountry.text = null
+                binding.etStatementTrailerARegistrationNumber.text = null
+                removeTrailerFields()
+            }
+        }
+
+        binding.cbStatementVehicleAMotorPresent.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                binding.llStatementMotorAFields.visibility = View.GONE
+                removeMotorFields()
+
+            } else {
+                binding.llStatementMotorAFields.visibility = View.VISIBLE
+                addMotorFields()
+                addMotorFieldsForValidation()
+            }
+        }
+    }
+
+    private fun setupButtonClickListeners() {
         binding.btnStatementVehicleAImportInsuranceInformation.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
                 val response = apiService.getPolicyHolderProfileInformation()
@@ -239,30 +127,7 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
         }
 
         binding.btnStatementVehicleAAddTrailer.setOnClickListener {
-            hasTrailer = updateTrailerButton(hasTrailer)
-        }
-
-        binding.cbStatementTrailerNeedsRegistration.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                binding.llStatementTrailerAFields.visibility = View.VISIBLE
-                setTrailerFieldsToValidation()
-            } else {
-                binding.llStatementTrailerAFields.visibility = View.GONE
-                removeTrailerFieldsFromValidation()
-                binding.etStatementTrailerACountry.text = null
-                binding.etStatementTrailerARegistrationNumber.text = null
-            }
-        }
-
-        binding.cbStatementVehicleAMotorPresent.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                binding.llStatementMotorAFields.visibility = View.GONE
-                removeMotorFieldsFromValidation()
-
-            } else {
-                binding.llStatementMotorAFields.visibility = View.VISIBLE
-                setMotorFieldsToValidation()
-            }
+            hasTrailer = updateTrailerButtonState(hasTrailer)
         }
 
         binding.btnStatementAccidentPrevious.setOnClickListener {
@@ -275,13 +140,11 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
             formHelper.clearErrors()
             binding.tvStatementNoMotorNoTrailerError.visibility = View.GONE
 
-            Log.i("fields to validate", validationRules.toString())
-
             formHelper.validateFields(validationRules)
 
             if (fields.none { it.error != null } && isVehicleAssigned()) {
                 updateViewModelFromUI(model)
-                navController.navigate(R.id.vehicleAInsuranceFragment)
+                navController.navigate(R.id.vehicleADriverFragment)
             } else if (!isVehicleAssigned()) {
                 binding.tvStatementNoMotorNoTrailerError.visibility = View.VISIBLE
             }
@@ -289,12 +152,13 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
     }
 
     private fun isVehicleAssigned(): Boolean {
+        //If both trailer and motor are not present it returns false
         return !hasTrailer || !binding.cbStatementVehicleAMotorPresent.isChecked
     }
 
 
     override fun updateUIFromViewModel(model: NewStatementViewModel) {
-        model.statementData.observe(viewLifecycleOwner, Observer { statementData ->
+        model.statementData.observe(viewLifecycleOwner) { statementData ->
             binding.etStatementPolicyHolderName.setText(statementData.policyHolderALastName)
             binding.etStatementPolicyHolderFirstName.setText(statementData.policyHolderAFirstName)
             binding.etStatementPolicyHolderAddress.setText(statementData.policyHolderAAddress)
@@ -304,14 +168,14 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
             binding.etStatementVehicleAMarkType.setText(statementData.vehicleAMarkType)
             binding.etStatementVehicleARegistrationNumber.setText(statementData.vehicleARegistrationNumber)
             binding.etStatementVehicleACountry.setText(statementData.vehicleACountryOfRegistration)
-            hasTrailer = updateTrailerButton(statementData.vehicleATrailerPresent)
-            Log.i("hasTrailer", hasTrailer.toString())
+            binding.cbStatementVehicleAMotorPresent.isChecked = statementData.vehicleAMotorPresent
+            hasTrailer = updateTrailerButtonState(statementData.vehicleATrailerPresent)
             if (statementData.vehicleATrailerRegistrationNumber.isNotEmpty() && statementData.vehicleATrailerCountryOfRegistration.isNotEmpty()) {
                 binding.cbStatementTrailerNeedsRegistration.isChecked = true
                 binding.etStatementTrailerARegistrationNumber.setText(statementData.vehicleATrailerRegistrationNumber)
                 binding.etStatementTrailerACountry.setText(statementData.vehicleATrailerCountryOfRegistration)
             }
-        })
+        }
     }
 
     override fun updateViewModelFromUI(model: NewStatementViewModel) {
@@ -333,7 +197,8 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
                 binding.etStatementTrailerARegistrationNumber.text.toString()
             this.vehicleATrailerCountryOfRegistration =
                 binding.etStatementTrailerACountry.text.toString()
-            this.vehicleATrailerPresent =  !hasTrailer
+            this.vehicleATrailerPresent = !hasTrailer
+            this.vehicleAMotorPresent = binding.cbStatementVehicleAMotorPresent.isChecked
         }
     }
 
@@ -425,6 +290,147 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
         )
     }
 
+    private fun handlePolicyHolderProfileResponse(response: Response<PolicyHolderResponse>) {
+        Log.i("Request", "Request code: ${response.code()}")
+        if (response.isSuccessful) {
+            val personalInformationResponse = response.body()
+            if (personalInformationResponse != null) {
+                importInsuranceInformation(personalInformationResponse.insuranceCertificates)
+                bindPolicyHolderInformationToUI(binding, personalInformationResponse)
+            }
+        } else {
+
+            val errorMessage = "Error while fetching insurance information"
+            requireContext().createSimpleDialog(getString(R.string.error), errorMessage)
+        }
+    }
+
+    private fun updateTrailerButtonState(hasTrailer: Boolean): Boolean {
+        val value: Boolean = !hasTrailer
+
+        if (value) {
+            binding.btnStatementVehicleAAddTrailer.text =
+                requireContext().getString(R.string.add_trailer_button)
+            binding.tvStatementVehicleATrailerTitle.visibility = View.GONE
+            binding.cbStatementTrailerNeedsRegistration.visibility = View.GONE
+        } else {
+            binding.btnStatementVehicleAAddTrailer.text =
+                requireContext().getString(R.string.remove_trailer_button)
+            binding.cbStatementTrailerNeedsRegistration.isChecked = false
+            binding.tvStatementVehicleATrailerTitle.visibility = View.VISIBLE
+            binding.cbStatementTrailerNeedsRegistration.visibility = View.VISIBLE
+        }
+        return value
+    }
+
+    private fun removeTrailerFields() {
+        (validationRules as MutableList<Triple<EditText, (String?) -> Boolean, String>>).removeAll { rule ->
+            rule.first == binding.etStatementTrailerARegistrationNumber || rule.first == binding.etStatementTrailerACountry
+        }
+
+        (fields as MutableList<TextView>).removeAll { field ->
+            if (field == binding.etStatementTrailerARegistrationNumber || field == binding.etStatementTrailerACountry) {
+                (field as EditText).error = null
+                true
+            } else {
+                false
+            }
+        }
+    }
+
+    private fun addTrailerFields() {
+        (fields as MutableList).apply {
+            add(binding.etStatementTrailerARegistrationNumber)
+            add(binding.etStatementTrailerACountry)
+        }
+    }
+
+    private fun addTrailerFieldsForValidation() {
+        (validationRules as MutableList).apply {
+            add(
+                Triple(
+                    binding.etStatementTrailerARegistrationNumber,
+                    { value -> value.isNullOrEmpty() },
+                    formHelper.errors.fieldRequired
+                )
+            )
+            add(
+                Triple(
+                    binding.etStatementTrailerACountry,
+                    { value -> value.isNullOrEmpty() },
+                    formHelper.errors.fieldRequired
+                )
+            )
+            add(
+                Triple(
+                    binding.etStatementTrailerACountry,
+                    { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
+                    formHelper.errors.noDigitsAllowed
+                )
+            )
+        }
+    }
+
+    private fun addMotorFields() {
+        (fields as MutableList).apply {
+            add(binding.etStatementVehicleAMarkType)
+            add(binding.etStatementVehicleARegistrationNumber)
+            add(binding.etStatementVehicleACountry)
+        }
+    }
+
+    private fun addMotorFieldsForValidation() {
+        (validationRules as MutableList).apply {
+            add(
+                Triple(
+                    binding.etStatementVehicleAMarkType,
+                    { value -> value.isNullOrEmpty() },
+                    formHelper.errors.fieldRequired
+                )
+            )
+            add(
+                Triple(
+                    binding.etStatementVehicleACountry,
+                    { value -> value.isNullOrEmpty() },
+                    formHelper.errors.fieldRequired
+                )
+            )
+            add(
+                Triple(
+                    binding.etStatementVehicleACountry,
+                    { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
+                    formHelper.errors.noDigitsAllowed
+                )
+            )
+            add(
+                Triple(
+                    binding.etStatementVehicleARegistrationNumber,
+                    { value -> value.isNullOrEmpty() },
+                    formHelper.errors.fieldRequired
+                )
+            )
+        }
+    }
+
+    private fun removeMotorFields() {
+        (validationRules as MutableList<Triple<EditText, (String?) -> Boolean, String>>).removeAll { rule ->
+            rule.first == binding.etStatementVehicleAMarkType || rule.first == binding.etStatementVehicleARegistrationNumber
+                    || rule.first == binding.etStatementVehicleACountry
+        }
+
+        (fields as MutableList<TextView>).removeAll { field ->
+            if (field == binding.etStatementVehicleAMarkType || field == binding.etStatementVehicleARegistrationNumber ||
+                field == binding.etStatementVehicleACountry
+            ) {
+                (field as EditText).error = null
+                true
+            } else {
+                false
+            }
+        }
+    }
+
+
     private fun bindPolicyHolderInformationToUI(
         binding: FragmentVehicleANewStatementBinding,
         response: PolicyHolderResponse
@@ -450,7 +456,7 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
                     insuranceCertificateStrings,
                     -1
                 ) { dialog, which ->
-                    val selectedInsurance = insuranceCertificates.get(which)
+                    val selectedInsurance = insuranceCertificates[which]
 
                     model.statementData.value?.apply {
                         this.vehicleAInsuranceCompanyName =
