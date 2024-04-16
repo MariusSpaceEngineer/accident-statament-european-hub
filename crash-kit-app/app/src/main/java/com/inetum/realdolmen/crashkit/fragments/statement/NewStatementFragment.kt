@@ -58,6 +58,17 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
 
     private val apiService = CrashKitApp.apiService
 
+    private val requestLocationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            getCurrentLocation()
+        } else {
+            Toast.makeText(requireContext(), "Location permission denied", Toast.LENGTH_SHORT)
+                .show()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -73,17 +84,6 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
         _binding = FragmentNewStatementBinding.inflate(inflater, container, false)
 
         return binding.root
-    }
-
-    private val requestLocationPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            getCurrentLocation()
-        } else {
-            Toast.makeText(requireContext(), "Location permission denied", Toast.LENGTH_SHORT)
-                .show()
-        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -108,54 +108,6 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
 
         setupWitnessCheckboxListener()
         setupButtonClickListeners()
-    }
-
-    private fun setupWitnessCheckboxListener() {
-        binding.cbStatementWitnessPresent.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                binding.llStatementWitnessFields.visibility = View.GONE
-                binding.etStatementWitnessName.text = null
-                binding.etStatementWitnessAddress.text = null
-                binding.etStatementWitnessPhone.text = null
-                removeWitnessFields()
-
-            } else {
-                binding.llStatementWitnessFields.visibility = View.VISIBLE
-                addWitnessFields()
-                addWitnessFieldsForValidation()
-            }
-        }
-    }
-
-    private fun setupButtonClickListeners() {
-        binding.btnStatementAccidentNext.setOnClickListener {
-
-            formHelper.clearErrors()
-
-            updateViewModelFromUI(model)
-
-            formHelper.validateFields(validationRules)
-
-            if (fields.none { it.error != null }) {
-                //If no errors, navigate to the next fragment
-                navController.navigate(R.id.vehicleANewStatementFragment)
-            }
-        }
-
-        binding.btnDateTimePicker.setOnClickListener {
-            dateTimePicker.pickDateTime()
-        }
-
-        dateTimePicker.addDateChangeListener {
-            binding.etStatementAccidentDate.setText(
-                (dateTimePicker.dateTime?.to24Format() ?: "")
-            )
-            binding.etStatementAccidentDate.error = null
-        }
-
-        binding.btnStatementAccidentLocation.setOnClickListener {
-            requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-        }
     }
 
     override fun updateUIFromViewModel(model: NewStatementViewModel) {
@@ -244,6 +196,54 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
                 formHelper.errors.fieldRequired
             ),
         )
+    }
+
+    private fun setupWitnessCheckboxListener() {
+        binding.cbStatementWitnessPresent.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                binding.llStatementWitnessFields.visibility = View.GONE
+                binding.etStatementWitnessName.text = null
+                binding.etStatementWitnessAddress.text = null
+                binding.etStatementWitnessPhone.text = null
+                removeWitnessFields()
+
+            } else {
+                binding.llStatementWitnessFields.visibility = View.VISIBLE
+                addWitnessFields()
+                addWitnessFieldsForValidation()
+            }
+        }
+    }
+
+    private fun setupButtonClickListeners() {
+        binding.btnStatementAccidentNext.setOnClickListener {
+
+            formHelper.clearErrors()
+
+            updateViewModelFromUI(model)
+
+            formHelper.validateFields(validationRules)
+
+            if (fields.none { it.error != null }) {
+                //If no errors, navigate to the next fragment
+                navController.navigate(R.id.vehicleANewStatementFragment)
+            }
+        }
+
+        binding.btnDateTimePicker.setOnClickListener {
+            dateTimePicker.pickDateTime()
+        }
+
+        dateTimePicker.addDateChangeListener {
+            binding.etStatementAccidentDate.setText(
+                (dateTimePicker.dateTime?.to24Format() ?: "")
+            )
+            binding.etStatementAccidentDate.error = null
+        }
+
+        binding.btnStatementAccidentLocation.setOnClickListener {
+            requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
     }
 
     private fun getCurrentLocation() {

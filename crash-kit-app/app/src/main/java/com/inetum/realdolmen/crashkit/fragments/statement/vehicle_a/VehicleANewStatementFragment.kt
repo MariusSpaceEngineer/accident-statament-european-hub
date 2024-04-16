@@ -116,47 +116,6 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
         }
     }
 
-    private fun setupButtonClickListeners() {
-        binding.btnStatementVehicleAImportInsuranceInformation.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
-                val response = apiService.getPolicyHolderProfileInformation()
-                withContext(Dispatchers.Main) {
-                    handlePolicyHolderProfileResponse(response)
-                }
-            }
-        }
-
-        binding.btnStatementVehicleAAddTrailer.setOnClickListener {
-            hasTrailer = updateTrailerButtonState(hasTrailer)
-        }
-
-        binding.btnStatementAccidentPrevious.setOnClickListener {
-            updateViewModelFromUI(model)
-
-            navController.popBackStack()
-        }
-
-        binding.btnStatementAccidentNext.setOnClickListener {
-            formHelper.clearErrors()
-            binding.tvStatementNoMotorNoTrailerError.visibility = View.GONE
-
-            formHelper.validateFields(validationRules)
-
-            if (fields.none { it.error != null } && isVehicleAssigned()) {
-                updateViewModelFromUI(model)
-                navController.navigate(R.id.vehicleADriverFragment)
-            } else if (!isVehicleAssigned()) {
-                binding.tvStatementNoMotorNoTrailerError.visibility = View.VISIBLE
-            }
-        }
-    }
-
-    private fun isVehicleAssigned(): Boolean {
-        //If both trailer and motor are not present it returns false
-        return !hasTrailer || !binding.cbStatementVehicleAMotorPresent.isChecked
-    }
-
-
     override fun updateUIFromViewModel(model: NewStatementViewModel) {
         model.statementData.observe(viewLifecycleOwner) { statementData ->
             binding.etStatementPolicyHolderName.setText(statementData.policyHolderALastName)
@@ -288,6 +247,46 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
                 formHelper.errors.invalidEmail
             )
         )
+    }
+
+    private fun setupButtonClickListeners() {
+        binding.btnStatementVehicleAImportInsuranceInformation.setOnClickListener {
+            CoroutineScope(Dispatchers.IO).launch {
+                val response = apiService.getPolicyHolderProfileInformation()
+                withContext(Dispatchers.Main) {
+                    handlePolicyHolderProfileResponse(response)
+                }
+            }
+        }
+
+        binding.btnStatementVehicleAAddTrailer.setOnClickListener {
+            hasTrailer = updateTrailerButtonState(hasTrailer)
+        }
+
+        binding.btnStatementAccidentPrevious.setOnClickListener {
+            updateViewModelFromUI(model)
+
+            navController.popBackStack()
+        }
+
+        binding.btnStatementAccidentNext.setOnClickListener {
+            formHelper.clearErrors()
+            binding.tvStatementNoMotorNoTrailerError.visibility = View.GONE
+
+            formHelper.validateFields(validationRules)
+
+            if (fields.none { it.error != null } && isVehicleAssigned()) {
+                updateViewModelFromUI(model)
+                navController.navigate(R.id.vehicleADriverFragment)
+            } else if (!isVehicleAssigned()) {
+                binding.tvStatementNoMotorNoTrailerError.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun isVehicleAssigned(): Boolean {
+        //If both trailer and motor are not present it returns false
+        return !hasTrailer || !binding.cbStatementVehicleAMotorPresent.isChecked
     }
 
     private fun handlePolicyHolderProfileResponse(response: Response<PolicyHolderResponse>) {
