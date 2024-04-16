@@ -74,4 +74,9 @@
         android:name="com.inetum.realdolmen.crashkit.fragments.ShareInsuranceInformationFragment"
         android:label="fragment_share_insurance_information"
         tools:layout="@layout/fragment_share_insurance_information" />
+    <fragment
+        android:id="@+id/accidentStatementSignatureFragment"
+        android:name="com.inetum.realdolmen.crashkit.fragments.statement.AccidentStatementSignatureFragment"
+        android:label="fragment_accident_statement_signature"
+        tools:layout="@layout/fragment_accident_statement_signature" />
 </navigation>
