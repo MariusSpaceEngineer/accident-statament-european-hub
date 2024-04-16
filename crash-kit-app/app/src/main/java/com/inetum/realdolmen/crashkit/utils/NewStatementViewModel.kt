@@ -27,7 +27,7 @@ data class StatementData(
     var injured: Boolean = false,
     var materialDamageToOtherVehicles: Boolean = false,
     var materialDamageToObjects: Boolean = false,
-    var witnessIsPresent: Boolean= false,
+    var witnessIsPresent: Boolean= true,
     var witnessName: String = "",
     var witnessAddress: String = "",
     var witnessPhoneNumber: String = "",
