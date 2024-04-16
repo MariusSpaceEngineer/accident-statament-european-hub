@@ -15,6 +15,7 @@
     <string name="statement_material_damage_title">Material Damage</string>
     <string name="statement_witness_title">Witness</string>
     <string name="statement_vehicle_a_title">Vehicle A</string>
+    <string name="motor_title">Motor</string>
     <string name="trailer_title">Trailer</string>
     <string name="statement_insurance_company_title">Insurance Company</string>
     <string name="statement_insurance_agency_title">Insurance Agency</string>
