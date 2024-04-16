@@ -18,7 +18,6 @@ import com.inetum.realdolmen.crashkit.helpers.FormHelper
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
-import com.inetum.realdolmen.crashkit.utils.printBackStack
 import com.inetum.realdolmen.crashkit.utils.to24Format
 import com.inetum.realdolmen.crashkit.utils.toLocalDate
 import java.beans.PropertyChangeSupport
@@ -30,13 +29,13 @@ import java.time.ZoneId
 class VehicleBDriverFragment : Fragment(), StatementDataHandler, ValidationConfigure {
     private lateinit var model: NewStatementViewModel
     private lateinit var navController: NavController
+    private lateinit var formHelper: FormHelper
 
     private var _binding: FragmentVehicleBDriverBinding? = null
     private val binding get() = _binding!!
 
     private var fields: List<TextView> = listOf()
     private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = listOf()
-    private lateinit var formHelper: FormHelper
 
     private val changeSupport = PropertyChangeSupport(this)
 
@@ -107,57 +106,13 @@ class VehicleBDriverFragment : Fragment(), StatementDataHandler, ValidationConfi
 
         setupValidation()
 
-        requireActivity().supportFragmentManager.printBackStack()
-
         updateUIFromViewModel(model)
 
-        binding.btnStatementAccidentPrevious.setOnClickListener {
-            updateViewModelFromUI(model)
+        setupButtonClickListeners()
 
-            navController.popBackStack()
-        }
-
-        binding.btnStatementAccidentNext.setOnClickListener {
-            formHelper.clearErrors()
-
-            updateViewModelFromUI(model)
-
-            formHelper.validateFields(validationRules)
-            if (fields.none { it.error != null }) {
-                navController.navigate(R.id.vehicleBCircumstancesFragment)
-            }
-        }
-
-        datePicker.addOnPositiveButtonClickListener { selection ->
-            val selectedDate =
-                Instant.ofEpochMilli(selection).atZone(ZoneId.systemDefault()).toLocalDate()
-            when (currentPicker) {
-                "driving_license_date_picker" -> {
-                    drivingLicenseExpirationDate = selectedDate
-                    binding.etStatementVehicleBDrivingLicenseExpirationDate.setText(
-                        (drivingLicenseExpirationDate?.to24Format() ?: "")
-                    )
-                    binding.etStatementVehicleBDrivingLicenseExpirationDate.error = null
-                }
-
-                "date_of_birth_date_picker" -> {
-                    driverDateOfBirth = selectedDate
-                    binding.etStatementVehicleBDriverDateOfBirth.setText(
-                        (driverDateOfBirth?.to24Format() ?: "")
-                    )
-                    binding.etStatementVehicleBDriverDateOfBirth.error = null
-                }
-            }
-        }
-
-        binding.btnDrivingLicenseExpirationDatePicker.setOnClickListener {
-            currentPicker = "driving_license_date_picker"
-            datePicker.show(parentFragmentManager, currentPicker)
-        }
-
-        binding.btnDateOfBirthDatePicker.setOnClickListener {
-            currentPicker = "date_of_birth_date_picker"
-            datePicker.show(parentFragmentManager, currentPicker)
+        binding.cbStatementVehicleBDriverIsPolicyHolder.setOnCheckedChangeListener { _, isChecked ->
+            updateDriverFields(isChecked)
+            removeDriverFieldsErrors()
         }
     }
 
@@ -177,6 +132,8 @@ class VehicleBDriverFragment : Fragment(), StatementDataHandler, ValidationConfi
                 statementData.vehicleBDriverDrivingLicenseExpirationDate?.to24Format()
                     ?: ""
             )
+            binding.cbStatementVehicleBDriverIsPolicyHolder.isChecked =
+                statementData.vehicleBDriverIsPolicyHolder
         })
     }
 
@@ -197,7 +154,8 @@ class VehicleBDriverFragment : Fragment(), StatementDataHandler, ValidationConfi
             this.vehicleBDriverDrivingLicenseNr =
                 binding.etStatementVehicleBDriverDrivingLicenseNumber.text.toString()
             this.vehicleBDriverDrivingLicenseExpirationDate = drivingLicenseExpirationDate
-
+            this.vehicleBDriverIsPolicyHolder =
+                binding.cbStatementVehicleBDriverIsPolicyHolder.isChecked
         }
     }
 
@@ -299,4 +257,86 @@ class VehicleBDriverFragment : Fragment(), StatementDataHandler, ValidationConfi
             ),
         )
     }
+    private fun updateDriverFields(checked: Boolean) {
+        if (checked) {
+            model.statementData.observe(viewLifecycleOwner) { statementData ->
+                // Update the UI here based on the new statementData
+                binding.etStatementVehicleBDriverName.setText(statementData.policyHolderBLastName)
+                binding.etStatementVehicleBDriverFirstName.setText(statementData.policyHolderBFirstName)
+                binding.etStatementVehicleBDriverAddress.setText(statementData.policyHolderBAddress)
+                binding.etStatementVehicleBDriverPhoneNumber.setText(statementData.policyHolderBPhoneNumber)
+                binding.etStatementVehicleBDriverEmail.setText(statementData.policyHolderBEmail)
+            }
+
+        } else {
+            binding.etStatementVehicleBDriverName.text = null
+            binding.etStatementVehicleBDriverFirstName.text = null
+            binding.etStatementVehicleBDriverAddress.text = null
+            binding.etStatementVehicleBDriverPhoneNumber.text = null
+            binding.etStatementVehicleBDriverEmail.text = null
+        }
+    }
+
+    private fun removeDriverFieldsErrors() {
+        // Remove error messages from fields
+        (fields as MutableList<TextView>).forEach { field ->
+            if (field == binding.etStatementVehicleBDriverName || field == binding.etStatementVehicleBDriverFirstName
+                || field == binding.etStatementVehicleBDriverAddress || field == binding.etStatementVehicleBDriverPhoneNumber
+                || field == binding.etStatementVehicleBDriverEmail
+            ) {
+                (field as EditText).error = null
+            }
+        }
+    }
+
+    private fun setupButtonClickListeners() {
+        binding.btnStatementAccidentPrevious.setOnClickListener {
+            updateViewModelFromUI(model)
+
+            navController.popBackStack()
+        }
+
+        binding.btnStatementAccidentNext.setOnClickListener {
+            formHelper.clearErrors()
+
+            formHelper.validateFields(validationRules)
+            if (fields.none { it.error != null }) {
+                updateViewModelFromUI(model)
+                navController.navigate(R.id.vehicleBCircumstancesFragment)
+            }
+        }
+
+        datePicker.addOnPositiveButtonClickListener { selection ->
+            val selectedDate =
+                Instant.ofEpochMilli(selection).atZone(ZoneId.systemDefault()).toLocalDate()
+            when (currentPicker) {
+                "driving_license_date_picker" -> {
+                    drivingLicenseExpirationDate = selectedDate
+                    binding.etStatementVehicleBDrivingLicenseExpirationDate.setText(
+                        (drivingLicenseExpirationDate?.to24Format() ?: "")
+                    )
+                    binding.etStatementVehicleBDrivingLicenseExpirationDate.error = null
+                }
+
+                "date_of_birth_date_picker" -> {
+                    driverDateOfBirth = selectedDate
+                    binding.etStatementVehicleBDriverDateOfBirth.setText(
+                        (driverDateOfBirth?.to24Format() ?: "")
+                    )
+                    binding.etStatementVehicleBDriverDateOfBirth.error = null
+                }
+            }
+        }
+
+        binding.btnDrivingLicenseExpirationDatePicker.setOnClickListener {
+            currentPicker = "driving_license_date_picker"
+            datePicker.show(parentFragmentManager, currentPicker)
+        }
+
+        binding.btnDateOfBirthDatePicker.setOnClickListener {
+            currentPicker = "date_of_birth_date_picker"
+            datePicker.show(parentFragmentManager, currentPicker)
+        }
+    }
+
 }
