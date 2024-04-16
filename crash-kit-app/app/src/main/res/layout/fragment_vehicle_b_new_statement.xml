@@ -92,7 +92,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_policy_holder_name"
+                        android:id="@+id/et_statement_policy_holder_b_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -110,7 +110,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_policy_holder_first_name"
+                        android:id="@+id/et_statement_policy_holder_b_first_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -128,7 +128,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_policy_holder_address"
+                        android:id="@+id/et_statement_policy_holder_b_address"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -146,7 +146,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_policy_holder_postal_code"
+                        android:id="@+id/et_statement_policy_holder_b_postal_code"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -164,7 +164,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_policy_holder_phone_number"
+                        android:id="@+id/et_statement_policy_holder_b_phone_number"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -182,7 +182,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_policy_holder_email"
+                        android:id="@+id/et_statement_policy_holder_b_email"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -208,68 +208,158 @@
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <com.google.android.material.textfield.TextInputLayout
+                <CheckBox
+                    android:id="@+id/cb_statement_vehicle_b_motor_present"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@string/no_motor_checkbox"
+                    android:textColor="@color/input_hint" />
+
+                <LinearLayout
+                    android:id="@+id/ll_statement_motor_b_fields"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:layout_marginBottom="8dp"
-                    android:hint="@string/label_mark_type"
-                    app:boxBackgroundColor="@color/input_field_background"
-                    app:boxStrokeColor="@color/primary800">
+                    android:orientation="vertical">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_b_mark_type"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/input_hint" />
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginBottom="8dp"
+                        android:hint="@string/label_mark_type"
+                        app:boxBackgroundColor="@color/input_field_background"
+                        app:boxStrokeColor="@color/primary800">
 
-                </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_statement_vehicle_b_mark_type"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/input_hint" />
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:layout_marginBottom="8dp"
-                    android:hint="@string/label_registration_number"
-                    app:boxBackgroundColor="@color/input_field_background"
-                    app:boxStrokeColor="@color/primary800">
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_b_registration_number"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/input_hint" />
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginBottom="8dp"
+                        android:hint="@string/label_registration_number"
+                        app:boxBackgroundColor="@color/input_field_background"
+                        app:boxStrokeColor="@color/primary800">
 
-                </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_statement_vehicle_b_registration_number"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/input_hint" />
 
-                <com.google.android.material.textfield.TextInputLayout
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginBottom="12dp"
+                        android:hint="@string/label_country_of_registration"
+                        app:boxBackgroundColor="@color/input_field_background"
+                        app:boxStrokeColor="@color/primary800">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_statement_vehicle_b_country"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/input_hint" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_statement_vehicle_b_trailer_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/trailer_title"
+                    android:textColor="@color/secondary900"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <CheckBox
+                    android:id="@+id/cb_statement_trailer_b_needs_registration"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/trailer_needs_registration_checkbox"
+                    android:textColor="@color/input_hint"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:id="@+id/ll_statement_trailer_b_fields"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginBottom="12dp"
+                        android:hint="@string/label_registration_number"
+                        app:boxBackgroundColor="@color/input_field_background"
+                        app:boxStrokeColor="@color/primary800">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_statement_trailer_b_registration_number"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/input_hint" />
+
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginBottom="12dp"
+                        android:hint="@string/label_country_of_registration"
+                        app:boxBackgroundColor="@color/input_field_background"
+                        app:boxStrokeColor="@color/primary800">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_statement_trailer_b_country"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/input_hint" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_statement_no_motor_no_trailer_error"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
+                    android:visibility="gone"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="12dp"
-                    android:hint="@string/label_country_of_registration"
-                    app:boxBackgroundColor="@color/input_field_background"
-                    app:boxStrokeColor="@color/primary800">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_b_country"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/input_hint" />
-
-                </com.google.android.material.textfield.TextInputLayout>
+                    android:gravity="center"
+                    android:text="Trailer registration is mandatory when no motor is associated"
+                    android:textColor="@color/danger800" />
 
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btn_statement_vehicle_a_add_trailer"
+                    android:id="@+id/btn_statement_vehicle_b_add_trailer"
                     style="@style/VehicleBBottomRoundedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/add_trailer_button"
                     android:textColor="@color/title" />
-
             </LinearLayout>
 
             <LinearLayout
