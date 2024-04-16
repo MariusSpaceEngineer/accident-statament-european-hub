@@ -49,7 +49,8 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
     private val binding get() = _binding!!
 
     private var fields: List<TextView> = mutableListOf()
-    private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = mutableListOf()
+    private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> =
+        mutableListOf()
 
     private val dateTimePicker by lazy {
         DateTimePicker(requireContext())
@@ -67,12 +68,11 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = FragmentNewStatementBinding.inflate(inflater, container, false)
-        val view = binding.root
 
-        return view
+        return binding.root
     }
 
     private val requestLocationPermissionLauncher = registerForActivityResult(
@@ -94,65 +94,6 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
         super.onSaveInstanceState(outState)
     }
 
-    private fun setWitnessFieldsToValidation() {
-        (fields as MutableList).apply {
-            add(binding.etStatementWitnessName)
-            add(binding.etStatementWitnessAddress)
-            add(binding.etStatementWitnessPhone)
-        }
-
-        (validationRules as MutableList).apply {
-            add(
-                Triple(
-                    binding.etStatementWitnessName,
-                    { value -> value.isNullOrEmpty() },
-                    formHelper.errors.fieldRequired
-                )
-            )
-            add(
-                Triple(
-                    binding.etStatementWitnessName,
-                    { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                    formHelper.errors.noDigitsAllowed
-                )
-            )
-            add(
-                Triple(
-                    binding.etStatementWitnessAddress,
-                    { value -> value.isNullOrEmpty() },
-                    formHelper.errors.fieldRequired
-                )
-            )
-            add(
-                Triple(
-                    binding.etStatementWitnessPhone,
-                    { value -> value.isNullOrEmpty() },
-                    formHelper.errors.fieldRequired
-                )
-            )
-        }
-    }
-
-    private fun removeWitnessFieldsFromValidation() {
-        // Remove trailer fields from validationRules
-        (validationRules as MutableList<Triple<EditText, (String?) -> Boolean, String>>).removeAll { rule ->
-            rule.first == binding.etStatementWitnessName || rule.first == binding.etStatementWitnessAddress
-                    || rule.first == binding.etStatementWitnessPhone
-        }
-
-        // Remove trailer fields from fields
-        (fields as MutableList<TextView>).removeAll { field ->
-            if (field == binding.etStatementWitnessName || field == binding.etStatementWitnessAddress ||
-                field == binding.etStatementWitnessPhone
-            ) {
-                (field as EditText).error = null
-                true
-            } else {
-                false
-            }
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = findNavController()
@@ -165,21 +106,25 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
 
         updateUIFromViewModel(model)
 
-        binding.cbStatementWitnessPresent.setOnCheckedChangeListener { buttonView, isChecked ->
+        setupWitnessCheckboxListener()
+        setupButtonClickListeners()
+    }
+
+    private fun setupWitnessCheckboxListener() {
+        binding.cbStatementWitnessPresent.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 binding.llStatementWitnessFields.visibility = View.GONE
-                binding.etStatementWitnessName.text= null
-                binding.etStatementWitnessAddress.text= null
-                binding.etStatementWitnessPhone.text= null
-                removeWitnessFieldsFromValidation()
+                binding.etStatementWitnessName.text = null
+                binding.etStatementWitnessAddress.text = null
+                binding.etStatementWitnessPhone.text = null
+                removeWitnessFields()
 
             } else {
                 binding.llStatementWitnessFields.visibility = View.VISIBLE
-                setWitnessFieldsToValidation()
+                addWitnessFields()
+                addWitnessFieldsForValidation()
             }
         }
-
-        setupButtonClickListeners()
     }
 
     private fun setupButtonClickListeners() {
@@ -228,7 +173,8 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
             binding.etStatementWitnessName.setText(statementData.witnessName)
             binding.etStatementWitnessAddress.setText(statementData.witnessAddress)
             binding.etStatementWitnessPhone.setText(statementData.witnessPhoneNumber)
-            binding.cbStatementWitnessPresent.isChecked= !statementData.witnessIsPresent
+            //The checkbox needs to be unchecked to show witness fields
+            binding.cbStatementWitnessPresent.isChecked = !statementData.witnessIsPresent
         })
     }
 
@@ -244,9 +190,8 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
             this.witnessName = binding.etStatementWitnessName.text.toString()
             this.witnessAddress = binding.etStatementWitnessAddress.text.toString()
             this.witnessPhoneNumber = binding.etStatementWitnessPhone.text.toString()
-            Log.i("witness",witnessIsPresent.toString())
-            this.witnessIsPresent= !binding.cbStatementWitnessPresent.isChecked
-            Log.i("witness",witnessIsPresent.toString())
+            //If the checkbox is checked then no witness is present
+            this.witnessIsPresent = !binding.cbStatementWitnessPresent.isChecked
         }
     }
 
@@ -361,6 +306,65 @@ class NewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigu
                     getString(R.string.error),
                     addressResponse.errorMessage!!
                 )
+            }
+        }
+    }
+
+    private fun addWitnessFieldsForValidation() {
+        (validationRules as MutableList).apply {
+            add(
+                Triple(
+                    binding.etStatementWitnessName,
+                    { value -> value.isNullOrEmpty() },
+                    formHelper.errors.fieldRequired
+                )
+            )
+            add(
+                Triple(
+                    binding.etStatementWitnessName,
+                    { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
+                    formHelper.errors.noDigitsAllowed
+                )
+            )
+            add(
+                Triple(
+                    binding.etStatementWitnessAddress,
+                    { value -> value.isNullOrEmpty() },
+                    formHelper.errors.fieldRequired
+                )
+            )
+            add(
+                Triple(
+                    binding.etStatementWitnessPhone,
+                    { value -> value.isNullOrEmpty() },
+                    formHelper.errors.fieldRequired
+                )
+            )
+        }
+    }
+
+    private fun addWitnessFields() {
+        (fields as MutableList).apply {
+            add(binding.etStatementWitnessName)
+            add(binding.etStatementWitnessAddress)
+            add(binding.etStatementWitnessPhone)
+        }
+    }
+
+    private fun removeWitnessFields() {
+        (validationRules as MutableList<Triple<EditText, (String?) -> Boolean, String>>).removeAll { rule ->
+            rule.first == binding.etStatementWitnessName || rule.first == binding.etStatementWitnessAddress
+                    || rule.first == binding.etStatementWitnessPhone
+        }
+
+        (fields as MutableList<TextView>).removeAll { field ->
+            if (field == binding.etStatementWitnessName || field == binding.etStatementWitnessAddress ||
+                field == binding.etStatementWitnessPhone
+            ) {
+                (field as EditText).error = null
+                true
+            } else {
+                false
             }
         }
     }
