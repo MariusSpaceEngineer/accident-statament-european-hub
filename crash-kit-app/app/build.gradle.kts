@@ -66,6 +66,7 @@ dependencies {
     implementation("androidx.test.uiautomator:uiautomator:2.3.0")
     implementation ("com.journeyapps:zxing-android-embedded:4.1.0")
     implementation("com.google.android.gms:play-services-location:21.2.0")
+    implementation("com.github.gcacace:signature-pad:1.3.1")
 
     // For unit testing
     testImplementation ("junit:junit:4.13.2")
