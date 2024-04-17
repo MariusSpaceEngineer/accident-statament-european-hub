@@ -1,14 +1,19 @@
 package com.inetum.realdolmen.crashkit.fragments.statement
 
+import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.github.gcacace.signaturepad.views.SignaturePad
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentAccidentStatementSignatureBinding
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
@@ -86,15 +91,97 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
             }
         })
 
+        binding.btnStatementVehicleADisagree.setOnClickListener {
+            createCustomDialog(
+                requireContext(),
+                R.layout.disagree_dialog,
+                R.color.secondary,
+                R.color.input_field_background,
+                R.drawable.disagree_dialog_background,
+                "Proceed",
+                "Revert"
+            ) { _, _ ->
+                navController.popBackStack(R.id.homeFragment, false)
+            }
+        }
+
+        binding.btnStatementVehicleBDisagree.setOnClickListener {
+            createCustomDialog(
+                requireContext(),
+                R.layout.disagree_dialog,
+                R.color.secondary,
+                R.color.input_field_background,
+                R.drawable.disagree_dialog_background,
+                "Proceed",
+                "Revert"
+            ) { _, _ ->
+                navController.popBackStack(R.id.homeFragment, false)
+            }
+        }
+
+
         binding.btnStatementAccidentSubmit.setOnClickListener {
             if (driversAgree()) {
                 binding.tvStatementSignatureNeededError.visibility = View.GONE
+                createCustomDialog(
+                    requireContext(),
+                    R.layout.submit_dialog,
+                    R.color.primary800,
+                    R.color.input_field_background,
+                    R.drawable.submit_dialog_background,
+                    "Proceed",
+                    "Revert"
+                ) { _, _ ->
+                    navController.popBackStack(R.id.homeFragment, false)
+                }
                 updateViewModelFromUI(model)
             } else {
                 binding.tvStatementSignatureNeededError.visibility = View.VISIBLE
             }
         }
 
+        binding.btnStatementAccidentPrevious.setOnClickListener {
+            navController.popBackStack()
+        }
+
+    }
+
+    private fun createCustomDialog(
+        context: Context,
+        layoutResId: Int,
+        positiveButtonColorResId: Int,
+        negativeButtonColorResId: Int,
+        backgroundColorResId: Int,
+        positiveButtonText: String,
+        negativeButtonText: String,
+        onPositiveClick: (Any, Any) -> Unit,
+    ) {
+        val builder = MaterialAlertDialogBuilder(context)
+        val inflater = LayoutInflater.from(context)
+        val dialogLayout = inflater.inflate(layoutResId, null)
+
+        builder.setView(dialogLayout)
+        builder.setPositiveButton(positiveButtonText, null)
+        builder.setNegativeButton(negativeButtonText, null)
+        val dialog = builder.create()
+
+        dialog.window?.setBackgroundDrawableResource(backgroundColorResId)
+        dialog.show()
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).apply {
+            setTextColor(ContextCompat.getColor(context, positiveButtonColorResId))
+            setOnClickListener { view ->
+                onPositiveClick(view, this)
+                dialog.cancel()
+            }
+        }
+
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).apply {
+            setTextColor(ContextCompat.getColor(context, negativeButtonColorResId))
+            setOnClickListener {
+                dialog.cancel()
+            }
+        }
     }
 
     private fun driversAgree(): Boolean {
