@@ -1,6 +1,7 @@
 package com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,6 +11,7 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ScrollView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -22,6 +24,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.adapters.ImageAdapter
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleAMiscellaneousBinding
+import com.inetum.realdolmen.crashkit.fragments.statement.PointOfImpactSketch
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 
@@ -77,6 +80,16 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
         }
     }
 
+    private lateinit var sketchView: PointOfImpactSketch
+
+    private val shapes = listOf(
+        R.drawable.personal_car_vehicle,
+        R.drawable.motorcycle_vehicle,
+        R.drawable.truck_vehicle,
+        R.drawable.direction_arrow
+    )
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         model = ViewModelProvider(requireActivity())[NewStatementViewModel::class.java]
@@ -100,12 +113,36 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
             FragmentVehicleAMiscellaneousBinding.inflate(inflater, container, false)
         val view = binding.root
 
+        setUpSketchView(view, shapes)
+
         return view
     }
 
+    private fun setUpSketchView(view: View, shapeList: List<Int>) {
+        sketchView = view.findViewById(R.id.poi_vehicle_a_sketch)
+        sketchView.viewModel = model
+
+        // Add the shapes from the list to the sketchView
+        sketchView.addShapes(shapeList)
+
+    }
+
+
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = findNavController()
+
+
+        // Get a reference to your PointOfImpactSketch and ScrollView
+        val scrollView = view.findViewById<ScrollView>(R.id.sv_statement_miscellaneous)
+
+        // Set an onTouchListener on the PointOfImpactSketch view
+        sketchView.setOnTouchListener { _, _ ->
+            // When user touches the PointOfImpactSketch view, we consume the touch event and disable the scroll on the parent ScrollView
+            scrollView.requestDisallowInterceptTouchEvent(true)
+            false
+        }
 
         updateUIFromViewModel(model)
 
@@ -164,6 +201,10 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
             this.vehicleADamageDescription =
                 binding.etStatementVehicleADamageDescription.text.toString()
             this.vehicleAAccidentPhotos = accidentImages
+        }
+
+        model.accidentSketchShapes.value?.apply {
+            model.pointOfImpactVehicleASketchShapes.value = sketchView.shapes
         }
     }
 

@@ -3,6 +3,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sv_statement_miscellaneous"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tertiary400">
@@ -63,6 +64,12 @@
                     android:textColor="@color/primary800"
                     android:textSize="28sp"
                     android:textStyle="bold" />
+
+                <com.inetum.realdolmen.crashkit.fragments.statement.PointOfImpactSketch
+                    android:id="@+id/poi_vehicle_a_sketch"
+                    android:layout_width="match_parent"
+                    android:background="@color/white"
+                    android:layout_height="250dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"

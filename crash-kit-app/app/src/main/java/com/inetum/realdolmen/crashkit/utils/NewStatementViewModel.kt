@@ -17,6 +17,10 @@ class NewStatementViewModel : ViewModel() {
     val accidentSketchShapes: MutableLiveData<List<Triple<IAccidentDrawable, Point, TextView?>>> by lazy {
         MutableLiveData<List<Triple<IAccidentDrawable, Point, TextView?>>>()
     }
+
+    val pointOfImpactVehicleASketchShapes: MutableLiveData<List<Pair<IAccidentDrawable, Point>>> by lazy {
+        MutableLiveData<List<Pair<IAccidentDrawable, Point>>>()
+    }
 }
 
 //TODO look which properties can't be null
