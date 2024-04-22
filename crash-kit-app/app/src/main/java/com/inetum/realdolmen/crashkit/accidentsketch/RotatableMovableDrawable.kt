@@ -5,7 +5,7 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.DrawableWrapper
 import android.util.Log
 
-class RotatableDrawable(
+class RotatableMovableDrawable(
     private val drawable: Drawable,
     override val resId: Int,
     override val priority: Int

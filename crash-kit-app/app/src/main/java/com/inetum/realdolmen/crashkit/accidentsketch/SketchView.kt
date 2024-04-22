@@ -46,7 +46,7 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
     private var mScaleFactor = 1f
 
     //Used by the RotationGestureDetector
-    private val rotations = mutableMapOf<RotatableDrawable, Float>()
+    private val rotations = mutableMapOf<RotatableMovableDrawable, Float>()
 
     //Booleans needed to keep track which gesture is happening
     private var isScaling: Boolean = false
@@ -95,7 +95,7 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                 Log.i("SketchView", "onRotation called with rotation angle $rotationDetector")
 
                 currentShape?.let { (drawable, _) ->
-                    if (drawable is RotatableDrawable) {
+                    if (drawable is RotatableMovableDrawable) {
                         // Update the rotation angle of the drawable
                         drawable.setRotation(rotationAngle)
 
@@ -228,9 +228,9 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                 if (resId == R.drawable.road_90 || resId == R.drawable.road_180 ||
                     resId == R.drawable.four_road_junction || resId == R.drawable.roundabout
                 ) {
-                    NonRotatableDrawable(drawable, resId, priority)
+                    NonRotatableMovableDrawable(drawable, resId, priority)
                 } else {
-                    RotatableDrawable(drawable, resId, priority)
+                    RotatableMovableDrawable(drawable, resId, priority)
                 }
 
             val position = Point(width / 2, height / 2)
@@ -300,7 +300,7 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
             isScaling = true
             isRotating = false
             scaleGestureDetector.onTouchEvent(event)
-        } else if (currentShape != null && currentShape!!.first is RotatableDrawable) {
+        } else if (currentShape != null && currentShape!!.first is RotatableMovableDrawable) {
             // Two fingers down, but not near the edge, start a rotation gesture
             isScaling = false
             isRotating = true
