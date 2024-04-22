@@ -2,7 +2,9 @@ package com.inetum.realdolmen.crashkit.fragments.statement
 
 import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,14 +15,35 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.github.gcacace.signaturepad.views.SignaturePad
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.inetum.realdolmen.crashkit.CrashKitApp
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentAccidentStatementSignatureBinding
+import com.inetum.realdolmen.crashkit.dto.AccidentImageDTO
+import com.inetum.realdolmen.crashkit.dto.AccidentStatementData
+import com.inetum.realdolmen.crashkit.dto.DriverDTO
+import com.inetum.realdolmen.crashkit.dto.InsuranceAgency
+import com.inetum.realdolmen.crashkit.dto.InsuranceCertificate
+import com.inetum.realdolmen.crashkit.dto.InsuranceCompany
+import com.inetum.realdolmen.crashkit.dto.MotorDTO
+import com.inetum.realdolmen.crashkit.dto.PolicyHolderDTO
+import com.inetum.realdolmen.crashkit.dto.RequestResponse
+import com.inetum.realdolmen.crashkit.dto.TrailerDTO
+import com.inetum.realdolmen.crashkit.dto.WitnessDTO
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
+import com.inetum.realdolmen.crashkit.utils.toByteArray
+import com.inetum.realdolmen.crashkit.utils.toIsoString
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.Response
 
 class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
     private lateinit var model: NewStatementViewModel
     private lateinit var navController: NavController
+
+    private val apiService = CrashKitApp.apiService
 
     private var _binding: FragmentAccidentStatementSignatureBinding? = null
     private val binding get() = _binding!!
@@ -115,7 +138,6 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
                 "Proceed",
                 "Revert"
             ) { _, _ ->
-                navController.popBackStack(R.id.homeFragment, false)
             }
         }
 
@@ -132,7 +154,13 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
                     "Proceed",
                     "Revert"
                 ) { _, _ ->
-                    navController.popBackStack(R.id.homeFragment, false)
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val accidentStatement = createAccidentStatement(model)
+                        val response = apiService.createAccidentStatement(accidentStatement)
+                        withContext(Dispatchers.Main) {
+                            handleAccidentStatementResponse(response)
+                        }
+                    }
                 }
                 updateViewModelFromUI(model)
             } else {
@@ -197,6 +225,196 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
             this.driverASignature = vehicleASignaturePad.signatureBitmap
             this.driverBSignature = vehicleBSignaturePad.signatureBitmap
         }
+    }
+
+    private fun createAccidentStatement(model: NewStatementViewModel): AccidentStatementData {
+        val statementData = model.statementData.value
+
+        val driverA = DriverDTO(
+            statementData?.vehicleADriverFirstName,
+            statementData?.vehicleADriverLastName,
+            statementData?.vehicleADriverDateOfBirth?.toIsoString(),
+            statementData?.vehicleADriverAddress,
+            statementData?.vehicleADriverCountry,
+            statementData?.vehicleADriverPhoneNumber,
+            statementData?.vehicleADriverEmail,
+            statementData?.vehicleADriverDrivingLicenseNr,
+            statementData?.vehicleADriverDrivingLicenseCategory,
+            statementData?.vehicleADriverDrivingLicenseExpirationDate?.toIsoString()
+        )
+
+        val driverB = DriverDTO(
+            statementData?.vehicleBDriverFirstName,
+            statementData?.vehicleBDriverLastName,
+            statementData?.vehicleBDriverDateOfBirth?.toIsoString(),
+            statementData?.vehicleBDriverAddress,
+            statementData?.vehicleBDriverCountry,
+            statementData?.vehicleBDriverPhoneNumber,
+            statementData?.vehicleBDriverEmail,
+            statementData?.vehicleBDriverDrivingLicenseNr,
+            statementData?.vehicleBDriverDrivingLicenseCategory,
+            statementData?.vehicleBDriverDrivingLicenseExpirationDate?.toIsoString()
+        )
+
+        val drivers = listOf(driverA, driverB)
+
+        val witness = WitnessDTO(
+            statementData?.witnessName,
+            statementData?.witnessAddress,
+            statementData?.witnessPhoneNumber
+        )
+
+        val witnesses = listOf(witness)
+
+        val motorA = MotorDTO(
+            statementData?.vehicleAMarkType,
+            statementData?.vehicleARegistrationNumber,
+            statementData?.vehicleACountryOfRegistration
+        )
+
+        val motorB = MotorDTO(
+            statementData?.vehicleBMarkType,
+            statementData?.vehicleBRegistrationNumber,
+            statementData?.vehicleBCountryOfRegistration
+        )
+
+        val motors = listOf(motorA, motorB)
+
+        val trailerA = TrailerDTO(
+            statementData?.vehicleATrailerRegistrationNumber,
+            statementData?.vehicleATrailerCountryOfRegistration
+        )
+        val trailerB = TrailerDTO(
+            statementData?.vehicleBTrailerRegistrationNumber,
+            statementData?.vehicleBTrailerCountryOfRegistration
+        )
+
+        val trailers = listOf(trailerA, trailerB)
+
+        val insuranceCompanyVehicleA =
+            InsuranceCompany(null, statementData?.vehicleAInsuranceCompanyName)
+
+        val insuranceAgencyVehicleA = InsuranceAgency(
+            null,
+            statementData?.vehicleAInsuranceAgencyName,
+            statementData?.vehicleAInsuranceAgencyAddress,
+            statementData?.vehicleAInsuranceAgencyCountry,
+            statementData?.vehicleAInsuranceAgencyPhoneNumber,
+            statementData?.vehicleAInsuranceAgencyEmail
+        )
+
+        val insuranceCertificateVehicleA = InsuranceCertificate(
+            null,
+            statementData?.vehicleAInsuranceCompanyPolicyNumber,
+            statementData?.vehicleAInsuranceCompanyGreenCardNumber,
+            statementData?.vehicleAInsuranceCertificateAvailabilityDate?.toIsoString(),
+            statementData?.vehicleAInsuranceCertificateExpirationDate?.toIsoString(),
+            insuranceAgencyVehicleA,
+            insuranceCompanyVehicleA
+        )
+
+        val policyHolderVehicleA = PolicyHolderDTO(
+            statementData?.policyHolderAFirstName,
+            statementData?.policyHolderALastName,
+            statementData?.policyHolderAEmail,
+            statementData?.policyHolderAPhoneNumber,
+            statementData?.policyHolderAAddress,
+            statementData?.policyHolderAPostalCode,
+            listOf(insuranceCertificateVehicleA)
+        )
+
+        val insuranceCompanyVehicleB =
+            InsuranceCompany(null, statementData?.vehicleBInsuranceCompanyName)
+
+        val insuranceAgencyVehicleB = InsuranceAgency(
+            null,
+            statementData?.vehicleBInsuranceAgencyName,
+            statementData?.vehicleBInsuranceAgencyAddress,
+            statementData?.vehicleBInsuranceAgencyCountry,
+            statementData?.vehicleBInsuranceAgencyPhoneNumber,
+            statementData?.vehicleBInsuranceAgencyEmail
+        )
+
+        val insuranceCertificateVehicleB = InsuranceCertificate(
+            null,
+            statementData?.vehicleBInsuranceCompanyPolicyNumber,
+            statementData?.vehicleBInsuranceCompanyGreenCardNumber,
+            statementData?.vehicleBInsuranceCertificateAvailabilityDate?.toIsoString(),
+            statementData?.vehicleBDriverDrivingLicenseExpirationDate?.toIsoString(),
+            insuranceAgencyVehicleB,
+            insuranceCompanyVehicleB
+        )
+
+        val policyHolderVehicleB = PolicyHolderDTO(
+            statementData?.policyHolderBFirstName,
+            statementData?.policyHolderBLastName,
+            statementData?.policyHolderBEmail,
+            statementData?.policyHolderBPhoneNumber,
+            statementData?.policyHolderBAddress,
+            statementData?.policyHolderBPostalCode,
+            listOf(insuranceCertificateVehicleB)
+        )
+
+        val policyHolders = listOf(policyHolderVehicleA, policyHolderVehicleB)
+
+        val vehicleAAccidentPhotos = mutableListOf<AccidentImageDTO>()
+
+        if (!statementData?.vehicleAAccidentPhotos.isNullOrEmpty()) {
+
+            for (image: Bitmap in statementData?.vehicleAAccidentPhotos!!) {
+                val imageByte = image.toByteArray()
+                vehicleAAccidentPhotos.add(AccidentImageDTO(imageByte))
+            }
+        }
+
+        val vehicleBAccidentPhotos = mutableListOf<AccidentImageDTO>()
+
+        if (!statementData?.vehicleBAccidentPhotos.isNullOrEmpty()) {
+
+            for (image: Bitmap in statementData?.vehicleBAccidentPhotos!!) {
+                val imageByte = image.toByteArray()
+                vehicleBAccidentPhotos.add(AccidentImageDTO(imageByte))
+            }
+        }
+
+        val vehicleACircumstances = model.vehicleACircumstances.value?.size ?: 0
+        val vehicleBCircumstances = model.vehicleBCircumstances.value?.size ?: 0
+        val amountOfCircumstances = vehicleACircumstances + vehicleBCircumstances
+
+        val accidentStatement = AccidentStatementData(
+            statementData?.dateOfAccident?.toIsoString(),
+            statementData?.accidentLocation,
+            statementData?.injured,
+            statementData?.materialDamageToOtherVehicles,
+            statementData?.materialDamageToObjects,
+            amountOfCircumstances,
+            statementData?.accidentSketch?.toByteArray(),
+            drivers,
+            witnesses,
+            policyHolders,
+            motors,
+            trailers,
+            model.vehicleACircumstances.value?.map { it.toString() },
+            statementData?.vehicleAPointOfImpactSketch?.toByteArray(),
+            statementData?.vehicleADamageDescription,
+            vehicleAAccidentPhotos,
+            statementData?.vehicleARemarks,
+            statementData?.driverASignature?.toByteArray(),
+            model.vehicleBCircumstances.value?.map { it.toString() },
+            statementData?.vehicleBPointOfImpactSketch?.toByteArray(),
+            statementData?.vehicleBDamageDescription,
+            vehicleBAccidentPhotos,
+            statementData?.vehicleBRemarks,
+            statementData?.driverBSignature?.toByteArray()
+        )
+
+        return accidentStatement
+    }
+
+    private fun handleAccidentStatementResponse(
+        response: Response<RequestResponse>
+    ) {
+        Log.i("Request", "Request code: ${response.code()}")
     }
 
 
