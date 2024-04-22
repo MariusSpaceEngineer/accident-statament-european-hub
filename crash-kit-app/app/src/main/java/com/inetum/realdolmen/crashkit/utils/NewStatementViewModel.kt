@@ -21,6 +21,10 @@ class NewStatementViewModel : ViewModel() {
     val pointOfImpactVehicleASketchShapes: MutableLiveData<List<Pair<IAccidentDrawable, Point>>> by lazy {
         MutableLiveData<List<Pair<IAccidentDrawable, Point>>>()
     }
+
+    val pointOfImpactVehicleBSketchShapes: MutableLiveData<List<Pair<IAccidentDrawable, Point>>> by lazy {
+        MutableLiveData<List<Pair<IAccidentDrawable, Point>>>()
+    }
 }
 
 //TODO look which properties can't be null
@@ -87,6 +91,7 @@ data class StatementData(
     var vehicleAComingRightJunction: Boolean = false,
     var vehicleANotObservedSignRedLight: Boolean = false,
     var vehicleAAccidentPhotos: MutableList<Bitmap>? = null,
+    var vehicleAPointOfImpactSketch: Bitmap? = null,
     var vehicleARemarks: String = "",
     var vehicleADamageDescription: String = "",
     var policyHolderBLastName: String = "",
@@ -141,6 +146,7 @@ data class StatementData(
     var vehicleBComingRightJunction: Boolean = false,
     var vehicleBNotObservedSignRedLight: Boolean = false,
     var vehicleBAccidentPhotos: MutableList<Bitmap>? = null,
+    var vehicleBPointOfImpactSketch: Bitmap? = null,
     var vehicleBRemarks: String = "",
     var vehicleBDamageDescription: String = "",
     var accidentSketch: Bitmap? = null,

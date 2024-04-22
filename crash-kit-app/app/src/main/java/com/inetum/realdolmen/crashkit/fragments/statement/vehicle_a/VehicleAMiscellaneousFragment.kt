@@ -27,10 +27,12 @@ import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleAMiscellaneousB
 import com.inetum.realdolmen.crashkit.fragments.statement.PointOfImpactSketch
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
+import com.inetum.realdolmen.crashkit.utils.createBitmapFromView
 
 class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
     private lateinit var model: NewStatementViewModel
     private lateinit var navController: NavController
+    private lateinit var pointOfImpactSketchView: PointOfImpactSketch
 
     private var _binding: FragmentVehicleAMiscellaneousBinding? = null
     private val binding get() = _binding!!
@@ -80,15 +82,13 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
         }
     }
 
-    private lateinit var sketchView: PointOfImpactSketch
-
     private val shapes = listOf(
         R.drawable.personal_car_vehicle,
         R.drawable.motorcycle_vehicle,
         R.drawable.truck_vehicle,
         R.drawable.direction_arrow
     )
-
+    private var pointOfImpactSketchBitmap: Bitmap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,32 +113,21 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
             FragmentVehicleAMiscellaneousBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        setUpSketchView(view, shapes)
+        setUpSketchView(view)
 
         return view
     }
-
-    private fun setUpSketchView(view: View, shapeList: List<Int>) {
-        sketchView = view.findViewById(R.id.poi_vehicle_a_sketch)
-        sketchView.viewModel = model
-
-        // Add the shapes from the list to the sketchView
-        sketchView.addShapes(shapeList)
-
-    }
-
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = findNavController()
 
-
         // Get a reference to your PointOfImpactSketch and ScrollView
-        val scrollView = view.findViewById<ScrollView>(R.id.sv_statement_miscellaneous)
+        val scrollView = view.findViewById<ScrollView>(R.id.sv_statement_vehicle_a_miscellaneous)
 
         // Set an onTouchListener on the PointOfImpactSketch view
-        sketchView.setOnTouchListener { _, _ ->
+        pointOfImpactSketchView.setOnTouchListener { _, _ ->
             // When user touches the PointOfImpactSketch view, we consume the touch event and disable the scroll on the parent ScrollView
             scrollView.requestDisallowInterceptTouchEvent(true)
             false
@@ -147,15 +136,25 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
         updateUIFromViewModel(model)
 
         binding.btnStatementAccidentPrevious.setOnClickListener {
+            pointOfImpactSketchBitmap = if (pointOfImpactSketchView.shapes.isNotEmpty()) {
+                pointOfImpactSketchView.createBitmapFromView()
+            } else {
+                null
+            }
             updateViewModelFromUI(model)
 
             navController.popBackStack()
         }
 
         binding.btnStatementAccidentNext.setOnClickListener {
+            pointOfImpactSketchBitmap = if (pointOfImpactSketchView.shapes.isNotEmpty()) {
+                pointOfImpactSketchView.createBitmapFromView()
+            } else {
+                null
+            }
             updateViewModelFromUI(model)
 
-            navController.navigate(R.id.vehicleBNewStatementFragment)
+            navController.navigate(R.id.vehicleBMiscellaneousFragment)
         }
 
         binding.btnStatementAccidentPicture.setOnClickListener {
@@ -201,11 +200,13 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
             this.vehicleADamageDescription =
                 binding.etStatementVehicleADamageDescription.text.toString()
             this.vehicleAAccidentPhotos = accidentImages
+            this.vehicleAPointOfImpactSketch = pointOfImpactSketchBitmap
         }
 
-        model.accidentSketchShapes.value?.apply {
-            model.pointOfImpactVehicleASketchShapes.value = sketchView.shapes
+        model.pointOfImpactVehicleASketchShapes.value?.apply {
+            model.pointOfImpactVehicleASketchShapes.value = pointOfImpactSketchView.shapes
         }
+
     }
 
     private fun requestCameraPermission() {
@@ -216,6 +217,26 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
     private fun startImageCapture() {
         val captureImageIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         requestImageCapture.launch(captureImageIntent)
+    }
+
+    private fun setUpSketchView(view: View) {
+        pointOfImpactSketchView = view.findViewById(R.id.poi_vehicle_a_sketch)
+        pointOfImpactSketchView.viewModel = model
+
+        if (model.pointOfImpactVehicleASketchShapes.value != null) {
+            model.pointOfImpactVehicleASketchShapes.observe(viewLifecycleOwner) { shapes ->
+                // Only add new shapes
+                shapes.forEach { newShape ->
+                    if (newShape !in pointOfImpactSketchView.shapes) {
+                        pointOfImpactSketchView.shapes.add(newShape)
+                    }
+                }
+                pointOfImpactSketchView.invalidate()
+            }
+        } else {
+            pointOfImpactSketchView.addShapes(shapes)
+        }
+
     }
 
 }
