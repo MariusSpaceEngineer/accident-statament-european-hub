@@ -815,6 +815,13 @@
                             android:textStyle="bold"
                             android:visibility="gone" />
 
+                        <ImageView
+                            android:id="@+id/iv_statement_vehicle_a_point_of_impact_sketch"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            tools:ignore="ContentDescription" />
+
                         <androidx.viewpager2.widget.ViewPager2
                             android:id="@+id/vp_statement_overview_vehicle_a_accident_photos"
                             android:layout_width="match_parent"
@@ -1464,6 +1471,13 @@
                             android:textSize="25sp"
                             android:textStyle="bold"
                             android:visibility="gone" />
+
+                        <ImageView
+                            android:id="@+id/iv_statement_vehicle_b_point_of_impact_sketch"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            tools:ignore="ContentDescription" />
 
                         <androidx.viewpager2.widget.ViewPager2
                             android:id="@+id/vp_statement_overview_vehicle_b_accident_photos"
