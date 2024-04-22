@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -14,9 +16,11 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleADriverBinding
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
+import com.inetum.realdolmen.crashkit.utils.DrivingLicenseCategories
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
+import com.inetum.realdolmen.crashkit.utils.showToast
 import com.inetum.realdolmen.crashkit.utils.to24Format
 import com.inetum.realdolmen.crashkit.utils.toLocalDate
 import java.beans.PropertyChangeSupport
@@ -70,6 +74,8 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
 
     private var currentPicker: String? = null
 
+    private val drivingLicenseCategories = DrivingLicenseCategories.list
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         model = ViewModelProvider(requireActivity())[NewStatementViewModel::class.java]
@@ -100,6 +106,8 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
 
         formHelper = FormHelper(requireContext(), fields)
 
+        setupDrivingLicenseCategorySpinner()
+
         setupValidation()
 
         updateUIFromViewModel(model)
@@ -110,6 +118,17 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
             updateDriverFields(isChecked)
             removeDriverFieldsErrors()
         }
+    }
+
+    private fun setupDrivingLicenseCategorySpinner() {
+        val spinner: Spinner = binding.spinStatementVehicleADriverCategory
+        val adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            drivingLicenseCategories
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
     }
 
     private fun setupButtonClickListeners() {
@@ -123,10 +142,12 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
             formHelper.clearErrors()
             formHelper.validateFields(validationRules)
 
-            if (fields.none { it.error != null }) {
+            if (fields.none { it.error != null } && validateSpinner(binding.spinStatementVehicleADriverCategory)) {
                 updateViewModelFromUI(model)
                 // If no errors, navigate to the next fragment
                 navController.navigate(R.id.vehicleACircumstancesFragment)
+            } else if (!validateSpinner(binding.spinStatementVehicleADriverCategory)) {
+                requireContext().showToast("Please select a valid category.")
             }
         }
 
@@ -183,6 +204,12 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
             )
             binding.cbStatementVehicleADriverIsPolicyHolder.isChecked =
                 statementData.vehicleADriverIsPolicyHolder
+
+            if (statementData.vehicleADriverDrivingLicenseCategory.isNotBlank()) {
+                val position =
+                    drivingLicenseCategories.indexOf(statementData.vehicleADriverDrivingLicenseCategory)
+                binding.spinStatementVehicleADriverCategory.setSelection(position)
+            }
         }
     }
 
@@ -200,6 +227,8 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
             this.vehicleADriverPhoneNumber =
                 binding.etStatementVehicleADriverPhoneNumber.text.toString()
             this.vehicleADriverEmail = binding.etStatementVehicleADriverEmail.text.toString()
+            this.vehicleADriverDrivingLicenseCategory =
+                binding.spinStatementVehicleADriverCategory.selectedItem.toString()
             this.vehicleADriverDrivingLicenseNr =
                 binding.etStatementVehicleADriverDrivingLicenseNumber.text.toString()
             this.vehicleADriverDrivingLicenseExpirationDate = drivingLicenseExpirationDate
@@ -304,6 +333,10 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
                 }, formHelper.errors.pastDate
             ),
         )
+    }
+
+    private fun validateSpinner(spinner: Spinner): Boolean {
+        return spinner.selectedItem != null && spinner.selectedItem.toString().isNotBlank()
     }
 
     private fun updateDriverFields(checked: Boolean) {

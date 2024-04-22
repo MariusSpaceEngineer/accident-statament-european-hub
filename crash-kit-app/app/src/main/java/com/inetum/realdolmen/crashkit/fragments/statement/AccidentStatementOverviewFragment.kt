@@ -680,6 +680,12 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
         )
 
         setBoldAndNormalText(
+            binding.tvStatementVehicleACardDriverCategory,
+            binding.tvStatementVehicleACardDriverCategory.text.toString(),
+            statementData.vehicleADriverDrivingLicenseCategory
+        )
+
+        setBoldAndNormalText(
             binding.tvStatementVehicleACardDriverEmail,
             binding.tvStatementVehicleACardDriverEmail.text.toString(),
             statementData.vehicleADriverEmail
@@ -933,6 +939,12 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             binding.tvStatementVehicleBCardDriverEmail,
             binding.tvStatementVehicleBCardDriverEmail.text.toString(),
             statementData.vehicleBDriverEmail
+        )
+
+        setBoldAndNormalText(
+            binding.tvStatementVehicleBCardDriverCategory,
+            binding.tvStatementVehicleBCardDriverCategory.text.toString(),
+            statementData.vehicleBDriverDrivingLicenseCategory
         )
 
         setBoldAndNormalText(

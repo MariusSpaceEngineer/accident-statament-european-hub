@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -15,9 +17,11 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleBDriverBinding
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
+import com.inetum.realdolmen.crashkit.utils.DrivingLicenseCategories
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
+import com.inetum.realdolmen.crashkit.utils.showToast
 import com.inetum.realdolmen.crashkit.utils.to24Format
 import com.inetum.realdolmen.crashkit.utils.toLocalDate
 import java.beans.PropertyChangeSupport
@@ -71,6 +75,8 @@ class VehicleBDriverFragment : Fragment(), StatementDataHandler, ValidationConfi
 
     private var currentPicker: String? = null
 
+    private val drivingLicenseCategories = DrivingLicenseCategories.list
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         model = ViewModelProvider(requireActivity())[NewStatementViewModel::class.java]
@@ -104,6 +110,8 @@ class VehicleBDriverFragment : Fragment(), StatementDataHandler, ValidationConfi
 
         formHelper = FormHelper(requireContext(), fields)
 
+        setupDrivingLicenseCategorySpinner()
+
         setupValidation()
 
         updateUIFromViewModel(model)
@@ -115,6 +123,18 @@ class VehicleBDriverFragment : Fragment(), StatementDataHandler, ValidationConfi
             removeDriverFieldsErrors()
         }
     }
+
+    private fun setupDrivingLicenseCategorySpinner() {
+        val spinner: Spinner = binding.spinStatementVehicleBDriverCategory
+        val adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            drivingLicenseCategories
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+    }
+
 
     override fun updateUIFromViewModel(model: NewStatementViewModel) {
         model.statementData.observe(viewLifecycleOwner, Observer { statementData ->
@@ -134,6 +154,12 @@ class VehicleBDriverFragment : Fragment(), StatementDataHandler, ValidationConfi
             )
             binding.cbStatementVehicleBDriverIsPolicyHolder.isChecked =
                 statementData.vehicleBDriverIsPolicyHolder
+
+            if (statementData.vehicleBDriverDrivingLicenseCategory.isNotBlank()) {
+                val position =
+                    drivingLicenseCategories.indexOf(statementData.vehicleBDriverDrivingLicenseCategory)
+                binding.spinStatementVehicleBDriverCategory.setSelection(position)
+            }
         })
     }
 
@@ -150,6 +176,8 @@ class VehicleBDriverFragment : Fragment(), StatementDataHandler, ValidationConfi
                 binding.etStatementVehicleBDriverCountry.text.toString()
             this.vehicleBDriverPhoneNumber =
                 binding.etStatementVehicleBDriverPhoneNumber.text.toString()
+            this.vehicleBDriverDrivingLicenseCategory =
+                binding.spinStatementVehicleBDriverCategory.selectedItem.toString()
             this.vehicleBDriverEmail = binding.etStatementVehicleBDriverEmail.text.toString()
             this.vehicleBDriverDrivingLicenseNr =
                 binding.etStatementVehicleBDriverDrivingLicenseNumber.text.toString()
@@ -300,9 +328,11 @@ class VehicleBDriverFragment : Fragment(), StatementDataHandler, ValidationConfi
             formHelper.clearErrors()
 
             formHelper.validateFields(validationRules)
-            if (fields.none { it.error != null }) {
+            if (fields.none { it.error != null } && validateSpinner(binding.spinStatementVehicleBDriverCategory)) {
                 updateViewModelFromUI(model)
                 navController.navigate(R.id.vehicleBCircumstancesFragment)
+            } else if (!validateSpinner(binding.spinStatementVehicleBDriverCategory)) {
+                requireContext().showToast("Please select a valid category.")
             }
         }
 
@@ -337,6 +367,10 @@ class VehicleBDriverFragment : Fragment(), StatementDataHandler, ValidationConfi
             currentPicker = "date_of_birth_date_picker"
             datePicker.show(parentFragmentManager, currentPicker)
         }
+    }
+
+    private fun validateSpinner(spinner: Spinner): Boolean {
+        return spinner.selectedItem != null && spinner.selectedItem.toString().isNotBlank()
     }
 
 }

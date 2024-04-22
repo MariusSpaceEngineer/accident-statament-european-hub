@@ -721,6 +721,16 @@
                             android:textSize="20sp" />
 
                         <TextView
+                            android:id="@+id/tv_statement_vehicle_a_card_driver_category"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:text="Category"
+                            android:textAllCaps="true"
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
+
+                        <TextView
                             android:id="@+id/tv_statement_vehicle_a_card_driver_email"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -1384,6 +1394,16 @@
                             android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_statement_vehicle_b_card_driver_category"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:text="Category"
+                            android:textAllCaps="true"
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_b_card_driver_driving_license_number"
