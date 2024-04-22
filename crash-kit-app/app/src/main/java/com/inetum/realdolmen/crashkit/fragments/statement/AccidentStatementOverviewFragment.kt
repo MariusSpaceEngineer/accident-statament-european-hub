@@ -698,9 +698,14 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
         )
 
         //Vehicle A page five
-        if (!statementData.vehicleAAccidentPhotos.isNullOrEmpty()) {
+        if (statementData.vehicleAPointOfImpactSketch != null){
             binding.tvStatementVehicleAPointOfImpactTitle.visibility = View.VISIBLE
+            binding.ivStatementVehicleAPointOfImpactSketch.setImageBitmap(statementData.vehicleAPointOfImpactSketch)
+            binding.ivStatementVehicleAPointOfImpactSketch.visibility= View.VISIBLE
 
+        }
+
+        if (!statementData.vehicleAAccidentPhotos.isNullOrEmpty()) {
             val accidentImages = statementData.vehicleAAccidentPhotos!!
             val viewPager = binding.vpStatementOverviewVehicleAAccidentPhotos
             viewPager.visibility = View.VISIBLE
@@ -943,8 +948,13 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
         )
 
         //Vehicle B page five
-        if (!statementData.vehicleBAccidentPhotos.isNullOrEmpty()) {
+        if (statementData.vehicleBPointOfImpactSketch != null){
             binding.tvStatementVehicleBPointOfImpactTitle.visibility = View.VISIBLE
+            binding.ivStatementVehicleBPointOfImpactSketch.setImageBitmap(statementData.vehicleBPointOfImpactSketch)
+            binding.ivStatementVehicleBPointOfImpactSketch.visibility= View.VISIBLE
+
+        }
+        if (!statementData.vehicleBAccidentPhotos.isNullOrEmpty()) {
 
             val accidentImages = statementData.vehicleBAccidentPhotos!!
             val viewPager = binding.vpStatementOverviewVehicleBAccidentPhotos
