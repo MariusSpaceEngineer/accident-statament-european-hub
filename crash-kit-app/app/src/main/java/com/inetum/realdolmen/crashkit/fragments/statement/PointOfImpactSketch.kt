@@ -13,8 +13,8 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.accidentsketch.IAccidentDrawable
-import com.inetum.realdolmen.crashkit.accidentsketch.NonRotatableDrawable
-import com.inetum.realdolmen.crashkit.accidentsketch.RotatableDrawable
+import com.inetum.realdolmen.crashkit.accidentsketch.NonRotatableMovableDrawable
+import com.inetum.realdolmen.crashkit.accidentsketch.RotatableMovableDrawable
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.RotationGestureDetector
 import kotlin.math.max
@@ -32,7 +32,7 @@ class PointOfImpactSketch(context: Context, attrs: AttributeSet) : View(context,
     private var mScaleFactor = 1f
 
     //Used by the RotationGestureDetector
-    private val rotations = mutableMapOf<RotatableDrawable, Float>()
+    private val rotations = mutableMapOf<RotatableMovableDrawable, Float>()
 
     //Booleans needed to keep track which gesture is happening
     private var isScaling: Boolean = false
@@ -42,7 +42,7 @@ class PointOfImpactSketch(context: Context, attrs: AttributeSet) : View(context,
         ScaleGestureDetector(context, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
             override fun onScale(detector: ScaleGestureDetector): Boolean {
                 val scaleFactor = detector.scaleFactor
-                Log.d("SketchView", "onScale called with scale factor $scaleFactor")
+                Log.d("PointOfImpactSketchView", "onScale called with scale factor $scaleFactor")
 
                 mScaleFactor *= scaleFactor
                 mScaleFactor = max(0.1f, min(mScaleFactor, 5.0f))
@@ -77,10 +77,10 @@ class PointOfImpactSketch(context: Context, attrs: AttributeSet) : View(context,
         RotationGestureDetector(object : RotationGestureDetector.OnRotationGestureListener {
             override fun onRotation(rotationDetector: RotationGestureDetector?): Boolean {
                 val rotationAngle = rotationDetector?.angle ?: 0f
-                Log.i("SketchView", "onRotation called with rotation angle $rotationDetector")
+                Log.i("PointOfImpactSketchView", "onRotation called with rotation angle $rotationDetector")
 
                 currentShape?.let { (drawable, _) ->
-                    if (drawable is RotatableDrawable) {
+                    if (drawable is RotatableMovableDrawable) {
                         // Update the rotation angle of the drawable
                         drawable.setRotation(rotationAngle)
 
@@ -98,7 +98,7 @@ class PointOfImpactSketch(context: Context, attrs: AttributeSet) : View(context,
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
                 if (event.pointerCount == 1) {
                     currentShape = findShapeAt(event.x.toInt(), event.y.toInt())
-                    currentShape?.let { (drawable, position) ->
+                    currentShape?.let { (_, position) ->
                         //Determines the position of the pointer so that the figure doesn't jump when touched
                         touchOffset.set(event.x.toInt() - position.x, event.y.toInt() - position.y)
                     }
@@ -140,18 +140,16 @@ class PointOfImpactSketch(context: Context, attrs: AttributeSet) : View(context,
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         for ((accidentDrawable, _) in shapes) {
-            val resId = accidentDrawable.resId
             val drawable = accidentDrawable as Drawable
 
             // Save the current state of the canvas
             val saveCount = canvas.save()
 
             // Rotate the canvas around the center of the drawable
-            val (centerX, centerY) = rotateCanvas(drawable, canvas)
+            rotateCanvas(drawable, canvas)
 
             // Draw the shape on the rotated canvas
             drawable.draw(canvas)
-
             // Restore the canvas to its previous state
             canvas.restoreToCount(saveCount)
         }
@@ -167,9 +165,9 @@ class PointOfImpactSketch(context: Context, attrs: AttributeSet) : View(context,
                 if (resId == R.drawable.personal_car_vehicle || resId == R.drawable.motorcycle_vehicle ||
                     resId == R.drawable.truck_vehicle
                 ) {
-                    NonRotatableDrawable(drawable!!, resId, 0)
+                    NonRotatableMovableDrawable(drawable!!, resId, 0)
                 } else {
-                    RotatableDrawable(drawable!!, resId, 0)
+                    RotatableMovableDrawable(drawable!!, resId, 1)
                 }
 
             // Calculate a new position for each shape so they don't overlap
@@ -196,10 +194,9 @@ class PointOfImpactSketch(context: Context, attrs: AttributeSet) : View(context,
         event: MotionEvent,
         position: Point
     ) {
-        val resId = accidentDrawable.resId
         val drawable = accidentDrawable as Drawable
 
-        if (accidentDrawable is RotatableDrawable) {
+        if (accidentDrawable is RotatableMovableDrawable) {
 
             // Calculate the new position
             val newX = event.x.toInt() - touchOffset.x
@@ -223,7 +220,7 @@ class PointOfImpactSketch(context: Context, attrs: AttributeSet) : View(context,
     private fun handleMultiFingerDownEvent(event: MotionEvent) {
         val shape = findShapeAt(event.getX(0).toInt(), event.getY(0).toInt())
         //Check if one of the pointers is near the edge of the shape
-        if (shape != null && shape.first is RotatableDrawable &&
+        if (shape != null && shape.first is RotatableMovableDrawable &&
             (isNearEdge(
                 event.getX(0).toInt(),
                 event.getY(0).toInt(),
@@ -235,13 +232,13 @@ class PointOfImpactSketch(context: Context, attrs: AttributeSet) : View(context,
                         shape.first as Drawable
                     ))
         ) {
-            Log.i("SketchView", "At least one finger is near the edge of a shape")
+            Log.i("PointOfImpactSketchView", "At least one finger is near the edge of a shape")
             // At least one finger is on the figure and near the edge, start a scale gesture
             currentShape = shape
             isScaling = true
             isRotating = false
             scaleGestureDetector.onTouchEvent(event)
-        } else if (currentShape != null && currentShape!!.first is RotatableDrawable) {
+        } else if (currentShape != null && currentShape!!.first is RotatableMovableDrawable) {
             // Two fingers down, but not near the edge, start a rotation gesture
             isScaling = false
             isRotating = true
@@ -272,10 +269,10 @@ class PointOfImpactSketch(context: Context, attrs: AttributeSet) : View(context,
             val shape = shapesAtPoint.maxByOrNull { (drawable, _) ->
                 drawable.priority
             }
-            Log.i("SketchView", "Shape found at ${shape?.second?.x} -${shape?.second?.y}")
+            Log.i("PointOfImpactSketchView", "Shape found at ${shape?.second?.x} -${shape?.second?.y}")
             shape
         } else {
-            Log.i("SketchView", "Shape not found")
+            Log.i("PointOfImpactSketchView", "Shape not found")
             null
         }
     }
