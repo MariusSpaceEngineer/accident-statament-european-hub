@@ -1,7 +1,7 @@
 package com.inetum.realdolmen.crashkit.utils
 
-object DrivingLicenseCategories {
-    val list = listOf(
+object AccidentStatementLists {
+    val drivingLicenseCategories = listOf(
         "",
         "AM",
         "A1",
