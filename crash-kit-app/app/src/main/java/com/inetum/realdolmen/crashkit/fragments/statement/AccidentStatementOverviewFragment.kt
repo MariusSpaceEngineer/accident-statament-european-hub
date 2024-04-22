@@ -178,7 +178,7 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             statementData?.vehicleADriverPhoneNumber,
             statementData?.vehicleADriverEmail,
             statementData?.vehicleADriverDrivingLicenseNr,
-            null,
+            statementData?.vehicleADriverDrivingLicenseCategory,
             statementData?.vehicleADriverDrivingLicenseExpirationDate?.toIsoString()
         )
 
@@ -191,7 +191,7 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             statementData?.vehicleBDriverPhoneNumber,
             statementData?.vehicleBDriverEmail,
             statementData?.vehicleBDriverDrivingLicenseNr,
-            null,
+            statementData?.vehicleBDriverDrivingLicenseCategory,
             statementData?.vehicleBDriverDrivingLicenseExpirationDate?.toIsoString()
         )
 
@@ -204,6 +204,7 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
 
         val witnesses = listOf(witness)
 
+        //TODO remove the type property and just holf the mark type one
         val motorA = MotorDTO(
             statementData?.vehicleAMarkType,
             null,
@@ -308,6 +309,7 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             }
         }
 
+        //TODO count the total circumstances
 
         val accidentStatement = AccidentStatementData(
             statementData?.dateOfAccident?.toIsoString(),
@@ -315,7 +317,7 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             statementData?.injured,
             statementData?.materialDamageToOtherVehicles,
             statementData?.materialDamageToObjects,
-            null,
+            model.vehicleACircumstances.value?.size,
             null,
             null,
             null,
@@ -703,11 +705,22 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             statementData.vehicleADriverDrivingLicenseExpirationDate?.to24Format()
         )
 
+        //Vehicle A page four
+        if (!model.vehicleACircumstances.value.isNullOrEmpty()) {
+            binding.tvStatementVehicleAAmountOfCircumstances.visibility = View.VISIBLE
+
+            setBoldAndNormalText(
+                binding.tvStatementVehicleAAmountOfCircumstances,
+                binding.tvStatementVehicleAAmountOfCircumstances.text.toString(),
+                model.vehicleACircumstances.value!!.size.toString()
+            )
+        }
+
         //Vehicle A page five
-        if (statementData.vehicleAPointOfImpactSketch != null){
+        if (statementData.vehicleAPointOfImpactSketch != null) {
             binding.tvStatementVehicleAPointOfImpactTitle.visibility = View.VISIBLE
             binding.ivStatementVehicleAPointOfImpactSketch.setImageBitmap(statementData.vehicleAPointOfImpactSketch)
-            binding.ivStatementVehicleAPointOfImpactSketch.visibility= View.VISIBLE
+            binding.ivStatementVehicleAPointOfImpactSketch.visibility = View.VISIBLE
 
         }
 
@@ -959,11 +972,22 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             statementData.vehicleBDriverDrivingLicenseExpirationDate?.to24Format()
         )
 
+        //Vehicle B page four
+        if (!model.vehicleBCircumstances.value.isNullOrEmpty()) {
+            binding.tvStatementVehicleBAmountOfCircumstances.visibility = View.VISIBLE
+
+            setBoldAndNormalText(
+                binding.tvStatementVehicleBAmountOfCircumstances,
+                binding.tvStatementVehicleBAmountOfCircumstances.text.toString(),
+                model.vehicleBCircumstances.value!!.size.toString()
+            )
+        }
+
         //Vehicle B page five
-        if (statementData.vehicleBPointOfImpactSketch != null){
+        if (statementData.vehicleBPointOfImpactSketch != null) {
             binding.tvStatementVehicleBPointOfImpactTitle.visibility = View.VISIBLE
             binding.ivStatementVehicleBPointOfImpactSketch.setImageBitmap(statementData.vehicleBPointOfImpactSketch)
-            binding.ivStatementVehicleBPointOfImpactSketch.visibility= View.VISIBLE
+            binding.ivStatementVehicleBPointOfImpactSketch.visibility = View.VISIBLE
 
         }
         if (!statementData.vehicleBAccidentPhotos.isNullOrEmpty()) {

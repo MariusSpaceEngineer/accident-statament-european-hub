@@ -1,17 +1,17 @@
 package com.inetum.realdolmen.crashkit.fragments.statement.vehicle_b
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleBCircumstancesBinding
-import com.inetum.realdolmen.crashkit.helpers.FragmentNavigationHelper
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 
@@ -19,12 +19,11 @@ class VehicleBCircumstancesFragment : Fragment(), StatementDataHandler {
     private lateinit var model: NewStatementViewModel
     private lateinit var navController: NavController
 
+    private lateinit var checkboxes: List<CheckBox>
+    private lateinit var checkedCheckboxes: List<CheckBox>
+
     private var _binding: FragmentVehicleBCircumstancesBinding? = null
     private val binding get() = _binding!!
-
-    private val fragmentNavigationHelper by lazy {
-        FragmentNavigationHelper(requireActivity().supportFragmentManager)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,96 +55,83 @@ class VehicleBCircumstancesFragment : Fragment(), StatementDataHandler {
         super.onViewCreated(view, savedInstanceState)
         navController = findNavController()
 
+        setupCheckboxes()
+
         updateUIFromViewModel(model)
 
         binding.btnStatementAccidentPrevious.setOnClickListener {
+            checkedCheckboxes = getCheckedCheckboxes(checkboxes)
+
             updateViewModelFromUI(model)
 
             navController.popBackStack()
         }
 
         binding.btnStatementAccidentNext.setOnClickListener {
+            checkedCheckboxes = getCheckedCheckboxes(checkboxes)
+
             updateViewModelFromUI(model)
 
-            navController.navigate(R.id.vehicleBMiscellaneousFragment)
+            navController.navigate(R.id.accidentStatementOverviewFragment)
         }
     }
 
     override fun updateUIFromViewModel(model: NewStatementViewModel) {
-        model.statementData.observe(viewLifecycleOwner, Observer { statementData ->
-            binding.cbStatementCircumstancesVehicleBParkedStopped.isChecked =
-                statementData.vehicleBParkedStopped
-            binding.cbStatementCircumstancesVehicleBLeavingParkingOpeningDoor.isChecked =
-                statementData.vehicleBLeavingParkingOpeningDoor
-            binding.cbStatementCircumstancesVehicleBEnteringParking.isChecked =
-                statementData.vehicleBEnteringParking
-            binding.cbStatementCircumstancesVehicleBEmergingFromCarParkPrivateGroundTrack.isChecked =
-                statementData.vehicleBEmergingParkPrivateGroundTrack
-            binding.cbStatementCircumstancesVehicleBEnteringCarParkPrivateGroundTrack.isChecked =
-                statementData.vehicleBEnteringCarParkPrivateGroundTrack
-            binding.cbStatementCircumstancesVehicleBEnteringRoundabout.isChecked =
-                statementData.vehicleBEnteringRoundabout
-            binding.cbStatementCircumstancesVehicleBCirculatingRoundabout.isChecked =
-                statementData.vehicleBCirculatingRoundabout
-            binding.cbStatementCircumstancesVehicleBStrikingRearSameDirectionSameLane.isChecked =
-                statementData.vehicleBStrikingRearSameDirectionLane
-            binding.cbStatementCircumstancesVehicleBGoingSameDirectionDifferentLane.isChecked =
-                statementData.vehicleBGoingSameDirectionDifferentLane
-            binding.cbStatementCircumstancesVehicleBChangingLanes.isChecked =
-                statementData.vehicleBChangingLane
-            binding.cbStatementCircumstancesVehicleBOvertaking.isChecked =
-                statementData.vehicleBOvertaking
-            binding.cbStatementCircumstancesVehicleBTurningRight.isChecked =
-                statementData.vehicleBTurningRight
-            binding.cbStatementCircumstancesVehicleBTurningLeft.isChecked =
-                statementData.vehicleBTurningLeft
-            binding.cbStatementCircumstancesVehicleBReversing.isChecked =
-                statementData.vehicleBReversing
-            binding.cbStatementCircumstancesVehicleBEncroachingReservedLaneForOppositeDirection.isChecked =
-                statementData.vehicleBEncroachingLaneOppositeDirection
-            binding.cbStatementCircumstancesVehicleBComingRightJunction.isChecked =
-                statementData.vehicleBComingRightJunction
-            binding.cbStatementCircumstancesVehicleBNotObservedSignRedLight.isChecked =
-                statementData.vehicleBNotObservedSignRedLight
-        })
-    }
-
-    override fun updateViewModelFromUI(model: NewStatementViewModel) {
-        model.statementData.value?.apply {
-            this.vehicleBParkedStopped =
-                binding.cbStatementCircumstancesVehicleBParkedStopped.isChecked
-            this.vehicleBLeavingParkingOpeningDoor =
-                binding.cbStatementCircumstancesVehicleBLeavingParkingOpeningDoor.isChecked
-            this.vehicleBEnteringParking =
-                binding.cbStatementCircumstancesVehicleBEnteringParking.isChecked
-            this.vehicleBEmergingParkPrivateGroundTrack =
-                binding.cbStatementCircumstancesVehicleBEmergingFromCarParkPrivateGroundTrack.isChecked
-            this.vehicleBEnteringCarParkPrivateGroundTrack =
-                binding.cbStatementCircumstancesVehicleBEnteringCarParkPrivateGroundTrack.isChecked
-            this.vehicleBEnteringRoundabout =
-                binding.cbStatementCircumstancesVehicleBEnteringRoundabout.isChecked
-            this.vehicleBCirculatingRoundabout =
-                binding.cbStatementCircumstancesVehicleBCirculatingRoundabout.isChecked
-            this.vehicleBStrikingRearSameDirectionLane =
-                binding.cbStatementCircumstancesVehicleBStrikingRearSameDirectionSameLane.isChecked
-            this.vehicleBGoingSameDirectionDifferentLane =
-                binding.cbStatementCircumstancesVehicleBGoingSameDirectionDifferentLane.isChecked
-            this.vehicleBChangingLane =
-                binding.cbStatementCircumstancesVehicleBChangingLanes.isChecked
-            this.vehicleBOvertaking =
-                binding.cbStatementCircumstancesVehicleBOvertaking.isChecked
-            this.vehicleBTurningRight =
-                binding.cbStatementCircumstancesVehicleBTurningRight.isChecked
-            this.vehicleBTurningLeft =
-                binding.cbStatementCircumstancesVehicleBTurningLeft.isChecked
-            this.vehicleBReversing = binding.cbStatementCircumstancesVehicleBReversing.isChecked
-            this.vehicleBEncroachingLaneOppositeDirection =
-                binding.cbStatementCircumstancesVehicleBEncroachingReservedLaneForOppositeDirection.isChecked
-            this.vehicleBComingRightJunction =
-                binding.cbStatementCircumstancesVehicleBComingRightJunction.isChecked
-            this.vehicleBNotObservedSignRedLight =
-                binding.cbStatementCircumstancesVehicleBNotObservedSignRedLight.isChecked
+        model.vehicleBCircumstances.observe(viewLifecycleOwner) { circumstances ->
+            val checkedCheckboxes = circumstances.map { it.text.toString() }
+            checkboxes.forEach { checkbox ->
+                checkbox.isChecked = checkbox.text.toString() in checkedCheckboxes
+            }
         }
     }
 
+    override fun updateViewModelFromUI(model: NewStatementViewModel) {
+        model.vehicleBCircumstances.value = checkedCheckboxes
+    }
+
+    private fun setupCheckboxes() {
+        setupCheckboxesList()
+        setupCheckboxListeners()
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun setupCheckboxListeners() {
+        val string = requireContext().getString(R.string.label_amount_of_crosses)
+
+        checkboxes.forEach { checkbox ->
+            checkbox.setOnCheckedChangeListener { _, _ ->
+                val checkedCount = checkboxes.count { it.isChecked }
+                // Update your TextView with the checkedCount here
+                binding.tvStatementCircumstancesVehicleBTotalCrosses.text =
+                    "$string: $checkedCount"
+            }
+        }
+    }
+
+    private fun setupCheckboxesList() {
+        checkboxes = listOf(
+            // Update the UI here based on the new statementData
+            binding.cbStatementCircumstancesVehicleBParkedStopped,
+            binding.cbStatementCircumstancesVehicleBLeavingParkingOpeningDoor,
+            binding.cbStatementCircumstancesVehicleBEnteringParking,
+            binding.cbStatementCircumstancesVehicleBEmergingFromCarParkPrivateGroundTrack,
+            binding.cbStatementCircumstancesVehicleBEnteringCarParkPrivateGroundTrack,
+            binding.cbStatementCircumstancesVehicleBEnteringRoundabout,
+            binding.cbStatementCircumstancesVehicleBCirculatingRoundabout,
+            binding.cbStatementCircumstancesVehicleBStrikingRearSameDirectionSameLane,
+            binding.cbStatementCircumstancesVehicleBGoingSameDirectionDifferentLane,
+            binding.cbStatementCircumstancesVehicleBChangingLanes,
+            binding.cbStatementCircumstancesVehicleBOvertaking,
+            binding.cbStatementCircumstancesVehicleBTurningRight,
+            binding.cbStatementCircumstancesVehicleBTurningLeft,
+            binding.cbStatementCircumstancesVehicleBReversing,
+            binding.cbStatementCircumstancesVehicleBEncroachingReservedLaneForOppositeDirection,
+            binding.cbStatementCircumstancesVehicleBComingRightJunction,
+            binding.cbStatementCircumstancesVehicleBNotObservedSignRedLight,
+        )
+    }
+
+    private fun getCheckedCheckboxes(checkboxes: List<CheckBox>): List<CheckBox> {
+        return checkboxes.filter { it.isChecked }
+    }
 }

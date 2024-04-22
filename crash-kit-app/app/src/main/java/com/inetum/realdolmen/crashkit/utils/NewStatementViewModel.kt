@@ -2,6 +2,7 @@ package com.inetum.realdolmen.crashkit.utils
 
 import android.graphics.Bitmap
 import android.graphics.Point
+import android.widget.CheckBox
 import android.widget.TextView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,6 +13,14 @@ import java.time.LocalDateTime
 class NewStatementViewModel : ViewModel() {
     val statementData: MutableLiveData<StatementData> by lazy {
         MutableLiveData<StatementData>(StatementData())
+    }
+
+    val vehicleACircumstances: MutableLiveData<List<CheckBox>> by lazy {
+        MutableLiveData<List<CheckBox>>()
+    }
+
+    val vehicleBCircumstances: MutableLiveData<List<CheckBox>> by lazy {
+        MutableLiveData<List<CheckBox>>()
     }
 
     val accidentSketchShapes: MutableLiveData<List<Triple<IAccidentDrawable, Point, TextView?>>> by lazy {

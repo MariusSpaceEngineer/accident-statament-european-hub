@@ -795,8 +795,8 @@
                             android:text="@string/label_amount_of_crosses"
                             android:textAllCaps="true"
                             android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textSize="16sp"
+                            android:visibility="gone" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_a_page_four_edit"
@@ -1462,8 +1462,8 @@
                             android:text="@string/label_amount_of_crosses"
                             android:textAllCaps="true"
                             android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textSize="16sp"
+                            android:visibility="gone" />
 
                         <TextView
                             android:id="@+id/tv_statement_vehicle_b_page_four_edit"

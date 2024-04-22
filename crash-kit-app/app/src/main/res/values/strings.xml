@@ -55,7 +55,7 @@
     <string name="label_date_of_birth">Date of Birth</string>
     <string name="label_driving_license_number">Driving License Number</string>
     <string name="label_driving_license_expiration_date">Driving License Expiration Date</string>
-    <string name="label_amount_of_crosses">Amount of Crosses:</string>
+    <string name="label_amount_of_crosses">Amount of Crosses</string>
     <string name="label_accident_sketch">Accident Sketch:</string>
     <string name="label_other_objects">Other Objects</string>
     <string name="label_other_cars">Other Cars</string>
