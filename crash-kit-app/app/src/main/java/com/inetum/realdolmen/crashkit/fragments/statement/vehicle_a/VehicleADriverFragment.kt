@@ -16,7 +16,7 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleADriverBinding
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
-import com.inetum.realdolmen.crashkit.utils.DrivingLicenseCategories
+import com.inetum.realdolmen.crashkit.utils.AccidentStatementLists
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
@@ -74,7 +74,7 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, ValidationConfi
 
     private var currentPicker: String? = null
 
-    private val drivingLicenseCategories = DrivingLicenseCategories.list
+    private val drivingLicenseCategories = AccidentStatementLists.drivingLicenseCategories
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
