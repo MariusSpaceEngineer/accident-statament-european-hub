@@ -47,10 +47,10 @@ public class AccidentStatementService {
             AccidentStatement accidentStatement = accidentStatementMapper.fromDTO(accidentStatementDTO);
 
             //Save accident images
-            if (!accidentStatement.getVehicleAAccidentImages().isEmpty()) {
+            if (accidentStatement.getVehicleAAccidentImages() != null) {
                 accidentImageRepository.saveAll(accidentStatement.getVehicleAAccidentImages());
             }
-            if (!accidentStatement.getVehicleBAccidentImages().isEmpty()) {
+            if (accidentStatement.getVehicleBAccidentImages() != null) {
                 accidentImageRepository.saveAll(accidentStatement.getVehicleBAccidentImages());
             }
 
