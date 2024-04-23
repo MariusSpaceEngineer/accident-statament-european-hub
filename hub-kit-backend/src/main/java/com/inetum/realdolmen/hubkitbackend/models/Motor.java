@@ -1,23 +1,16 @@
 package com.inetum.realdolmen.hubkitbackend.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Entity
-@Table(name = "motors")
-public class Motor {
-    @Id
-    @GeneratedValue
-    private Integer id;
+@DiscriminatorValue("MOTOR")
+public class Motor extends Vehicle{
     private String markType;
-    private String licensePlate;
-    private String countryOfRegistration;
 }
