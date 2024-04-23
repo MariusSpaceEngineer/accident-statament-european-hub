@@ -17,6 +17,7 @@ public class Trailer {
     @Id
     @GeneratedValue
     private Integer id;
+    private Boolean hasRegistration;
     private String licensePlate;
     private String countryOfRegistration;
 }
