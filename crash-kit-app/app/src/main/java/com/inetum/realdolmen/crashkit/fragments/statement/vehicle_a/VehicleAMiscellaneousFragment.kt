@@ -16,7 +16,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
@@ -154,7 +153,7 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
             }
             updateViewModelFromUI(model)
 
-            navController.navigate(R.id.vehicleBMiscellaneousFragment)
+            navController.navigate(R.id.vehicleBNewStatementFragment)
         }
 
         binding.btnStatementAccidentPicture.setOnClickListener {
@@ -181,7 +180,7 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
     }
 
     override fun updateUIFromViewModel(model: NewStatementViewModel) {
-        model.statementData.observe(viewLifecycleOwner, Observer { statementData ->
+        model.statementData.observe(viewLifecycleOwner) { statementData ->
             binding.etStatementVehicleADriverRemarks.setText(statementData.vehicleARemarks)
             binding.etStatementVehicleADamageDescription.setText(statementData.vehicleADamageDescription)
             if (!statementData.vehicleAAccidentPhotos.isNullOrEmpty()) {
@@ -191,7 +190,7 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
                 viewPager?.visibility = View.VISIBLE
                 viewPager?.adapter = ImageAdapter(accidentImages, this.requireContext())
             }
-        })
+        }
     }
 
     override fun updateViewModelFromUI(model: NewStatementViewModel) {
