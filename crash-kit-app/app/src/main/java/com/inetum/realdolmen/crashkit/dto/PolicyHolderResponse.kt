@@ -29,7 +29,8 @@ data class InsuranceCertificate(
     val availabilityDate: String?,
     val expirationDate: String?,
     val insuranceAgency: InsuranceAgency?,
-    val insuranceCompany: InsuranceCompany?
+    val insuranceCompany: InsuranceCompany?,
+    val vehicle: Vehicle?
 )
 
 data class InsuranceAgency(
