@@ -3,6 +3,7 @@ package com.inetum.realdolmen.hubkitbackend.dto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.antlr.v4.runtime.misc.NotNull;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,28 +13,38 @@ import java.util.List;
 @Builder
 public class AccidentStatementDTO {
     private Integer id;
+    @NotNull
     private LocalDate date;
+    @NotNull
     private String location;
+    @NotNull
     private Boolean injured;
+    @NotNull
     private Boolean damageToOtherCars;
+    @NotNull
     private Boolean damageToObjects;
-    //TODO: create circumstances class
-    //private Set<?> circumstances;
+    @NotNull
     private Integer numberOfCircumstances;
-    private Byte sketchOfImage;
-    private Byte initialImpactVehicleA;
-    private Byte initialImpactVehicleB;
-    private List<AccidentImageDTO> vehicleAAccidentImages;
-    private String remarkVehicleA;
-    private List<AccidentImageDTO> vehicleBAccidentImages;
-    private String remarkVehicleB;
-    private String visibleDamageVehicleA;
-    private String visibleDamageVehicleB;
-    private Byte signatureVehicleA;
-    private Byte signatureVehicleB;
+    private byte[] sketchOfAccident;
+    @NotNull
     private List<DriverDTO> drivers;
-    private List<WitnessDTO> witnesses;
+    private WitnessDTO witness;
+    @NotNull
     private List<PolicyHolderDTO> policyHolders;
     private List<MotorDTO> motors;
     private List<TrailerDTO> trailers;
+    private List<String> vehicleACircumstances;
+    private byte[] vehicleAInitialImpactSketch;
+    private String vehicleAVisibleDamageDescription;
+    private List<AccidentImageDTO> vehicleAAccidentImages;
+    private String vehicleARemark;
+    @NotNull
+    private byte[] vehicleASignature;
+    private List<String> vehicleBCircumstances;
+    private byte[] vehicleBInitialImpactSketch;
+    private String vehicleBVisibleDamageDescription;
+    private List<AccidentImageDTO> vehicleBAccidentImages;
+    private String vehicleBRemark;
+    @NotNull
+    private byte[] vehicleBSignature;
 }

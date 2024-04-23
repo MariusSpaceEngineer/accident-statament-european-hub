@@ -17,9 +17,7 @@ public class Motor {
     @Id
     @GeneratedValue
     private Integer id;
-    private String brand;
-    //TODO: make a enum or a class with values maybe
-    private String type;
+    private String markType;
     private String licensePlate;
     private String countryOfRegistration;
 }

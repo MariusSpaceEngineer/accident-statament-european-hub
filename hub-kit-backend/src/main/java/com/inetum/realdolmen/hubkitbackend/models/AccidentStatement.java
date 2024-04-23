@@ -22,30 +22,42 @@ public class AccidentStatement {
     private Boolean injured;
     private Boolean damageToOtherCars;
     private Boolean damageToObjects;
-    //TODO: create circumstances class
-    //private Set<?> circumstances;
     private Integer numberOfCircumstances;
-    private Byte sketchOfImage;
-    private Byte initialImpactVehicleA;
-    private Byte initialImpactVehicleB;
-    @OneToMany
-    private List<AccidentImage> vehicleAAccidentImages;
-    private String remarkVehicleA;
-    @OneToMany
-    private List<AccidentImage> vehicleBAccidentImages;
-    private String remarkVehicleB;
-    private String visibleDamageVehicleA;
-    private String visibleDamageVehicleB;
-    private Byte signatureVehicleA;
-    private Byte signatureVehicleB;
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] sketchOfAccident;
     @ManyToMany
     private List<Driver> drivers;
-    @ManyToMany
-    private List<Witness> witnesses;
+    @ManyToOne
+    private Witness witness;
     @ManyToMany
     private List<Motor> motors;
     @ManyToMany
     private List<PolicyHolder> policyHolders;
     @ManyToMany
     private List<Trailer> trailers;
+    @ElementCollection
+    private List<String> vehicleACircumstances;
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] vehicleAInitialImpactSketch;
+    private String vehicleAVisibleDamageDescription;
+    @OneToMany
+    private List<AccidentImage> vehicleAAccidentImages;
+    private String vehicleARemark;
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] vehicleASignature;
+    @ElementCollection
+    private List<String> vehicleBCircumstances;
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] vehicleBInitialImpactSketch;
+    private String vehicleBVisibleDamageDescription;
+    @OneToMany
+    private List<AccidentImage> vehicleBAccidentImages;
+    private String vehicleBRemark;
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] vehicleBSignature;
 }

@@ -12,16 +12,10 @@ import java.time.LocalDate;
 @Builder
 public class InsuranceCertificateDTO {
     private Integer id;
-    @NonNull
     private String policyNumber;
-    @NonNull
     private String greenCardNumber;
-    @NonNull
     private LocalDate availabilityDate;
-    @NonNull
     private LocalDate expirationDate;
-    @NonNull
     private InsuranceAgencyDTO insuranceAgency;
-    @NonNull
     private InsuranceCompanyDTO insuranceCompany;
 }
