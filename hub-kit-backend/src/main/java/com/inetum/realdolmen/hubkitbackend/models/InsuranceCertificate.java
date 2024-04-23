@@ -26,5 +26,8 @@ public class InsuranceCertificate {
     @ManyToOne
     @JoinColumn(name = "insurance_company_id")
     private InsuranceCompany insuranceCompany;
+    @ManyToOne
+    @JoinColumn(name = "vehicle_id")
+    private Vehicle vehicle;
 }
 

@@ -1,5 +1,6 @@
 package com.inetum.realdolmen.hubkitbackend.dto;
 
+import com.inetum.realdolmen.hubkitbackend.models.Vehicle;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
@@ -18,4 +19,5 @@ public class InsuranceCertificateDTO {
     private LocalDate expirationDate;
     private InsuranceAgencyDTO insuranceAgency;
     private InsuranceCompanyDTO insuranceCompany;
+    private Vehicle vehicle;
 }
