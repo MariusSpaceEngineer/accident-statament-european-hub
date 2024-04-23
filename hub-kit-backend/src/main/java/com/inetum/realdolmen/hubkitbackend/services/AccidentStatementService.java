@@ -43,12 +43,10 @@ public class AccidentStatementService {
 
     public String createAccidentStatement(AccidentStatementDTO accidentStatementDTO) throws Exception {
         try {
-            if (accidentStatementDTO == null) {
-                throw new MissingPropertyException("AccidentStatementDTO cannot be null");
-            }
 
             AccidentStatement accidentStatement = accidentStatementMapper.fromDTO(accidentStatementDTO);
 
+            //Save accident images
             if (!accidentStatement.getVehicleAAccidentImages().isEmpty()) {
                 accidentImageRepository.saveAll(accidentStatement.getVehicleAAccidentImages());
             }
@@ -56,10 +54,8 @@ public class AccidentStatementService {
                 accidentImageRepository.saveAll(accidentStatement.getVehicleBAccidentImages());
             }
 
+            //Save drivers
             for (Driver driver : accidentStatement.getDrivers()) {
-                if (driver.getDrivingLicenseNr() == null || driver.getDrivingLicenseNr().isEmpty()) {
-                    throw new MissingPropertyException("Driver's driving license number cannot be null");
-                }
                 var existingDriver = driverRepository.findByDrivingLicenseNr(driver.getDrivingLicenseNr());
                 if (existingDriver.isPresent()) {
                     var index = accidentStatement.getDrivers().indexOf(driver);
@@ -69,24 +65,23 @@ public class AccidentStatementService {
                 }
             }
 
-            for (Witness witness : accidentStatement.getWitnesses()) {
+            //Save witness
+            var witness = accidentStatement.getWitness();
+            if (witness != null) {
                 if (witness.getName() == null || witness.getName().isEmpty() || witness.getAddress() == null || witness.getAddress().isEmpty()) {
                     throw new MissingPropertyException("Witness's name and address cannot be null");
                 }
                 var existingWitness = witnessRepository.findByNameAndAddress(witness.getName(), witness.getAddress());
                 if (existingWitness.isPresent()) {
-                    accidentStatement.getWitnesses().remove(witness);
-                    accidentStatement.getWitnesses().add(existingWitness.get());
+                    accidentStatement.setWitness(existingWitness.get());
                 } else {
                     witnessRepository.save(witness);
                 }
             }
 
+            //Save motors
             if (accidentStatement.getMotors() != null) {
                 for (Motor motor : accidentStatement.getMotors()) {
-                    if (motor.getLicensePlate() == null || motor.getLicensePlate().isEmpty()) {
-                        throw new MissingPropertyException("Motor's license plate cannot be null");
-                    }
                     var existingMotor = motorRepository.findByLicensePlate(motor.getLicensePlate());
                     if (existingMotor.isPresent()) {
                         var index = accidentStatement.getMotors().indexOf(motor);
@@ -97,21 +92,25 @@ public class AccidentStatementService {
                 }
             }
 
+            //Save trailers
             if (accidentStatement.getTrailers() != null) {
                 for (Trailer trailer : accidentStatement.getTrailers()) {
-                    if (trailer.getLicensePlate() == null || trailer.getLicensePlate().isEmpty()) {
-                        throw new MissingPropertyException("Trailer's license plate cannot be null");
-                    }
-                    var existingTrailer = trailerRepository.findByLicensePlate(trailer.getLicensePlate());
-                    if (existingTrailer.isPresent()) {
-                        var index = accidentStatement.getTrailers().indexOf(trailer);
-                        accidentStatement.getTrailers().set(index, existingTrailer.get());
+                    if (trailer.getHasRegistration()) {
+                        var existingTrailer = trailerRepository.findByLicensePlate(trailer.getLicensePlate());
+                        if (existingTrailer.isPresent()) {
+                            var index = accidentStatement.getTrailers().indexOf(trailer);
+                            accidentStatement.getTrailers().set(index, existingTrailer.get());
+                        } else {
+                            trailerRepository.save(trailer);
+                        }
                     } else {
                         trailerRepository.save(trailer);
                     }
                 }
             }
 
+            //TODO check which fields can be null in policyHolder, InsuranceCertificate, InsuranceAgency and InsuranceCompany
+            //Save policy holders
             for (PolicyHolder policyHolder : accidentStatement.getPolicyHolders()) {
                 var insuranceCertificate = policyHolder.getInsuranceCertificates().getFirst();
                 if (insuranceCertificate.getGreenCardNumber() == null || insuranceCertificate.getGreenCardNumber().isEmpty() || insuranceCertificate.getPolicyNumber() == null || insuranceCertificate.getPolicyNumber().isEmpty()) {
@@ -159,7 +158,7 @@ public class AccidentStatementService {
         }
     }
 
-    public String getLocationAddress(LocationCoordinates locationCoordinates) throws Exception{
+    public String getLocationAddress(LocationCoordinates locationCoordinates) throws Exception {
         try {
             JOpenCageReverseRequest request = new JOpenCageReverseRequest(locationCoordinates.getLatitude(), locationCoordinates.getLongitude());
             request.setNoAnnotations(true); // exclude additional info such as calling code, timezone, and currency
