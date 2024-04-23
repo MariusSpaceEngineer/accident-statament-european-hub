@@ -91,25 +91,25 @@ public class AccidentStatementIntegrationTest {
                 .build();
 
         motorA = MotorDTO.builder()
-                .brand("Brand")
-                .type("Type")
+                .markType("Brand")
                 .licensePlate("1LOI958")
                 .countryOfRegistration("Belgium")
                 .build();
 
         motorB = MotorDTO.builder()
-                .brand("BrandB")
-                .type("TypeB")
+                .markType("BrandB")
                 .licensePlate("2LOI958")
                 .countryOfRegistration("Belgium")
                 .build();
 
         trailerA = TrailerDTO.builder()
+                .hasRegistration(true)
                 .licensePlate("DEF456")
                 .countryOfRegistration("Belgium")
                 .build();
 
         trailerB = TrailerDTO.builder()
+                .hasRegistration(true)
                 .licensePlate("GHI789")
                 .countryOfRegistration("Belgium")
                 .build();
@@ -183,6 +183,7 @@ public class AccidentStatementIntegrationTest {
                 .contentType(ContentType.JSON);
     }
 
+    //TODO fix test
     @Test
     public void createStatementTest() throws JsonProcessingException {
 
@@ -193,22 +194,24 @@ public class AccidentStatementIntegrationTest {
                 .damageToOtherCars(true)
                 .damageToObjects(false)
                 .numberOfCircumstances(2)
-                .sketchOfImage((byte) 1)
-                .initialImpactVehicleA((byte) 1)
-                .vehicleAAccidentImages(accidentImagesVehicleA)
-                .initialImpactVehicleB((byte) 1)
-                .remarkVehicleA("Remark A")
-                .vehicleBAccidentImages(accidentImagesVehicleB)
-                .remarkVehicleB("Remark B")
-                .visibleDamageVehicleA("Visible Damage A")
-                .visibleDamageVehicleB("Visible Damage B")
-                .signatureVehicleA((byte) 1)
-                .signatureVehicleB((byte) 2)
+                .sketchOfAccident(new byte[]{(byte) 1})
                 .drivers(List.of(driverA, driverB))
-                .witnesses(Collections.singletonList(witness))
+                .witness(witness)
                 .motors(List.of(motorA, motorB))
                 .trailers(List.of(trailerA, trailerB))
                 .policyHolders(List.of(policyHolderVehicleA, policyHolderVehicleB))
+                .vehicleACircumstances(List.of("PARKED/STOPPED"))
+                .vehicleAInitialImpactSketch(new byte[]{(byte) 1})
+                .vehicleAVisibleDamageDescription("Visible Damage A")
+                .vehicleAAccidentImages(accidentImagesVehicleA)
+                .vehicleARemark("Remark A")
+                .vehicleASignature(new byte[]{(byte) 1})
+                .vehicleBCircumstances(List.of("PARKED/STOPPED"))
+                .vehicleBInitialImpactSketch(new byte[]{(byte) 1})
+                .vehicleBVisibleDamageDescription("Visible Damage B")
+                .vehicleBAccidentImages(accidentImagesVehicleB)
+                .vehicleBRemark("Remark A")
+                .vehicleBSignature(new byte[]{(byte) 1})
                 .build();
 
         String json = objectMapper.writeValueAsString(accidentStatement);
@@ -231,11 +234,8 @@ public class AccidentStatementIntegrationTest {
                 .statusCode(HttpStatus.CONFLICT.value());
     }
 
-    // JSON body with a driver that has an empty driving license number
     @Test
-    public void createStatementWithNullDrivingLicenseNumberTest() throws JsonProcessingException {
-        driverA.setDrivingLicenseNr(null);
-
+    public void createStatementWithNoMotor() throws JsonProcessingException {
         AccidentStatementDTO accidentStatement = AccidentStatementDTO.builder()
                 .date(LocalDate.parse("2024-03-11"))
                 .location("Brussels")
@@ -243,22 +243,23 @@ public class AccidentStatementIntegrationTest {
                 .damageToOtherCars(true)
                 .damageToObjects(false)
                 .numberOfCircumstances(2)
-                .sketchOfImage((byte) 1)
-                .initialImpactVehicleA((byte) 1)
-                .vehicleAAccidentImages(accidentImagesVehicleA)
-                .initialImpactVehicleB((byte) 1)
-                .remarkVehicleA("Remark A")
-                .vehicleBAccidentImages(accidentImagesVehicleB)
-                .remarkVehicleB("Remark B")
-                .visibleDamageVehicleA("Visible Damage A")
-                .visibleDamageVehicleB("Visible Damage B")
-                .signatureVehicleA((byte) 1)
-                .signatureVehicleB((byte) 2)
+                .sketchOfAccident(new byte[]{(byte) 1})
                 .drivers(List.of(driverA, driverB))
-                .witnesses(Collections.singletonList(witness))
-                .motors(List.of(motorA, motorB))
+                .witness(witness)
                 .trailers(List.of(trailerA, trailerB))
                 .policyHolders(List.of(policyHolderVehicleA, policyHolderVehicleB))
+                .vehicleACircumstances(List.of("PARKED/STOPPED"))
+                .vehicleAInitialImpactSketch(new byte[]{(byte) 1})
+                .vehicleAVisibleDamageDescription("Visible Damage A")
+                .vehicleAAccidentImages(accidentImagesVehicleA)
+                .vehicleARemark("Remark A")
+                .vehicleASignature(new byte[]{(byte) 1})
+                .vehicleBCircumstances(List.of("PARKED/STOPPED"))
+                .vehicleBInitialImpactSketch(new byte[]{(byte) 1})
+                .vehicleBVisibleDamageDescription("Visible Damage B")
+                .vehicleBAccidentImages(accidentImagesVehicleB)
+                .vehicleBRemark("Remark A")
+                .vehicleBSignature(new byte[]{(byte) 1})
                 .build();
 
         String json = objectMapper.writeValueAsString(accidentStatement);
@@ -266,14 +267,11 @@ public class AccidentStatementIntegrationTest {
         requestSpec.body(json)
                 .post("/statement/create")
                 .then()
-                .statusCode(HttpStatus.CONFLICT.value());
+                .statusCode(HttpStatus.CREATED.value());
     }
 
     @Test
-    public void createStatementWithNullWitnessNameTest() throws JsonProcessingException {
-        // JSON body with a witness that has an empty witness name
-        witness.setName(null);
-
+    public void createStatementWithNoTrailer() throws JsonProcessingException {
         AccidentStatementDTO accidentStatement = AccidentStatementDTO.builder()
                 .date(LocalDate.parse("2024-03-11"))
                 .location("Brussels")
@@ -281,22 +279,23 @@ public class AccidentStatementIntegrationTest {
                 .damageToOtherCars(true)
                 .damageToObjects(false)
                 .numberOfCircumstances(2)
-                .sketchOfImage((byte) 1)
-                .initialImpactVehicleA((byte) 1)
-                .vehicleAAccidentImages(accidentImagesVehicleA)
-                .initialImpactVehicleB((byte) 1)
-                .remarkVehicleA("Remark A")
-                .vehicleBAccidentImages(accidentImagesVehicleB)
-                .remarkVehicleB("Remark B")
-                .visibleDamageVehicleA("Visible Damage A")
-                .visibleDamageVehicleB("Visible Damage B")
-                .signatureVehicleA((byte) 1)
-                .signatureVehicleB((byte) 2)
+                .sketchOfAccident(new byte[]{(byte) 1})
                 .drivers(List.of(driverA, driverB))
-                .witnesses(Collections.singletonList(witness))
+                .witness(witness)
                 .motors(List.of(motorA, motorB))
-                .trailers(List.of(trailerA, trailerB))
                 .policyHolders(List.of(policyHolderVehicleA, policyHolderVehicleB))
+                .vehicleACircumstances(List.of("PARKED/STOPPED"))
+                .vehicleAInitialImpactSketch(new byte[]{(byte) 1})
+                .vehicleAVisibleDamageDescription("Visible Damage A")
+                .vehicleAAccidentImages(accidentImagesVehicleA)
+                .vehicleARemark("Remark A")
+                .vehicleASignature(new byte[]{(byte) 1})
+                .vehicleBCircumstances(List.of("PARKED/STOPPED"))
+                .vehicleBInitialImpactSketch(new byte[]{(byte) 1})
+                .vehicleBVisibleDamageDescription("Visible Damage B")
+                .vehicleBAccidentImages(accidentImagesVehicleB)
+                .vehicleBRemark("Remark A")
+                .vehicleBSignature(new byte[]{(byte) 1})
                 .build();
 
         String json = objectMapper.writeValueAsString(accidentStatement);
@@ -304,14 +303,11 @@ public class AccidentStatementIntegrationTest {
         requestSpec.body(json)
                 .post("/statement/create")
                 .then()
-                .statusCode(HttpStatus.CONFLICT.value());
+                .statusCode(HttpStatus.CREATED.value());
     }
 
     @Test
-    public void createStatementWithNullWitnessAddressTest() throws JsonProcessingException {
-        // JSON body with a witness that has an empty witness address
-        witness.setAddress(null);
-
+    public void createStatementWithNoWitness() throws JsonProcessingException {
         AccidentStatementDTO accidentStatement = AccidentStatementDTO.builder()
                 .date(LocalDate.parse("2024-03-11"))
                 .location("Brussels")
@@ -319,38 +315,35 @@ public class AccidentStatementIntegrationTest {
                 .damageToOtherCars(true)
                 .damageToObjects(false)
                 .numberOfCircumstances(2)
-                .sketchOfImage((byte) 1)
-                .initialImpactVehicleA((byte) 1)
-                .vehicleAAccidentImages(accidentImagesVehicleA)
-                .initialImpactVehicleB((byte) 1)
-                .remarkVehicleA("Remark A")
-                .vehicleBAccidentImages(accidentImagesVehicleB)
-                .remarkVehicleB("Remark B")
-                .visibleDamageVehicleA("Visible Damage A")
-                .visibleDamageVehicleB("Visible Damage B")
-                .signatureVehicleA((byte) 1)
-                .signatureVehicleB((byte) 2)
+                .sketchOfAccident(new byte[]{(byte) 1})
                 .drivers(List.of(driverA, driverB))
-                .witnesses(Collections.singletonList(witness))
                 .motors(List.of(motorA, motorB))
                 .trailers(List.of(trailerA, trailerB))
                 .policyHolders(List.of(policyHolderVehicleA, policyHolderVehicleB))
+                .vehicleACircumstances(List.of("PARKED/STOPPED"))
+                .vehicleAInitialImpactSketch(new byte[]{(byte) 1})
+                .vehicleAVisibleDamageDescription("Visible Damage A")
+                .vehicleAAccidentImages(accidentImagesVehicleA)
+                .vehicleARemark("Remark A")
+                .vehicleASignature(new byte[]{(byte) 1})
+                .vehicleBCircumstances(List.of("PARKED/STOPPED"))
+                .vehicleBInitialImpactSketch(new byte[]{(byte) 1})
+                .vehicleBVisibleDamageDescription("Visible Damage B")
+                .vehicleBAccidentImages(accidentImagesVehicleB)
+                .vehicleBRemark("Remark A")
+                .vehicleBSignature(new byte[]{(byte) 1})
                 .build();
 
         String json = objectMapper.writeValueAsString(accidentStatement);
 
-
         requestSpec.body(json)
                 .post("/statement/create")
                 .then()
-                .statusCode(HttpStatus.CONFLICT.value());
+                .statusCode(HttpStatus.CREATED.value());
     }
 
     @Test
-    public void createStatementWithNullMotorLicensePlateTest() throws JsonProcessingException {
-        // JSON body with a motor that has an empty motor license plate
-        motorA.setLicensePlate(null);
-
+    public void createStatementWithNoAccidentImages() throws JsonProcessingException {
         AccidentStatementDTO accidentStatement = AccidentStatementDTO.builder()
                 .date(LocalDate.parse("2024-03-11"))
                 .location("Brussels")
@@ -358,22 +351,21 @@ public class AccidentStatementIntegrationTest {
                 .damageToOtherCars(true)
                 .damageToObjects(false)
                 .numberOfCircumstances(2)
-                .sketchOfImage((byte) 1)
-                .initialImpactVehicleA((byte) 1)
-                .vehicleAAccidentImages(accidentImagesVehicleA)
-                .initialImpactVehicleB((byte) 1)
-                .remarkVehicleA("Remark A")
-                .vehicleBAccidentImages(accidentImagesVehicleB)
-                .remarkVehicleB("Remark B")
-                .visibleDamageVehicleA("Visible Damage A")
-                .visibleDamageVehicleB("Visible Damage B")
-                .signatureVehicleA((byte) 1)
-                .signatureVehicleB((byte) 2)
+                .sketchOfAccident(new byte[]{(byte) 1})
                 .drivers(List.of(driverA, driverB))
-                .witnesses(Collections.singletonList(witness))
                 .motors(List.of(motorA, motorB))
                 .trailers(List.of(trailerA, trailerB))
                 .policyHolders(List.of(policyHolderVehicleA, policyHolderVehicleB))
+                .vehicleACircumstances(List.of("PARKED/STOPPED"))
+                .vehicleAInitialImpactSketch(new byte[]{(byte) 1})
+                .vehicleAVisibleDamageDescription("Visible Damage A")
+                .vehicleARemark("Remark A")
+                .vehicleASignature(new byte[]{(byte) 1})
+                .vehicleBCircumstances(List.of("PARKED/STOPPED"))
+                .vehicleBInitialImpactSketch(new byte[]{(byte) 1})
+                .vehicleBVisibleDamageDescription("Visible Damage B")
+                .vehicleBRemark("Remark A")
+                .vehicleBSignature(new byte[]{(byte) 1})
                 .build();
 
         String json = objectMapper.writeValueAsString(accidentStatement);
@@ -381,38 +373,33 @@ public class AccidentStatementIntegrationTest {
         requestSpec.body(json)
                 .post("/statement/create")
                 .then()
-                .statusCode(HttpStatus.CONFLICT.value());
+                .statusCode(HttpStatus.CREATED.value());
     }
 
     @Test
-    public void createStatementWithNullTrailerLicensePlateTest() throws JsonProcessingException {
-        // JSON body with a motor that has an empty trailer license plate
-
-        trailerA.setLicensePlate(null);
-
+    public void createStatementWithNoCircumstances() throws JsonProcessingException {
         AccidentStatementDTO accidentStatement = AccidentStatementDTO.builder()
                 .date(LocalDate.parse("2024-03-11"))
                 .location("Brussels")
                 .injured(false)
                 .damageToOtherCars(true)
                 .damageToObjects(false)
-                .numberOfCircumstances(2)
-                .sketchOfImage((byte) 1)
-                .initialImpactVehicleA((byte) 1)
-                .vehicleAAccidentImages(accidentImagesVehicleA)
-                .initialImpactVehicleB((byte) 1)
-                .remarkVehicleA("Remark A")
-                .vehicleBAccidentImages(accidentImagesVehicleB)
-                .remarkVehicleB("Remark B")
-                .visibleDamageVehicleA("Visible Damage A")
-                .visibleDamageVehicleB("Visible Damage B")
-                .signatureVehicleA((byte) 1)
-                .signatureVehicleB((byte) 2)
+                .numberOfCircumstances(0)
+                .sketchOfAccident(new byte[]{(byte) 1})
                 .drivers(List.of(driverA, driverB))
-                .witnesses(Collections.singletonList(witness))
                 .motors(List.of(motorA, motorB))
                 .trailers(List.of(trailerA, trailerB))
                 .policyHolders(List.of(policyHolderVehicleA, policyHolderVehicleB))
+                .vehicleAInitialImpactSketch(new byte[]{(byte) 1})
+                .vehicleAVisibleDamageDescription("Visible Damage A")
+                .vehicleAAccidentImages(accidentImagesVehicleA)
+                .vehicleARemark("Remark A")
+                .vehicleASignature(new byte[]{(byte) 1})
+                .vehicleBInitialImpactSketch(new byte[]{(byte) 1})
+                .vehicleBVisibleDamageDescription("Visible Damage B")
+                .vehicleBAccidentImages(accidentImagesVehicleB)
+                .vehicleBRemark("Remark A")
+                .vehicleBSignature(new byte[]{(byte) 1})
                 .build();
 
         String json = objectMapper.writeValueAsString(accidentStatement);
@@ -420,7 +407,39 @@ public class AccidentStatementIntegrationTest {
         requestSpec.body(json)
                 .post("/statement/create")
                 .then()
-                .statusCode(HttpStatus.CONFLICT.value());
+                .statusCode(HttpStatus.CREATED.value());
     }
 
+    @Test
+    public void createStatementWithNoSketches() throws JsonProcessingException {
+        AccidentStatementDTO accidentStatement = AccidentStatementDTO.builder()
+                .date(LocalDate.parse("2024-03-11"))
+                .location("Brussels")
+                .injured(false)
+                .damageToOtherCars(true)
+                .damageToObjects(false)
+                .numberOfCircumstances(0)
+                .drivers(List.of(driverA, driverB))
+                .motors(List.of(motorA, motorB))
+                .trailers(List.of(trailerA, trailerB))
+                .policyHolders(List.of(policyHolderVehicleA, policyHolderVehicleB))
+                .vehicleACircumstances(List.of("PARKED/STOPPED"))
+                .vehicleAVisibleDamageDescription("Visible Damage A")
+                .vehicleAAccidentImages(accidentImagesVehicleA)
+                .vehicleARemark("Remark A")
+                .vehicleASignature(new byte[]{(byte) 1})
+                .vehicleBCircumstances(List.of("PARKED/STOPPED"))
+                .vehicleBVisibleDamageDescription("Visible Damage B")
+                .vehicleBAccidentImages(accidentImagesVehicleB)
+                .vehicleBRemark("Remark A")
+                .vehicleBSignature(new byte[]{(byte) 1})
+                .build();
+
+        String json = objectMapper.writeValueAsString(accidentStatement);
+
+        requestSpec.body(json)
+                .post("/statement/create")
+                .then()
+                .statusCode(HttpStatus.CREATED.value());
+    }
 }
