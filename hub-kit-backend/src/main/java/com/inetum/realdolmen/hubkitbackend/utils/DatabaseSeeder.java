@@ -2,10 +2,7 @@ package com.inetum.realdolmen.hubkitbackend.utils;
 
 import com.inetum.realdolmen.hubkitbackend.Roles;
 import com.inetum.realdolmen.hubkitbackend.models.*;
-import com.inetum.realdolmen.hubkitbackend.repositories.InsuranceAgencyRepository;
-import com.inetum.realdolmen.hubkitbackend.repositories.InsuranceCertificateRepository;
-import com.inetum.realdolmen.hubkitbackend.repositories.InsuranceCompanyRepository;
-import com.inetum.realdolmen.hubkitbackend.repositories.UserRepository;
+import com.inetum.realdolmen.hubkitbackend.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -28,6 +25,8 @@ public class DatabaseSeeder {
     private final InsuranceCompanyRepository insuranceCompanyRepository;
     private final InsuranceAgencyRepository insuranceAgencyRepository;
     private final InsuranceCertificateRepository insuranceCertificateRepository;
+    private final MotorRepository motorRepository;
+    private final TrailerRepository trailerRepository;
 
 
     @EventListener
@@ -68,6 +67,20 @@ public class DatabaseSeeder {
                     .build();
             insuranceAgencyRepository.save(insuranceAgency2);
 
+            var motor = Motor.builder()
+                    .markType("Volkswagen")
+                    .licensePlate("6JIO87")
+                    .countryOfRegistration("Belgium")
+                    .build();
+            motorRepository.save(motor);
+
+            var trailer = Trailer.builder()
+                    .hasRegistration(true)
+                    .licensePlate("5HU489")
+                    .countryOfRegistration("Belgium")
+                    .build();
+            trailerRepository.save(trailer);
+
             var insuranceCertificate1 = InsuranceCertificate.builder()
                     .policyNumber("POL123456789")
                     .greenCardNumber("GCN987654321")
@@ -75,6 +88,7 @@ public class DatabaseSeeder {
                     .expirationDate(LocalDate.of(2025, 2, 28))
                     .insuranceCompany(insuranceCompany)
                     .insuranceAgency(insuranceAgency)
+                    .vehicle(motor) // associate the motor with this certificate
                     .build();
 
             var insuranceCertificate2 = InsuranceCertificate.builder()
@@ -84,6 +98,7 @@ public class DatabaseSeeder {
                     .expirationDate(LocalDate.of(2025, 2, 28))
                     .insuranceCompany(insuranceCompany2)
                     .insuranceAgency(insuranceAgency2)
+                    .vehicle(trailer) // associate the trailer with this certificate
                     .build();
 
             insuranceCertificateRepository.save(insuranceCertificate1);
