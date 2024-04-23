@@ -31,6 +31,7 @@ import com.inetum.realdolmen.crashkit.dto.TrailerDTO
 import com.inetum.realdolmen.crashkit.dto.WitnessDTO
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
+import com.inetum.realdolmen.crashkit.utils.createSimpleDialog
 import com.inetum.realdolmen.crashkit.utils.toByteArray
 import com.inetum.realdolmen.crashkit.utils.toIsoString
 import kotlinx.coroutines.CoroutineScope
@@ -155,10 +156,29 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
                     "Revert"
                 ) { _, _ ->
                     CoroutineScope(Dispatchers.IO).launch {
-                        val accidentStatement = createAccidentStatement(model)
-                        val response = apiService.createAccidentStatement(accidentStatement)
-                        withContext(Dispatchers.Main) {
-                            handleAccidentStatementResponse(response)
+                        try {
+
+
+                            val accidentStatement = createAccidentStatement(model)
+                            val response = apiService.createAccidentStatement(accidentStatement)
+                            withContext(Dispatchers.Main) {
+                                handleAccidentStatementResponse(response)
+                            }
+                        } catch (e: Exception) {
+                            Log.e("NetworkRequest", "Exception occurred: ", e)
+                            withContext(Dispatchers.Main) {
+                                val message = when (e) {
+                                    is java.net.SocketTimeoutException -> requireContext().getString(
+                                        R.string.error_network
+                                    )
+
+                                    else -> requireContext().getString(R.string.unknown_error)
+                                }
+                                requireContext().createSimpleDialog(
+                                    getString(R.string.error),
+                                    message
+                                )
+                            }
                         }
                     }
                 }
@@ -255,41 +275,55 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
             statementData?.vehicleBDriverDrivingLicenseCategory,
             statementData?.vehicleBDriverDrivingLicenseExpirationDate?.toIsoString()
         )
-
         val drivers = listOf(driverA, driverB)
 
-        val witness = WitnessDTO(
-            statementData?.witnessName,
-            statementData?.witnessAddress,
-            statementData?.witnessPhoneNumber
-        )
+        val witness = if (statementData?.witnessIsPresent == true) {
+            WitnessDTO(
+                statementData.witnessName,
+                statementData.witnessAddress,
+                statementData.witnessPhoneNumber
+            )
+        } else {
+            null
+        }
 
-        val witnesses = listOf(witness)
+        val motors = mutableListOf<MotorDTO>()
+        if (statementData?.vehicleAMotorAbsent == false) {
+            val motorA = MotorDTO(
+                statementData.vehicleAMotorMarkType,
+                statementData.vehicleAMotorLicensePlate,
+                statementData.vehicleAMotorCountryOfRegistration
+            )
+            motors.add(motorA)
+        }
 
-        val motorA = MotorDTO(
-            statementData?.vehicleAMarkType,
-            statementData?.vehicleARegistrationNumber,
-            statementData?.vehicleACountryOfRegistration
-        )
+        if (statementData?.vehicleBMotorAbsent == false) {
+            val motorB = MotorDTO(
+                statementData.vehicleBMotorMarkType,
+                statementData.vehicleBMotorLicensePlate,
+                statementData.vehicleBMotorCountryOfRegistration
+            )
+            motors.add(motorB)
+        }
 
-        val motorB = MotorDTO(
-            statementData?.vehicleBMarkType,
-            statementData?.vehicleBRegistrationNumber,
-            statementData?.vehicleBCountryOfRegistration
-        )
+        val trailers = mutableListOf<TrailerDTO>()
+        if (statementData?.vehicleATrailerPresent == true) {
+            val trailerA = TrailerDTO(
+                statementData.vehicleATrailerHasRegistration,
+                statementData.vehicleATrailerLicensePlate,
+                statementData.vehicleATrailerCountryOfRegistration
+            )
+            trailers.add(trailerA)
+        }
+        if (statementData?.vehicleBTrailerPresent == true) {
+            val trailerB = TrailerDTO(
+                statementData.vehicleBTrailerHasRegistration,
+                statementData.vehicleBTrailerLicensePlate,
+                statementData.vehicleBTrailerCountryOfRegistration
+            )
+            trailers.add(trailerB)
+        }
 
-        val motors = listOf(motorA, motorB)
-
-        val trailerA = TrailerDTO(
-            statementData?.vehicleATrailerRegistrationNumber,
-            statementData?.vehicleATrailerCountryOfRegistration
-        )
-        val trailerB = TrailerDTO(
-            statementData?.vehicleBTrailerRegistrationNumber,
-            statementData?.vehicleBTrailerCountryOfRegistration
-        )
-
-        val trailers = listOf(trailerA, trailerB)
 
         val insuranceCompanyVehicleA =
             InsuranceCompany(null, statementData?.vehicleAInsuranceCompanyName)
@@ -358,7 +392,6 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
         val policyHolders = listOf(policyHolderVehicleA, policyHolderVehicleB)
 
         val vehicleAAccidentPhotos = mutableListOf<AccidentImageDTO>()
-
         if (!statementData?.vehicleAAccidentPhotos.isNullOrEmpty()) {
 
             for (image: Bitmap in statementData?.vehicleAAccidentPhotos!!) {
@@ -368,7 +401,6 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
         }
 
         val vehicleBAccidentPhotos = mutableListOf<AccidentImageDTO>()
-
         if (!statementData?.vehicleBAccidentPhotos.isNullOrEmpty()) {
 
             for (image: Bitmap in statementData?.vehicleBAccidentPhotos!!) {
@@ -381,7 +413,7 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
         val vehicleBCircumstances = model.vehicleBCircumstances.value?.size ?: 0
         val amountOfCircumstances = vehicleACircumstances + vehicleBCircumstances
 
-        val accidentStatement = AccidentStatementData(
+        return AccidentStatementData(
             statementData?.dateOfAccident?.toIsoString(),
             statementData?.accidentLocation,
             statementData?.injured,
@@ -390,25 +422,23 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
             amountOfCircumstances,
             statementData?.accidentSketch?.toByteArray(),
             drivers,
-            witnesses,
+            witness,
             policyHolders,
             motors,
             trailers,
-            model.vehicleACircumstances.value?.map { it.toString() },
+            model.vehicleACircumstances.value?.map { it.text.toString() },
             statementData?.vehicleAPointOfImpactSketch?.toByteArray(),
             statementData?.vehicleADamageDescription,
             vehicleAAccidentPhotos,
             statementData?.vehicleARemarks,
             statementData?.driverASignature?.toByteArray(),
-            model.vehicleBCircumstances.value?.map { it.toString() },
+            model.vehicleBCircumstances.value?.map { it.text.toString() },
             statementData?.vehicleBPointOfImpactSketch?.toByteArray(),
             statementData?.vehicleBDamageDescription,
             vehicleBAccidentPhotos,
             statementData?.vehicleBRemarks,
             statementData?.driverBSignature?.toByteArray()
         )
-
-        return accidentStatement
     }
 
     private fun handleAccidentStatementResponse(
