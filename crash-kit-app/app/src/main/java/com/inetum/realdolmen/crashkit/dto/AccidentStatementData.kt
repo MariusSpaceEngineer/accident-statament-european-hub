@@ -9,7 +9,7 @@ data class AccidentStatementData(
     val numberOfCircumstances: Int? = null,
     val sketchOfAccident: ByteArray? = null,
     val drivers: List<DriverDTO>? = null,
-    val witnesses: List<WitnessDTO>? = null,
+    val witness: WitnessDTO? = null,
     val policyHolders: List<PolicyHolderDTO>? = null,
     val motors: List<MotorDTO>? = null,
     val trailers: List<TrailerDTO>? = null,
