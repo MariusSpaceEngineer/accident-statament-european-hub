@@ -391,23 +391,24 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
 
         val policyHolders = listOf(policyHolderVehicleA, policyHolderVehicleB)
 
-        val vehicleAAccidentPhotos = mutableListOf<AccidentImageDTO>()
-        if (!statementData?.vehicleAAccidentPhotos.isNullOrEmpty()) {
-
+        val vehicleAAccidentPhotos: MutableList<AccidentImageDTO>? = if (!statementData?.vehicleAAccidentPhotos.isNullOrEmpty()) {
+            val tempList = mutableListOf<AccidentImageDTO>()
             for (image: Bitmap in statementData?.vehicleAAccidentPhotos!!) {
                 val imageByte = image.toByteArray()
-                vehicleAAccidentPhotos.add(AccidentImageDTO(imageByte))
+                tempList.add(AccidentImageDTO(imageByte))
             }
-        }
+            tempList
+        } else null
 
-        val vehicleBAccidentPhotos = mutableListOf<AccidentImageDTO>()
-        if (!statementData?.vehicleBAccidentPhotos.isNullOrEmpty()) {
-
+        val vehicleBAccidentPhotos: MutableList<AccidentImageDTO>? = if (!statementData?.vehicleBAccidentPhotos.isNullOrEmpty()) {
+            val tempList = mutableListOf<AccidentImageDTO>()
             for (image: Bitmap in statementData?.vehicleBAccidentPhotos!!) {
                 val imageByte = image.toByteArray()
-                vehicleBAccidentPhotos.add(AccidentImageDTO(imageByte))
+                tempList.add(AccidentImageDTO(imageByte))
             }
-        }
+            tempList
+        } else null
+
 
         val vehicleACircumstances = model.vehicleACircumstances.value?.size ?: 0
         val vehicleBCircumstances = model.vehicleBCircumstances.value?.size ?: 0
