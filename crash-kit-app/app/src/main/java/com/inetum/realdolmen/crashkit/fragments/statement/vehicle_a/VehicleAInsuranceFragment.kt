@@ -124,7 +124,12 @@ class VehicleAInsuranceFragment : Fragment(), StatementDataHandler, ValidationCo
 
             if (fields.none { it.error != null }) {
                 // If no errors, navigate to the next fragment
-                navController.navigate(R.id.vehicleADriverFragment)
+                if (model.statementData.value?.vehicleATrailerHasRegistration == true) {
+                    navController.navigate(R.id.vehicleATrailerInsuranceFragment)
+                }
+                else{
+                    navController.navigate(R.id.vehicleADriverFragment)
+                }
             }
 
         }

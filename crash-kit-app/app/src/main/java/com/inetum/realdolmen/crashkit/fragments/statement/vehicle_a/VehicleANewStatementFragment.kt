@@ -281,7 +281,12 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
 
             if (fields.none { it.error != null } && isVehicleAssigned()) {
                 updateViewModelFromUI(model)
-                navController.navigate(R.id.vehicleADriverFragment)
+                if (binding.cbStatementVehicleAMotorAbsent.isChecked) {
+                    navController.navigate(R.id.vehicleATrailerInsuranceFragment)
+                }
+                else{
+                    navController.navigate(R.id.vehicleAInsuranceFragment)
+                }
             } else if (!isVehicleAssigned()) {
                 binding.tvStatementNoMotorNoTrailerError.visibility = View.VISIBLE
             }
