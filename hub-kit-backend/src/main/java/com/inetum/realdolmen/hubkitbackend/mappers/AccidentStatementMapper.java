@@ -12,6 +12,17 @@ public interface AccidentStatementMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(source = "vehicleAAccidentImages", target = "vehicleAAccidentImages")
     @Mapping(source = "vehicleBAccidentImages", target = "vehicleBAccidentImages")
+    @Mapping(source = "sketchOfAccident", target = "sketchOfAccident")
+    @Mapping(source = "vehicleACircumstances", target = "vehicleACircumstances")
+    @Mapping(source = "vehicleBCircumstances", target = "vehicleBCircumstances")
+    @Mapping(source = "vehicleAInitialImpactSketch", target = "vehicleAInitialImpactSketch")
+    @Mapping(source = "vehicleBInitialImpactSketch", target = "vehicleBInitialImpactSketch")
+    @Mapping(source = "vehicleAVisibleDamageDescription", target = "vehicleAVisibleDamageDescription")
+    @Mapping(source = "vehicleBVisibleDamageDescription", target = "vehicleBVisibleDamageDescription")
+    @Mapping(source = "vehicleARemark", target = "vehicleARemark")
+    @Mapping(source = "vehicleBRemark", target = "vehicleBRemark")
+    @Mapping(source = "vehicleASignature", target = "vehicleASignature")
+    @Mapping(source = "vehicleBSignature", target = "vehicleBSignature")
     AccidentStatement fromDTO(AccidentStatementDTO accidentStatementDTO);
 
     AccidentStatementDTO toDTO(AccidentStatement accidentStatement);
