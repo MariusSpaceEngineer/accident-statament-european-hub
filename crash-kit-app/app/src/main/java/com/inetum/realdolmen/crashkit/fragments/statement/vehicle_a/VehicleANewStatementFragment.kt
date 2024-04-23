@@ -90,20 +90,20 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
     }
 
     private fun setupCheckboxListeners() {
-        binding.cbStatementTrailerNeedsRegistration.setOnCheckedChangeListener { _, isChecked ->
+        binding.cbStatementTrailerHasRegistration.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 binding.llStatementTrailerAFields.visibility = View.VISIBLE
                 addTrailerFields()
                 addTrailerFieldsForValidation()
             } else {
                 binding.llStatementTrailerAFields.visibility = View.GONE
-                binding.etStatementTrailerACountry.text = null
-                binding.etStatementTrailerARegistrationNumber.text = null
+                binding.etStatementTrailerACountryOfRegistration.text = null
+                binding.etStatementTrailerALicensePlate.text = null
                 removeTrailerFields()
             }
         }
 
-        binding.cbStatementVehicleAMotorPresent.setOnCheckedChangeListener { _, isChecked ->
+        binding.cbStatementVehicleAMotorAbsent.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 binding.llStatementMotorAFields.visibility = View.GONE
                 removeMotorFields()
@@ -124,21 +124,22 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
             binding.etStatementPolicyHolderPostalCode.setText(statementData.policyHolderAPostalCode)
             binding.etStatementPolicyHolderPhoneNumber.setText(statementData.policyHolderAPhoneNumber)
             binding.etStatementPolicyHolderEmail.setText(statementData.policyHolderAEmail)
-            binding.etStatementVehicleAMarkType.setText(statementData.vehicleAMarkType)
-            binding.etStatementVehicleARegistrationNumber.setText(statementData.vehicleARegistrationNumber)
-            binding.etStatementVehicleACountry.setText(statementData.vehicleACountryOfRegistration)
-            binding.cbStatementVehicleAMotorPresent.isChecked = statementData.vehicleAMotorPresent
+            binding.etStatementVehicleAMotorMarkType.setText(statementData.vehicleAMotorMarkType)
+            binding.etStatementVehicleAMotorLicensePlate.setText(statementData.vehicleAMotorLicensePlate)
+            binding.etStatementVehicleAMotorCountryOfRegistration.setText(statementData.vehicleAMotorCountryOfRegistration)
+            binding.cbStatementVehicleAMotorAbsent.isChecked = statementData.vehicleAMotorAbsent
             hasTrailer = updateTrailerButtonState(statementData.vehicleATrailerPresent)
-            if (statementData.vehicleATrailerRegistrationNumber.isNotEmpty() && statementData.vehicleATrailerCountryOfRegistration.isNotEmpty()) {
-                binding.cbStatementTrailerNeedsRegistration.isChecked = true
-                binding.etStatementTrailerARegistrationNumber.setText(statementData.vehicleATrailerRegistrationNumber)
-                binding.etStatementTrailerACountry.setText(statementData.vehicleATrailerCountryOfRegistration)
+            if (statementData.vehicleATrailerLicensePlate.isNotEmpty() && statementData.vehicleATrailerCountryOfRegistration.isNotEmpty()) {
+                binding.cbStatementTrailerHasRegistration.isChecked = true
+                binding.etStatementTrailerALicensePlate.setText(statementData.vehicleATrailerLicensePlate)
+                binding.etStatementTrailerACountryOfRegistration.setText(statementData.vehicleATrailerCountryOfRegistration)
             }
         }
     }
 
     override fun updateViewModelFromUI(model: NewStatementViewModel) {
         model.statementData.value?.apply {
+            //Policy Holder
             this.policyHolderALastName = binding.etStatementPolicyHolderName.text.toString()
             this.policyHolderAFirstName =
                 binding.etStatementPolicyHolderFirstName.text.toString()
@@ -147,17 +148,20 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
             this.policyHolderAPhoneNumber =
                 binding.etStatementPolicyHolderPhoneNumber.text.toString()
             this.policyHolderAEmail = binding.etStatementPolicyHolderEmail.text.toString()
-            this.vehicleAMarkType = binding.etStatementVehicleAMarkType.text.toString()
-            this.vehicleARegistrationNumber =
-                binding.etStatementVehicleARegistrationNumber.text.toString()
-            this.vehicleACountryOfRegistration =
-                binding.etStatementVehicleACountry.text.toString()
-            this.vehicleATrailerRegistrationNumber =
-                binding.etStatementTrailerARegistrationNumber.text.toString()
-            this.vehicleATrailerCountryOfRegistration =
-                binding.etStatementTrailerACountry.text.toString()
+            //Motor
+            this.vehicleAMotorAbsent = binding.cbStatementVehicleAMotorAbsent.isChecked
+            this.vehicleAMotorMarkType = binding.etStatementVehicleAMotorMarkType.text.toString()
+            this.vehicleAMotorLicensePlate =
+                binding.etStatementVehicleAMotorLicensePlate.text.toString()
+            this.vehicleAMotorCountryOfRegistration =
+                binding.etStatementVehicleAMotorCountryOfRegistration.text.toString()
+            //Trailer
             this.vehicleATrailerPresent = !hasTrailer
-            this.vehicleAMotorPresent = binding.cbStatementVehicleAMotorPresent.isChecked
+            this.vehicleATrailerHasRegistration = binding.cbStatementTrailerHasRegistration.isChecked
+            this.vehicleATrailerLicensePlate =
+                binding.etStatementTrailerALicensePlate.text.toString()
+            this.vehicleATrailerCountryOfRegistration =
+                binding.etStatementTrailerACountryOfRegistration.text.toString()
         }
     }
 
@@ -170,9 +174,9 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
             binding.etStatementPolicyHolderPostalCode,
             binding.etStatementPolicyHolderPhoneNumber,
             binding.etStatementPolicyHolderEmail,
-            binding.etStatementVehicleAMarkType,
-            binding.etStatementVehicleARegistrationNumber,
-            binding.etStatementVehicleACountry
+            binding.etStatementVehicleAMotorMarkType,
+            binding.etStatementVehicleAMotorLicensePlate,
+            binding.etStatementVehicleAMotorCountryOfRegistration
         )
 
 
@@ -213,22 +217,22 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
                 formHelper.errors.fieldRequired
             ),
             Triple(
-                binding.etStatementVehicleAMarkType,
+                binding.etStatementVehicleAMotorMarkType,
                 { value -> value.isNullOrEmpty() },
                 formHelper.errors.fieldRequired
             ),
             Triple(
-                binding.etStatementVehicleACountry,
+                binding.etStatementVehicleAMotorCountryOfRegistration,
                 { value -> value.isNullOrEmpty() },
                 formHelper.errors.fieldRequired
             ),
             Triple(
-                binding.etStatementVehicleACountry,
+                binding.etStatementVehicleAMotorCountryOfRegistration,
                 { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
                 formHelper.errors.noDigitsAllowed
             ),
             Triple(
-                binding.etStatementVehicleARegistrationNumber,
+                binding.etStatementVehicleAMotorLicensePlate,
                 { value -> value.isNullOrEmpty() },
                 formHelper.errors.fieldRequired
             ),
@@ -286,7 +290,7 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
 
     private fun isVehicleAssigned(): Boolean {
         //If both trailer and motor are not present it returns false
-        return !hasTrailer || !binding.cbStatementVehicleAMotorPresent.isChecked
+        return !hasTrailer || !binding.cbStatementVehicleAMotorAbsent.isChecked
     }
 
     private fun handlePolicyHolderProfileResponse(response: Response<PolicyHolderResponse>) {
@@ -311,24 +315,24 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
             binding.btnStatementVehicleAAddTrailer.text =
                 requireContext().getString(R.string.add_trailer_button)
             binding.tvStatementVehicleATrailerTitle.visibility = View.GONE
-            binding.cbStatementTrailerNeedsRegistration.visibility = View.GONE
+            binding.cbStatementTrailerHasRegistration.visibility = View.GONE
         } else {
             binding.btnStatementVehicleAAddTrailer.text =
                 requireContext().getString(R.string.remove_trailer_button)
-            binding.cbStatementTrailerNeedsRegistration.isChecked = false
+            binding.cbStatementTrailerHasRegistration.isChecked = false
             binding.tvStatementVehicleATrailerTitle.visibility = View.VISIBLE
-            binding.cbStatementTrailerNeedsRegistration.visibility = View.VISIBLE
+            binding.cbStatementTrailerHasRegistration.visibility = View.VISIBLE
         }
         return value
     }
 
     private fun removeTrailerFields() {
         (validationRules as MutableList<Triple<EditText, (String?) -> Boolean, String>>).removeAll { rule ->
-            rule.first == binding.etStatementTrailerARegistrationNumber || rule.first == binding.etStatementTrailerACountry
+            rule.first == binding.etStatementTrailerALicensePlate || rule.first == binding.etStatementTrailerACountryOfRegistration
         }
 
         (fields as MutableList<TextView>).removeAll { field ->
-            if (field == binding.etStatementTrailerARegistrationNumber || field == binding.etStatementTrailerACountry) {
+            if (field == binding.etStatementTrailerALicensePlate || field == binding.etStatementTrailerACountryOfRegistration) {
                 (field as EditText).error = null
                 true
             } else {
@@ -339,8 +343,8 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
 
     private fun addTrailerFields() {
         (fields as MutableList).apply {
-            add(binding.etStatementTrailerARegistrationNumber)
-            add(binding.etStatementTrailerACountry)
+            add(binding.etStatementTrailerALicensePlate)
+            add(binding.etStatementTrailerACountryOfRegistration)
         }
     }
 
@@ -348,21 +352,21 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
         (validationRules as MutableList).apply {
             add(
                 Triple(
-                    binding.etStatementTrailerARegistrationNumber,
+                    binding.etStatementTrailerALicensePlate,
                     { value -> value.isNullOrEmpty() },
                     formHelper.errors.fieldRequired
                 )
             )
             add(
                 Triple(
-                    binding.etStatementTrailerACountry,
+                    binding.etStatementTrailerACountryOfRegistration,
                     { value -> value.isNullOrEmpty() },
                     formHelper.errors.fieldRequired
                 )
             )
             add(
                 Triple(
-                    binding.etStatementTrailerACountry,
+                    binding.etStatementTrailerACountryOfRegistration,
                     { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
                     formHelper.errors.noDigitsAllowed
                 )
@@ -372,9 +376,9 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
 
     private fun addMotorFields() {
         (fields as MutableList).apply {
-            add(binding.etStatementVehicleAMarkType)
-            add(binding.etStatementVehicleARegistrationNumber)
-            add(binding.etStatementVehicleACountry)
+            add(binding.etStatementVehicleAMotorMarkType)
+            add(binding.etStatementVehicleAMotorLicensePlate)
+            add(binding.etStatementVehicleAMotorCountryOfRegistration)
         }
     }
 
@@ -382,28 +386,28 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
         (validationRules as MutableList).apply {
             add(
                 Triple(
-                    binding.etStatementVehicleAMarkType,
+                    binding.etStatementVehicleAMotorMarkType,
                     { value -> value.isNullOrEmpty() },
                     formHelper.errors.fieldRequired
                 )
             )
             add(
                 Triple(
-                    binding.etStatementVehicleACountry,
+                    binding.etStatementVehicleAMotorCountryOfRegistration,
                     { value -> value.isNullOrEmpty() },
                     formHelper.errors.fieldRequired
                 )
             )
             add(
                 Triple(
-                    binding.etStatementVehicleACountry,
+                    binding.etStatementVehicleAMotorCountryOfRegistration,
                     { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
                     formHelper.errors.noDigitsAllowed
                 )
             )
             add(
                 Triple(
-                    binding.etStatementVehicleARegistrationNumber,
+                    binding.etStatementVehicleAMotorLicensePlate,
                     { value -> value.isNullOrEmpty() },
                     formHelper.errors.fieldRequired
                 )
@@ -413,13 +417,13 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
 
     private fun removeMotorFields() {
         (validationRules as MutableList<Triple<EditText, (String?) -> Boolean, String>>).removeAll { rule ->
-            rule.first == binding.etStatementVehicleAMarkType || rule.first == binding.etStatementVehicleARegistrationNumber
-                    || rule.first == binding.etStatementVehicleACountry
+            rule.first == binding.etStatementVehicleAMotorMarkType || rule.first == binding.etStatementVehicleAMotorLicensePlate
+                    || rule.first == binding.etStatementVehicleAMotorCountryOfRegistration
         }
 
         (fields as MutableList<TextView>).removeAll { field ->
-            if (field == binding.etStatementVehicleAMarkType || field == binding.etStatementVehicleARegistrationNumber ||
-                field == binding.etStatementVehicleACountry
+            if (field == binding.etStatementVehicleAMotorMarkType || field == binding.etStatementVehicleAMotorLicensePlate ||
+                field == binding.etStatementVehicleAMotorCountryOfRegistration
             ) {
                 (field as EditText).error = null
                 true

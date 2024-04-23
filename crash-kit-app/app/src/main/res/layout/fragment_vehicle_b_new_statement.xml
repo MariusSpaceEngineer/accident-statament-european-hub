@@ -209,7 +209,7 @@
                     android:textStyle="bold" />
 
                 <CheckBox
-                    android:id="@+id/cb_statement_vehicle_b_motor_present"
+                    android:id="@+id/cb_statement_vehicle_b_motor_absent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -233,7 +233,7 @@
                         app:boxStrokeColor="@color/primary800">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/et_statement_vehicle_b_mark_type"
+                            android:id="@+id/et_statement_vehicle_b_motor_mark_type"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textColor="@color/input_hint" />
@@ -251,7 +251,7 @@
                         app:boxStrokeColor="@color/primary800">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/et_statement_vehicle_b_registration_number"
+                            android:id="@+id/et_statement_vehicle_b_motor_license_plate"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textColor="@color/input_hint" />
@@ -269,7 +269,7 @@
                         app:boxStrokeColor="@color/primary800">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/et_statement_vehicle_b_country"
+                            android:id="@+id/et_statement_vehicle_b_motor_country_of_registration"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textColor="@color/input_hint" />
@@ -289,7 +289,7 @@
                     android:visibility="gone" />
 
                 <CheckBox
-                    android:id="@+id/cb_statement_trailer_b_needs_registration"
+                    android:id="@+id/cb_statement_trailer_b_has_registration"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/trailer_needs_registration_checkbox"
@@ -314,7 +314,7 @@
                         app:boxStrokeColor="@color/primary800">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/et_statement_trailer_b_registration_number"
+                            android:id="@+id/et_statement_trailer_b_license_plate"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textColor="@color/input_hint" />
@@ -333,7 +333,7 @@
                         app:boxStrokeColor="@color/primary800">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/et_statement_trailer_b_country"
+                            android:id="@+id/et_statement_trailer_b_country_of_registration"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textColor="@color/input_hint" />

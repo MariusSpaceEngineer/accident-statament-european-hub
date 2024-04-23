@@ -95,12 +95,12 @@ class VehicleNewStatementFragmentInstrumentedUITest {
             )
         onView(withId(R.id.et_statement_policy_holder_email))
             .check(matches(isDisplayed()))
-        onView(withId(R.id.et_statement_vehicle_a_country))
+        onView(withId(R.id.et_statement_vehicle_a_motor_country_of_registration))
             .perform(scrollTo())
             .check(matches(isDisplayed()))
-        onView(withId(R.id.et_statement_vehicle_a_mark_type))
+        onView(withId(R.id.et_statement_vehicle_a_motor_mark_type))
             .check(matches(isDisplayed()))
-        onView(withId(R.id.et_statement_vehicle_a_registration_number))
+        onView(withId(R.id.et_statement_vehicle_a_motor_license_plate))
             .check(matches(isDisplayed()))
 
 
@@ -117,11 +117,11 @@ class VehicleNewStatementFragmentInstrumentedUITest {
             .perform(typeText("Test Phone Number"), closeSoftKeyboard())
         onView(withId(R.id.et_statement_policy_holder_email))
             .perform(typeText("Test Email"), closeSoftKeyboard())
-        onView(withId(R.id.et_statement_vehicle_a_country))
+        onView(withId(R.id.et_statement_vehicle_a_motor_country_of_registration))
             .perform(scrollTo(), typeText("Test Country"), closeSoftKeyboard())
-        onView(withId(R.id.et_statement_vehicle_a_mark_type))
+        onView(withId(R.id.et_statement_vehicle_a_motor_mark_type))
             .perform(typeText("Test Mark Type"), closeSoftKeyboard())
-        onView(withId(R.id.et_statement_vehicle_a_registration_number))
+        onView(withId(R.id.et_statement_vehicle_a_motor_license_plate))
             .perform(typeText("Test Registration Number"), closeSoftKeyboard())
 
         // Check to see if fields have been filled correctly
@@ -137,11 +137,11 @@ class VehicleNewStatementFragmentInstrumentedUITest {
             .check(matches(withText("Test Phone Number")))
         onView(withId(R.id.et_statement_policy_holder_email))
             .check(matches(withText("Test Email")))
-        onView(withId(R.id.et_statement_vehicle_a_country))
+        onView(withId(R.id.et_statement_vehicle_a_motor_country_of_registration))
             .check(matches(withText("Test Country")))
-        onView(withId(R.id.et_statement_vehicle_a_mark_type))
+        onView(withId(R.id.et_statement_vehicle_a_motor_mark_type))
             .check(matches(withText("Test Mark Type")))
-        onView(withId(R.id.et_statement_vehicle_a_registration_number))
+        onView(withId(R.id.et_statement_vehicle_a_motor_license_plate))
             .check(matches(withText("Test Registration Number")))
     }
 

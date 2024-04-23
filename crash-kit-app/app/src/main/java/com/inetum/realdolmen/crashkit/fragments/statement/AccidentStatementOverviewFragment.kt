@@ -20,7 +20,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
-import com.inetum.realdolmen.crashkit.CrashKitApp
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.adapters.ImageAdapter
 import com.inetum.realdolmen.crashkit.databinding.FragmentAccidentStatementOverviewBinding
@@ -35,8 +34,6 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
 
     private var _binding: FragmentAccidentStatementOverviewBinding? = null
     private val binding get() = _binding!!
-
-    private val apiService = CrashKitApp.apiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -314,43 +311,43 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             statementData.policyHolderAEmail
         )
 
-        if (statementData.vehicleAMarkType.isNotEmpty()) {
+        if (statementData.vehicleAMotorMarkType.isNotEmpty()) {
             binding.tvStatementVehicleACardMotorTitle.visibility = View.VISIBLE
             binding.tvStatementVehicleACardMotorMarkType.visibility = View.VISIBLE
             setBoldAndNormalText(
                 binding.tvStatementVehicleACardMotorMarkType,
                 binding.tvStatementVehicleACardMotorMarkType.text.toString(),
-                statementData.vehicleAMarkType
+                statementData.vehicleAMotorMarkType
             )
         }
 
-        if (statementData.vehicleARegistrationNumber.isNotEmpty()) {
+        if (statementData.vehicleAMotorLicensePlate.isNotEmpty()) {
             binding.tvStatementVehicleACardMotorRegistrationNumber.visibility = View.VISIBLE
             setBoldAndNormalText(
                 binding.tvStatementVehicleACardMotorRegistrationNumber,
                 binding.tvStatementVehicleACardMotorRegistrationNumber.text.toString(),
-                statementData.vehicleARegistrationNumber
+                statementData.vehicleAMotorLicensePlate
             )
         }
 
-        if (statementData.vehicleACountryOfRegistration.isNotEmpty()) {
+        if (statementData.vehicleAMotorCountryOfRegistration.isNotEmpty()) {
             binding.tvStatementVehicleACardMotorCountry.visibility = View.VISIBLE
             setBoldAndNormalText(
                 binding.tvStatementVehicleACardMotorCountry,
                 binding.tvStatementVehicleACardMotorCountry.text.toString(),
-                statementData.vehicleACountryOfRegistration
+                statementData.vehicleAMotorCountryOfRegistration
             )
         }
 
         if (statementData.vehicleATrailerPresent) {
             binding.tvStatementVehicleACardTrailerTitle.visibility = View.VISIBLE
 
-            if (statementData.vehicleATrailerRegistrationNumber.isNotEmpty()) {
+            if (statementData.vehicleATrailerLicensePlate.isNotEmpty()) {
                 binding.tvStatementVehicleACardTrailerRegistrationNumber.visibility = View.VISIBLE
                 setBoldAndNormalText(
                     binding.tvStatementVehicleACardTrailerRegistrationNumber,
                     binding.tvStatementVehicleACardTrailerRegistrationNumber.text.toString(),
-                    statementData.vehicleATrailerRegistrationNumber
+                    statementData.vehicleATrailerLicensePlate
                 )
             }
 
@@ -363,7 +360,7 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
                 )
             }
 
-            if (statementData.vehicleATrailerRegistrationNumber.isEmpty() && statementData.vehicleATrailerCountryOfRegistration.isEmpty()) {
+            if (statementData.vehicleATrailerLicensePlate.isEmpty() && statementData.vehicleATrailerCountryOfRegistration.isEmpty()) {
                 binding.tvStatementVehicleACardTrailerNoRegistration.visibility = View.VISIBLE
             }
 
@@ -579,43 +576,43 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             statementData.policyHolderBEmail
         )
 
-        if (statementData.vehicleBMarkType.isNotEmpty()) {
+        if (statementData.vehicleBMotorMarkType.isNotEmpty()) {
             binding.tvStatementVehicleBCardMotorTitle.visibility = View.VISIBLE
             binding.tvStatementVehicleBCardMotorMarkType.visibility = View.VISIBLE
             setBoldAndNormalText(
                 binding.tvStatementVehicleBCardMotorMarkType,
                 binding.tvStatementVehicleBCardMotorMarkType.text.toString(),
-                statementData.vehicleBMarkType
+                statementData.vehicleBMotorMarkType
             )
         }
 
-        if (statementData.vehicleBRegistrationNumber.isNotEmpty()) {
+        if (statementData.vehicleBMotorLicensePlate.isNotEmpty()) {
             binding.tvStatementVehicleBCardMotorRegistrationNumber.visibility = View.VISIBLE
             setBoldAndNormalText(
                 binding.tvStatementVehicleBCardMotorRegistrationNumber,
                 binding.tvStatementVehicleBCardMotorRegistrationNumber.text.toString(),
-                statementData.vehicleBRegistrationNumber
+                statementData.vehicleBMotorLicensePlate
             )
         }
 
-        if (statementData.vehicleBCountryOfRegistration.isNotEmpty()) {
+        if (statementData.vehicleBMotorCountryOfRegistration.isNotEmpty()) {
             binding.tvStatementVehicleBCardMotorCountry.visibility = View.VISIBLE
             setBoldAndNormalText(
                 binding.tvStatementVehicleBCardMotorCountry,
                 binding.tvStatementVehicleBCardMotorCountry.text.toString(),
-                statementData.vehicleBCountryOfRegistration
+                statementData.vehicleBMotorCountryOfRegistration
             )
         }
 
         if (statementData.vehicleBTrailerPresent) {
             binding.tvStatementVehicleBCardTrailerTitle.visibility = View.VISIBLE
 
-            if (statementData.vehicleBTrailerRegistrationNumber.isNotEmpty()) {
+            if (statementData.vehicleBTrailerLicensePlate.isNotEmpty()) {
                 binding.tvStatementVehicleBCardTrailerRegistrationNumber.visibility = View.VISIBLE
                 setBoldAndNormalText(
                     binding.tvStatementVehicleBCardTrailerRegistrationNumber,
                     binding.tvStatementVehicleBCardTrailerRegistrationNumber.text.toString(),
-                    statementData.vehicleBTrailerRegistrationNumber
+                    statementData.vehicleBTrailerLicensePlate
                 )
             }
 
@@ -628,7 +625,7 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
                 )
             }
 
-            if (statementData.vehicleBTrailerRegistrationNumber.isEmpty() && statementData.vehicleBTrailerCountryOfRegistration.isEmpty()) {
+            if (statementData.vehicleBTrailerLicensePlate.isEmpty() && statementData.vehicleBTrailerCountryOfRegistration.isEmpty()) {
                 binding.tvStatementVehicleBCardTrailerNoRegistration.visibility = View.VISIBLE
             }
 
