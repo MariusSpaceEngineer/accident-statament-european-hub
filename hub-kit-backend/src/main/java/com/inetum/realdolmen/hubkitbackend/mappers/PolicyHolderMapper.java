@@ -5,7 +5,7 @@ import com.inetum.realdolmen.hubkitbackend.models.PolicyHolder;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {InsuranceCertificateMapper.class})
 public interface PolicyHolderMapper {
     @Mapping(target = "id", ignore = true)
     PolicyHolder fromDTO(PolicyHolderDTO policyHolderDTO);
