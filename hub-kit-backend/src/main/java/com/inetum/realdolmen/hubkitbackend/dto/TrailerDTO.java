@@ -1,17 +1,16 @@
 package com.inetum.realdolmen.hubkitbackend.dto;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.antlr.v4.runtime.misc.NotNull;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
-@Builder
-public class TrailerDTO {
-    private Integer id;
-    @NotNull
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
+public class TrailerDTO extends VehicleDTO {
     private Boolean hasRegistration;
-    private String licensePlate;
-    private String countryOfRegistration;
 }

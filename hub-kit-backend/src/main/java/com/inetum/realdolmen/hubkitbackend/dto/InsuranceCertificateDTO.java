@@ -1,9 +1,8 @@
 package com.inetum.realdolmen.hubkitbackend.dto;
 
-import com.inetum.realdolmen.hubkitbackend.models.Vehicle;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -19,5 +18,6 @@ public class InsuranceCertificateDTO {
     private LocalDate expirationDate;
     private InsuranceAgencyDTO insuranceAgency;
     private InsuranceCompanyDTO insuranceCompany;
-    private Vehicle vehicle;
+    @JsonDeserialize(using = VehicleDTODeserializer.class)
+    private VehicleDTO vehicle;
 }
