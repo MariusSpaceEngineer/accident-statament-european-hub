@@ -25,9 +25,12 @@ import com.inetum.realdolmen.crashkit.databinding.FragmentProfileBinding
 import com.inetum.realdolmen.crashkit.dto.InsuranceAgency
 import com.inetum.realdolmen.crashkit.dto.InsuranceCertificate
 import com.inetum.realdolmen.crashkit.dto.InsuranceCompany
+import com.inetum.realdolmen.crashkit.dto.MotorDTO
 import com.inetum.realdolmen.crashkit.dto.PersonalInformationData
 import com.inetum.realdolmen.crashkit.dto.PolicyHolderPersonalInformationResponse
 import com.inetum.realdolmen.crashkit.dto.PolicyHolderResponse
+import com.inetum.realdolmen.crashkit.dto.TrailerDTO
+import com.inetum.realdolmen.crashkit.dto.Vehicle
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
 import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.createSimpleDialog
@@ -128,6 +131,9 @@ class ProfileFragment : Fragment(), ValidationConfigure {
     private lateinit var fieldInsuranceAgencyPhoneNumber: TextView
     private lateinit var fieldInsuranceAgencyAddress: TextView
     private lateinit var fieldInsuranceAgencyCountry: TextView
+    private lateinit var fieldInsuranceVehicleMarkType: TextView
+    private lateinit var fieldInsuranceVehicleLicensePlate: TextView
+    private lateinit var fieldInsuranceVehicleCountryOfRegistration: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -235,7 +241,10 @@ class ProfileFragment : Fragment(), ValidationConfigure {
             binding.etProfileInsuranceAgencyEmailValue,
             binding.etProfileInsuranceAgencyPhoneNumberValue,
             binding.etProfileInsuranceAgencyAddressValue,
-            binding.etProfileInsuranceAgencyCountryValue
+            binding.etProfileInsuranceAgencyCountryValue,
+            binding.etProfileInsuranceAgencyVehicleMarkTypeValue,
+            binding.etProfileInsuranceVehicleLicensePlateValue,
+            binding.etProfileInsuranceVehicleCountryOfRegistrationValue
         )
 
         this.insuranceInformationValidationRules =
@@ -319,6 +328,21 @@ class ProfileFragment : Fragment(), ValidationConfigure {
                     { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
                     personalFormHelper.errors.noDigitsAllowed
                 ),
+                Triple(
+                    binding.etProfileInsuranceVehicleLicensePlateValue,
+                    { value -> value.isNullOrEmpty() },
+                    personalFormHelper.errors.fieldRequired
+                ),
+                Triple(
+                    binding.etProfileInsuranceVehicleCountryOfRegistrationValue,
+                    { value -> value.isNullOrEmpty() },
+                    personalFormHelper.errors.fieldRequired
+                ),
+                Triple(
+                    binding.etProfileInsuranceVehicleCountryOfRegistrationValue,
+                    { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
+                    personalFormHelper.errors.noDigitsAllowed
+                ),
             )
     }
 
@@ -335,6 +359,10 @@ class ProfileFragment : Fragment(), ValidationConfigure {
         fieldInsuranceAgencyPhoneNumber = binding.etProfileInsuranceAgencyPhoneNumberValue
         fieldInsuranceAgencyAddress = binding.etProfileInsuranceAgencyAddressValue
         fieldInsuranceAgencyCountry = binding.etProfileInsuranceAgencyCountryValue
+        fieldInsuranceVehicleMarkType = binding.etProfileInsuranceAgencyVehicleMarkTypeValue
+        fieldInsuranceVehicleLicensePlate = binding.etProfileInsuranceVehicleLicensePlateValue
+        fieldInsuranceVehicleCountryOfRegistration =
+            binding.etProfileInsuranceVehicleCountryOfRegistrationValue
     }
 
     private fun setupPersonalInformationCardFields() {
@@ -429,8 +457,10 @@ class ProfileFragment : Fragment(), ValidationConfigure {
         fieldInsuranceCertExpirationDate: TextView,
         fieldInsuranceAgencyPhoneNumber: TextView,
         fieldInsuranceAgencyAddress: TextView,
-        fieldInsuranceAgencyCountry: TextView
-
+        fieldInsuranceAgencyCountry: TextView,
+        fieldInsuranceVehicleMarkType: TextView,
+        fieldInsuranceVehicleLicensePlate: TextView,
+        fieldInsuranceVehicleCountryOfRegistration: TextView
     ) {
         val insuranceAgency = InsuranceAgency(
             selectedCertificate?.insuranceAgency?.id,
@@ -446,6 +476,20 @@ class ProfileFragment : Fragment(), ValidationConfigure {
             fieldInsuranceCompanyName.text.toString()
         )
 
+        val vehicleId = selectedCertificate?.vehicle?.id
+        val licensePlate = fieldInsuranceVehicleLicensePlate.text.toString()
+        val countryOfRegistration = fieldInsuranceVehicleCountryOfRegistration.text.toString()
+
+        val vehicle: Vehicle?
+
+        if (fieldInsuranceVehicleMarkType.text.isNotEmpty()) {
+            val markType = fieldInsuranceVehicleMarkType.text.toString()
+            vehicle = MotorDTO(vehicleId, licensePlate, countryOfRegistration, markType = markType)
+        } else {
+            vehicle = TrailerDTO(vehicleId, licensePlate, countryOfRegistration, hasRegistration = true)
+        }
+
+
         val insuranceCertificateData = InsuranceCertificate(
             selectedCertificate?.id,
             fieldPolicyNumber.text.toString(),
@@ -453,16 +497,37 @@ class ProfileFragment : Fragment(), ValidationConfigure {
             fieldInsuranceCertAvailabilityDate.text.toString().toLocalDate()?.toIsoString(),
             fieldInsuranceCertExpirationDate.text.toString().toLocalDate()?.toIsoString(),
             insuranceAgency,
-            insuranceCompany
+            insuranceCompany,
+            vehicle
         )
 
         Log.i("insurance certificate", insuranceCertificateData.toString())
 
         CoroutineScope(Dispatchers.IO).launch {
-            val response =
-                apiService.updateInsuranceCertificateInformation(insuranceCertificateData)
-            withContext(Dispatchers.Main) {
-                handlePolicyHolderInsuranceInformationResponse(response, insuranceInformationFields)
+            try {
+                val response =
+                    apiService.updateInsuranceCertificateInformation(insuranceCertificateData)
+                withContext(Dispatchers.Main) {
+                    handlePolicyHolderInsuranceInformationResponse(
+                        response,
+                        insuranceInformationFields
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("NetworkRequest", "Exception occurred: ", e)
+                withContext(Dispatchers.Main) {
+                    val message = when (e) {
+                        is java.net.SocketTimeoutException -> requireContext().getString(
+                            R.string.error_network
+                        )
+
+                        else -> requireContext().getString(R.string.unknown_error)
+                    }
+                    requireContext().createSimpleDialog(
+                        getString(R.string.error),
+                        message
+                    )
+                }
             }
         }
     }
@@ -583,8 +648,10 @@ class ProfileFragment : Fragment(), ValidationConfigure {
                 binding.etProfilePersonalAddressValue.setText(personalInformationResponse.address)
                 binding.etProfilePersonalPostalCodeValue.setText(personalInformationResponse.postalCode)
 
+
                 if (!personalInformationResponse.insuranceCertificates.isNullOrEmpty()) {
                     insuranceCertificates = personalInformationResponse.insuranceCertificates
+                    Log.i("certificates", insuranceCertificates.toString())
                     showInsuranceDialog()
                 } else {
                     binding.tvProfileInsuranceCardChangeInsurance.visibility = View.GONE
@@ -600,9 +667,23 @@ class ProfileFragment : Fragment(), ValidationConfigure {
     private fun showInsuranceDialog(
     ) {
         if (insuranceCertificates != null) {
-            val insuranceCertificateStrings =
-                insuranceCertificates!!.map { "Company name: ${it.insuranceCompany?.name}\nAgency name: ${it.insuranceAgency?.name}\nPolicy Number: ${it.policyNumber}" }
-                    .toMutableList()
+            val insuranceCertificateStrings = insuranceCertificates!!.map { certificate ->
+                val vehicle = certificate.vehicle
+                val vehicleType = when (vehicle) {
+                    is MotorDTO -> "Motor"
+                    is TrailerDTO -> "Trailer"
+                    else -> "Unknown"
+                }
+                val markType = if (vehicle is MotorDTO) vehicle.markType else "N/A"
+
+                "Vehicle Type: $vehicleType\n" + "Company name: ${certificate.insuranceCompany?.name}\n" +
+                        "Agency name: ${certificate.insuranceAgency?.name}\n" +
+                        "Policy Number: ${certificate.policyNumber}\n" +
+                        "Mark Type: $markType\n" +
+                        "License Plate: ${vehicle?.licensePlate}\n" +
+                        "Country of Registration: ${vehicle?.countryOfRegistration}\n"
+            }.toMutableList()
+
             insuranceCertificateStrings.add("Create a new certificate")
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Select an Insurance Certificate")
@@ -612,6 +693,8 @@ class ProfileFragment : Fragment(), ValidationConfigure {
                 ) { dialog, which ->
                     if (which == insuranceCertificateStrings.lastIndex) {
                         selectedCertificate = null
+
+                        binding.tilProfileInsuranceAgencyVehicleMarkTypeLabel.visibility=View.VISIBLE
 
                         binding.etProfileInsuranceCompanyPolicyNumberValue.setText("")
                         binding.etProfileInsuranceCompanyGreenCardNumberValue.setText("")
@@ -623,6 +706,9 @@ class ProfileFragment : Fragment(), ValidationConfigure {
                         binding.etProfileInsuranceAgencyPhoneNumberValue.setText("")
                         binding.etProfileInsuranceAgencyAddressValue.setText("")
                         binding.etProfileInsuranceAgencyCountryValue.setText("")
+                        binding.etProfileInsuranceAgencyVehicleMarkTypeValue.setText("")
+                        binding.etProfileInsuranceVehicleLicensePlateValue.setText("")
+                        binding.etProfileInsuranceVehicleCountryOfRegistrationValue.setText("")
 
                     } else {
                         selectedCertificate = insuranceCertificates?.get(which)
@@ -660,6 +746,24 @@ class ProfileFragment : Fragment(), ValidationConfigure {
                             )
                             binding.etProfileInsuranceAgencyCountryValue.setText(
                                 selectedCertificate?.insuranceAgency?.country ?: ""
+                            )
+                        }
+                        if (selectedCertificate?.vehicle != null) {
+                            if (selectedCertificate?.vehicle is TrailerDTO){
+                                binding.etProfileInsuranceAgencyVehicleMarkTypeValue.setText("")
+                                binding.tilProfileInsuranceAgencyVehicleMarkTypeLabel.visibility=View.GONE
+                            }
+                            if (selectedCertificate?.vehicle is MotorDTO) {
+                                binding.etProfileInsuranceAgencyVehicleMarkTypeValue.setText(
+                                    (selectedCertificate?.vehicle as MotorDTO).markType
+                                )
+                                binding.tilProfileInsuranceAgencyVehicleMarkTypeLabel.visibility=View.VISIBLE
+                            }
+                            binding.etProfileInsuranceVehicleLicensePlateValue.setText(
+                                selectedCertificate?.vehicle?.licensePlate ?: ""
+                            )
+                            binding.etProfileInsuranceVehicleCountryOfRegistrationValue.setText(
+                                selectedCertificate?.vehicle?.countryOfRegistration ?: ""
                             )
                         }
                     }
@@ -714,7 +818,10 @@ class ProfileFragment : Fragment(), ValidationConfigure {
                     fieldInsuranceCertExpirationDate,
                     fieldInsuranceAgencyPhoneNumber,
                     fieldInsuranceAgencyAddress,
-                    fieldInsuranceAgencyCountry
+                    fieldInsuranceAgencyCountry,
+                    fieldInsuranceVehicleMarkType,
+                    fieldInsuranceVehicleLicensePlate,
+                    fieldInsuranceVehicleCountryOfRegistration
                 )
             }
         }
