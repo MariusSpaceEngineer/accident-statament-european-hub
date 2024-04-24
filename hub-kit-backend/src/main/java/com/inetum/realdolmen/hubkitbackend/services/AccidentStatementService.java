@@ -118,9 +118,10 @@ public class AccidentStatementService {
                 }
                 var existingCertificate = insuranceCertificateRepository.findByGreenCardNumberAndPolicyNumber(insuranceCertificate.getGreenCardNumber(), insuranceCertificate.getPolicyNumber());
                 if (existingCertificate.isEmpty()) {
-                    var existingInsuranceAgency = insuranceAgencyRepository.findByNameAndAddress(
+                    var existingInsuranceAgency = insuranceAgencyRepository.findByNameAndAddressAndCountry(
                             insuranceCertificate.getInsuranceAgency().getName(),
-                            insuranceCertificate.getInsuranceAgency().getAddress());
+                            insuranceCertificate.getInsuranceAgency().getAddress(),
+                            insuranceCertificate.getInsuranceAgency().getCountry());
 
                     var existingInsuranceCompany = insuranceCompanyRepository.findByName(
                             insuranceCertificate.getInsuranceCompany().getName());
