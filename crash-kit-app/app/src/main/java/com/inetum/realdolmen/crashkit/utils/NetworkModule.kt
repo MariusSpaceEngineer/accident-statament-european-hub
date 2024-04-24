@@ -31,7 +31,7 @@ object NetworkModule {
 
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         val gson = GsonBuilder()
-            .registerTypeAdapter(Vehicle::class.java, VehicleDeserializer())
+            .registerTypeAdapter(Vehicle::class.java, VehicleAdapter())
             .create()
 
         return Retrofit.Builder()
