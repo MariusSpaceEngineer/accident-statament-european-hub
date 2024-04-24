@@ -1,14 +1,9 @@
 package com.inetum.realdolmen.hubkitbackend.services;
 
-import com.inetum.realdolmen.hubkitbackend.dto.InsuranceCertificateDTO;
-import com.inetum.realdolmen.hubkitbackend.dto.PolicyHolderDTO;
-import com.inetum.realdolmen.hubkitbackend.dto.PolicyHolderPersonalInformationDTO;
+import com.inetum.realdolmen.hubkitbackend.dto.*;
 import com.inetum.realdolmen.hubkitbackend.mappers.*;
 import com.inetum.realdolmen.hubkitbackend.models.*;
-import com.inetum.realdolmen.hubkitbackend.repositories.InsuranceAgencyRepository;
-import com.inetum.realdolmen.hubkitbackend.repositories.InsuranceCertificateRepository;
-import com.inetum.realdolmen.hubkitbackend.repositories.InsuranceCompanyRepository;
-import com.inetum.realdolmen.hubkitbackend.repositories.UserRepository;
+import com.inetum.realdolmen.hubkitbackend.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +19,7 @@ public class PolicyHolderService {
     private final InsuranceCertificateRepository insuranceCertificateRepository;
     private final InsuranceCompanyRepository insuranceCompanyRepository;
     private final InsuranceAgencyRepository insuranceAgencyRepository;
+    private final VehicleRepository vehicleRepository;
     private final JwtService jwtService;
 
     private final PolicyHolderMapper policyHolderMapper;
@@ -31,19 +27,23 @@ public class PolicyHolderService {
     private final InsuranceCompanyMapper insuranceCompanyMapper;
     private final InsuranceAgencyMapper insuranceAgencyMapper;
     private final PolicyHolderPersonalInformationMapper personalInformationMapper;
+    private final MotorMapper motorMapper;
+    private final TrailerMapper trailerMapper;
 
-    public Optional<PolicyHolderDTO> fetchPolicyHolderProfile(String token) throws Exception {
+    public Optional<PolicyHolderDTO> fetchPolicyHolderProfile(String token) {
         Optional<User> user = getUser(token);
 
         if (user.isPresent()) {
             PolicyHolder policyHolder = (PolicyHolder) user.get();
             PolicyHolderDTO dto = policyHolderMapper.toDTO(policyHolder);
+            addVehiclesDTOsToPolicyHolderDTO(policyHolder, dto);
 
             return Optional.of(dto);
         } else {
             return Optional.empty(); // User not found
         }
     }
+
 
     public Optional<PolicyHolderPersonalInformationDTO> updatePolicyHolderPersonalInformation(String token, PolicyHolderPersonalInformationDTO policyHolderDTO) throws Exception {
         Optional<User> user = getUser(token);
@@ -71,12 +71,13 @@ public class PolicyHolderService {
 
             InsuranceCompany savedInsuranceCompany = getOrCreateInsuranceCompany(insuranceCertificateDTO);
             InsuranceAgency savedInsuranceAgency = getOrCreateInsuranceAgency(insuranceCertificateDTO);
+            Vehicle savedVehicle = getOrCreateVehicle(insuranceCertificateDTO);
 
             //If the policyHolder has no insurance certificate
             if (existingPolicyHolder.getInsuranceCertificates().isEmpty()) {
-                addInsuranceCertificateToPolicyHolder(insuranceCertificateDTO, existingPolicyHolder, savedInsuranceCompany, savedInsuranceAgency);
+                addInsuranceCertificateToPolicyHolder(insuranceCertificateDTO, existingPolicyHolder, savedInsuranceCompany, savedInsuranceAgency, savedVehicle);
             } else {
-                updateInsuranceCertificateOfPolicyHolder(insuranceCertificateDTO, existingPolicyHolder, savedInsuranceCompany, savedInsuranceAgency);
+                updateInsuranceCertificateOfPolicyHolder(insuranceCertificateDTO, existingPolicyHolder, savedInsuranceCompany, savedInsuranceAgency, savedVehicle);
             }
 
             insuranceCertificateRepository.saveAll(existingPolicyHolder.getInsuranceCertificates());
@@ -84,10 +85,7 @@ public class PolicyHolderService {
 
             List<InsuranceCertificateDTO> result = new ArrayList<>();
 
-            for (InsuranceCertificate insurance : existingPolicyHolder.getInsuranceCertificates()) {
-                var insuranceDTO = insuranceCertificateMapper.toDTO(insurance);
-                result.add(insuranceDTO);
-            }
+            addVehicleDTOsToInsuranceCertificatesDTOs(existingPolicyHolder, result);
 
             return Optional.of(result);
 
@@ -98,34 +96,111 @@ public class PolicyHolderService {
 
     }
 
+    private void addVehicleDTOsToInsuranceCertificatesDTOs(PolicyHolder existingPolicyHolder, List<InsuranceCertificateDTO> result) {
+        for (InsuranceCertificate insurance : existingPolicyHolder.getInsuranceCertificates()) {
+            var insuranceDTO = insuranceCertificateMapper.toDTO(insurance);
+            Vehicle vehicle = insurance.getVehicle();
+            if (vehicle instanceof Motor) {
+                MotorDTO motorDTO = motorMapper.toDTO((Motor) vehicle);
+                insuranceDTO.setVehicle(motorDTO);
+            } else if (vehicle instanceof Trailer) {
+                TrailerDTO trailerDTO = trailerMapper.toDTO((Trailer) vehicle);
+                insuranceDTO.setVehicle(trailerDTO);
+            }
+
+            result.add(insuranceDTO);
+        }
+    }
+
     private Optional<User> getUser(String token) {
         String email = jwtService.extractUsername(token);
         return userRepository.findByEmail(email);
     }
 
+    private void addVehiclesDTOsToPolicyHolderDTO(PolicyHolder policyHolder, PolicyHolderDTO dto) {
+        List<InsuranceCertificate> insuranceCertificates = policyHolder.getInsuranceCertificates();
+        for (int i = 0; i < insuranceCertificates.size(); i++) {
+            Vehicle vehicle = insuranceCertificates.get(i).getVehicle();
+            if (vehicle instanceof Motor) {
+                MotorDTO motorDTO = motorMapper.toDTO((Motor) vehicle);
+                dto.getInsuranceCertificates().get(i).setVehicle(motorDTO);
+            } else if (vehicle instanceof Trailer) {
+                TrailerDTO trailerDTO = trailerMapper.toDTO((Trailer) vehicle);
+                dto.getInsuranceCertificates().get(i).setVehicle(trailerDTO);
+            }
+        }
+    }
+
     private InsuranceCompany getOrCreateInsuranceCompany(InsuranceCertificateDTO insuranceCertificateDTO) {
-        Optional<InsuranceCompany> existingInsuranceCompany = insuranceCompanyRepository.findByName(insuranceCertificateDTO.getInsuranceCompany().getName());
+        InsuranceCompanyDTO insuranceCompanyDTO = insuranceCertificateDTO.getInsuranceCompany();
+        Optional<InsuranceCompany> existingInsuranceCompany = Optional.empty();
+
+        if (insuranceCompanyDTO.getId() != null) {
+            existingInsuranceCompany = insuranceCompanyRepository.findById(insuranceCompanyDTO.getId());
+        } else if (insuranceCompanyDTO.getName() != null) {
+            existingInsuranceCompany = insuranceCompanyRepository.findByName(insuranceCompanyDTO.getName());
+        }
+
         if (existingInsuranceCompany.isPresent()) {
-            var updatedInsuranceCompany = insuranceCompanyMapper.updateFromDTO(insuranceCertificateDTO.getInsuranceCompany(), existingInsuranceCompany.get());
+            var updatedInsuranceCompany = insuranceCompanyMapper.updateFromDTO(insuranceCompanyDTO, existingInsuranceCompany.get());
             return insuranceCompanyRepository.save(updatedInsuranceCompany);
         } else {
-            var newInsuranceCompany = insuranceCompanyMapper.fromDTO(insuranceCertificateDTO.getInsuranceCompany());
+            var newInsuranceCompany = insuranceCompanyMapper.fromDTO(insuranceCompanyDTO);
             return insuranceCompanyRepository.save(newInsuranceCompany);
         }
     }
 
     private InsuranceAgency getOrCreateInsuranceAgency(InsuranceCertificateDTO insuranceCertificateDTO) {
-        Optional<InsuranceAgency> existingInsuranceAgency = insuranceAgencyRepository.findByNameAndAddress(insuranceCertificateDTO.getInsuranceAgency().getName(), insuranceCertificateDTO.getInsuranceAgency().getAddress());
+        InsuranceAgencyDTO insuranceAgencyDTO = insuranceCertificateDTO.getInsuranceAgency();
+        Optional<InsuranceAgency> existingInsuranceAgency = Optional.empty();
+
+        if (insuranceAgencyDTO.getId() != null) {
+            existingInsuranceAgency = insuranceAgencyRepository.findById(insuranceAgencyDTO.getId());
+        } else if (insuranceAgencyDTO.getName() != null && insuranceAgencyDTO.getAddress() != null && insuranceAgencyDTO.getCountry() != null) {
+            existingInsuranceAgency = insuranceAgencyRepository.findByNameAndAddressAndCountry(insuranceAgencyDTO.getName(), insuranceAgencyDTO.getAddress(), insuranceAgencyDTO.getCountry());
+        }
+
         if (existingInsuranceAgency.isPresent()) {
-            var updatedInsuranceAgency = insuranceAgencyMapper.updateFromDTO(insuranceCertificateDTO.getInsuranceAgency(), existingInsuranceAgency.get());
+            var updatedInsuranceAgency = insuranceAgencyMapper.updateFromDTO(insuranceAgencyDTO, existingInsuranceAgency.get());
             return insuranceAgencyRepository.save(updatedInsuranceAgency);
         } else {
-            var newInsuranceAgency = insuranceAgencyMapper.fromDTO(insuranceCertificateDTO.getInsuranceAgency());
+            var newInsuranceAgency = insuranceAgencyMapper.fromDTO(insuranceAgencyDTO);
             return insuranceAgencyRepository.save(newInsuranceAgency);
         }
     }
 
-    private void updateInsuranceCertificateOfPolicyHolder(InsuranceCertificateDTO insuranceCertificateDTO, PolicyHolder existingPolicyHolder, InsuranceCompany savedInsuranceCompany, InsuranceAgency savedInsuranceAgency) {
+    private Vehicle getOrCreateVehicle(InsuranceCertificateDTO insuranceCertificateDTO) {
+        Optional<Vehicle> existingVehicle = vehicleRepository.findVehicleByLicensePlate(insuranceCertificateDTO.getVehicle().getLicensePlate());
+        if (existingVehicle.isPresent()) {
+            Vehicle vehicle = existingVehicle.get();
+            if (vehicle instanceof Motor) {
+                if (insuranceCertificateDTO.getVehicle() instanceof MotorDTO motorDTO) {
+                    Motor motor = (Motor) vehicle;
+                    var updateMotor = motorMapper.updateFromDTO(motorDTO, motor);
+                    return vehicleRepository.save(updateMotor);
+                }
+            } else if (vehicle instanceof Trailer) {
+                if (insuranceCertificateDTO.getVehicle() instanceof TrailerDTO trailerDTO) {
+                    Trailer trailer = (Trailer) vehicle;
+                    var upadateTrailer = trailerMapper.updateFromDTO(trailerDTO, trailer);
+                    return vehicleRepository.save(upadateTrailer);
+                }
+            }
+        } else {
+            VehicleDTO vehicleDTO = insuranceCertificateDTO.getVehicle();
+            if (vehicleDTO instanceof MotorDTO motorDTO) {
+                Motor newMotor = motorMapper.fromDTO(motorDTO);
+                return vehicleRepository.save(newMotor);
+            } else if (vehicleDTO instanceof TrailerDTO trailerDTO) {
+                Trailer newTrailer = trailerMapper.fromDTO(trailerDTO);
+                return vehicleRepository.save(newTrailer);
+            }
+        }
+        return null;
+    }
+
+
+    private void updateInsuranceCertificateOfPolicyHolder(InsuranceCertificateDTO insuranceCertificateDTO, PolicyHolder existingPolicyHolder, InsuranceCompany savedInsuranceCompany, InsuranceAgency savedInsuranceAgency, Vehicle savedVehicle) {
         var insuranceCertificates = existingPolicyHolder.getInsuranceCertificates();
         var certificateToReplace = insuranceCertificates.stream()
                 .filter(certificate -> Objects.equals(certificate.getId(), insuranceCertificateDTO.getId()))
@@ -135,16 +210,24 @@ public class PolicyHolderService {
             var updatedCertificate = insuranceCertificateMapper.updateFromDTO(insuranceCertificateDTO, certificateToReplace.get());
             insuranceCertificates.remove(certificateToReplace.get());
             insuranceCertificates.add(updatedCertificate);
+            updatedCertificate.setInsuranceCompany(savedInsuranceCompany);
+            updatedCertificate.setInsuranceAgency(savedInsuranceAgency);
+            updatedCertificate.setVehicle(savedVehicle);
         } else {
-            existingPolicyHolder.getInsuranceCertificates().add(insuranceCertificateMapper.fromDTO(insuranceCertificateDTO));
-            existingPolicyHolder.getInsuranceCertificates().getLast().setInsuranceCompany(savedInsuranceCompany);
-            existingPolicyHolder.getInsuranceCertificates().getLast().setInsuranceAgency(savedInsuranceAgency);
+            var newCertificate = insuranceCertificateMapper.fromDTO(insuranceCertificateDTO);
+            newCertificate.setInsuranceCompany(savedInsuranceCompany);
+            newCertificate.setInsuranceAgency(savedInsuranceAgency);
+            newCertificate.setVehicle(savedVehicle);
+            existingPolicyHolder.getInsuranceCertificates().add(newCertificate);
         }
     }
 
-    private void addInsuranceCertificateToPolicyHolder(InsuranceCertificateDTO insuranceCertificateDTO, PolicyHolder existingPolicyHolder, InsuranceCompany savedInsuranceCompany, InsuranceAgency savedInsuranceAgency) {
-        existingPolicyHolder.getInsuranceCertificates().add(insuranceCertificateMapper.fromDTO(insuranceCertificateDTO));
-        existingPolicyHolder.getInsuranceCertificates().getFirst().setInsuranceCompany(savedInsuranceCompany);
-        existingPolicyHolder.getInsuranceCertificates().getFirst().setInsuranceAgency(savedInsuranceAgency);
+    private void addInsuranceCertificateToPolicyHolder(InsuranceCertificateDTO insuranceCertificateDTO, PolicyHolder existingPolicyHolder, InsuranceCompany savedInsuranceCompany, InsuranceAgency savedInsuranceAgency, Vehicle savedVehicle) {
+        var newCertificate = insuranceCertificateMapper.fromDTO(insuranceCertificateDTO);
+        newCertificate.setInsuranceCompany(savedInsuranceCompany);
+        newCertificate.setInsuranceAgency(savedInsuranceAgency);
+        newCertificate.setVehicle(savedVehicle);
+        existingPolicyHolder.getInsuranceCertificates().add(newCertificate);
     }
+
 }
