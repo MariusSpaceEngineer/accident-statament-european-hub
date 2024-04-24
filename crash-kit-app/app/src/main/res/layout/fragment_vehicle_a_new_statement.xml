@@ -222,6 +222,17 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_statement_vehicle_a_import_motor_insurance_information"
+                        style="@style/PrimaryRoundedButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="Import Motor Information"
+                        android:textColor="@color/title" />
+
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -305,6 +316,17 @@
                     android:orientation="vertical"
                     android:visibility="gone">
 
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_statement_vehicle_a_import_trailer_insurance_information"
+                        style="@style/PrimaryRoundedButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="Import Trailer Information"
+                        android:textColor="@color/title" />
+
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -348,12 +370,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
-                    android:visibility="gone"
                     android:layout_marginEnd="12dp"
                     android:layout_marginBottom="12dp"
                     android:gravity="center"
                     android:text="Trailer registration is mandatory when no motor is associated"
-                    android:textColor="@color/danger800" />
+                    android:textColor="@color/danger800"
+                    android:visibility="gone" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_statement_vehicle_a_add_trailer"
