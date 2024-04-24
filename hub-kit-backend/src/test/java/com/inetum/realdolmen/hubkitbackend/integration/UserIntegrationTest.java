@@ -3,10 +3,7 @@ package com.inetum.realdolmen.hubkitbackend.integration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.inetum.realdolmen.hubkitbackend.dto.InsuranceAgencyDTO;
-import com.inetum.realdolmen.hubkitbackend.dto.InsuranceCertificateDTO;
-import com.inetum.realdolmen.hubkitbackend.dto.InsuranceCompanyDTO;
-import com.inetum.realdolmen.hubkitbackend.dto.PolicyHolderPersonalInformationDTO;
+import com.inetum.realdolmen.hubkitbackend.dto.*;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import jakarta.transaction.Transactional;
@@ -83,6 +80,13 @@ class UserIntegrationTest {
                 .name("Insurance Company")
                 .build();
 
+        MotorDTO motorDTO= MotorDTO.builder()
+                .id(1)
+                .licensePlate("K4489ML")
+                .countryOfRegistration("Belgium")
+                .markType("Volkswagen")
+                .build();
+
         insuranceCertificate = InsuranceCertificateDTO.builder()
                 .id(1)
                 .policyNumber("Policy123")
@@ -91,6 +95,7 @@ class UserIntegrationTest {
                 .expirationDate(LocalDate.parse("2025-01-01"))
                 .insuranceAgency(insuranceAgency)
                 .insuranceCompany(insuranceCompany)
+                .vehicle(motorDTO)
                 .build();
 
 
