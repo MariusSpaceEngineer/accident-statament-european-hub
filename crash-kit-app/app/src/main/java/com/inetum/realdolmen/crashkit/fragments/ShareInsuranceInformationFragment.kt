@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.gson.Gson
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.WriterException
@@ -36,6 +35,7 @@ class ShareInsuranceInformationFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val apiService = CrashKitApp.apiService
+    private val gson = CrashKitApp.gson
 
     private val qrCodeWidth: Int = 1000
     private val qrCodeHeight: Int = 1000
@@ -77,6 +77,8 @@ class ShareInsuranceInformationFragment : Fragment() {
                     val json =
                         convertResponseToJSON(personalInformationResponse, selectedCertificate)
 
+                    Log.i("qr-code data", json.toString())
+
                     val bitmap = generateQRCode(json, qrCodeWidth, qrCodeHeight)
 
                     binding.ivShareInsuranceQrCode.visibility = View.VISIBLE
@@ -98,7 +100,6 @@ class ShareInsuranceInformationFragment : Fragment() {
         personalInformationResponse: PolicyHolderResponse,
         selectedCertificate: InsuranceCertificate?
     ): String? {
-        val gson = Gson()
         val policyHolder = PolicyHolderVehicleBResponse(
             personalInformationResponse.id,
             personalInformationResponse.firstName,
@@ -109,8 +110,7 @@ class ShareInsuranceInformationFragment : Fragment() {
             personalInformationResponse.postalCode,
             selectedCertificate
         )
-        val json = gson.toJson(policyHolder)
-        return json
+        return gson.toJson(policyHolder)
     }
 
     private fun generateQRCode(
@@ -172,10 +172,11 @@ class ShareInsuranceInformationFragment : Fragment() {
                     insuranceCertificateStrings.toTypedArray(),
                     -1) { dialog, which ->
                     selectedCertificate = insuranceCertificates[which]
-                    dialog.dismiss()
 
                     // Call the callback with the selected certificate
                     onCertificateSelected(selectedCertificate)
+                    dialog.dismiss()
+
                 }
                 .show()
         } else {

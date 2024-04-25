@@ -18,12 +18,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
-import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.zxing.integration.android.IntentIntegrator
+import com.inetum.realdolmen.crashkit.CrashKitApp
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleBNewStatementBinding
+import com.inetum.realdolmen.crashkit.dto.MotorDTO
 import com.inetum.realdolmen.crashkit.dto.PolicyHolderVehicleBResponse
+import com.inetum.realdolmen.crashkit.dto.TrailerDTO
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
@@ -36,11 +38,14 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, Validatio
     private lateinit var navController: NavController
     private lateinit var formHelper: FormHelper
 
+    private val gson = CrashKitApp.gson
+
     private var _binding: FragmentVehicleBNewStatementBinding? = null
     private val binding get() = _binding!!
 
     private var fields: List<TextView> = mutableListOf()
-    private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> = mutableListOf()
+    private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> =
+        mutableListOf()
 
     private var hasTrailer: Boolean = false
 
@@ -69,7 +74,6 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, Validatio
             } else {
                 Log.i("QR-code", scanResult.contents)
                 val json = scanResult.contents
-                val gson = Gson()
                 try {
                     val policyHolderResponse =
                         gson.fromJson(json, PolicyHolderVehicleBResponse::class.java)
@@ -153,7 +157,8 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, Validatio
             this.policyHolderBFirstName =
                 binding.etStatementPolicyHolderBFirstName.text.toString()
             this.policyHolderBAddress = binding.etStatementPolicyHolderBAddress.text.toString()
-            this.policyHolderBPostalCode = binding.etStatementPolicyHolderBPostalCode.text.toString()
+            this.policyHolderBPostalCode =
+                binding.etStatementPolicyHolderBPostalCode.text.toString()
             this.policyHolderBPhoneNumber =
                 binding.etStatementPolicyHolderBPhoneNumber.text.toString()
             this.policyHolderBEmail = binding.etStatementPolicyHolderBEmail.text.toString()
@@ -166,7 +171,8 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, Validatio
                 binding.etStatementVehicleBMotorCountryOfRegistration.text.toString()
             //Trailer
             this.vehicleBTrailerPresent = !hasTrailer
-            this.vehicleBTrailerHasRegistration = binding.cbStatementTrailerBHasRegistration.isChecked
+            this.vehicleBTrailerHasRegistration =
+                binding.cbStatementTrailerBHasRegistration.isChecked
             this.vehicleBTrailerLicensePlate =
                 binding.etStatementTrailerBLicensePlate.text.toString()
             this.vehicleBTrailerCountryOfRegistration =
@@ -264,6 +270,7 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, Validatio
 
     private fun setupCheckboxListeners() {
         binding.cbStatementTrailerBHasRegistration.setOnCheckedChangeListener { _, isChecked ->
+            Log.i("trailer checkbox", isChecked.toString())
             if (isChecked) {
                 binding.llStatementTrailerBFields.visibility = View.VISIBLE
                 addTrailerFields()
@@ -416,7 +423,15 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, Validatio
             if (fields.none { it.error != null } && isVehicleAssigned()) {
                 updateViewModelFromUI(model)
 
-                navController.navigate(R.id.vehicleBInsuranceFragment)
+                if (binding.cbStatementVehicleBMotorAbsent.isChecked) {
+                    if (binding.cbStatementTrailerBHasRegistration.isChecked) {
+                        navController.navigate(R.id.vehicleBTrailerInsuranceFragment)
+                    } else {
+                        navController.navigate(R.id.vehicleBDriverFragment)
+                    }
+                } else {
+                    navController.navigate(R.id.vehicleBInsuranceFragment)
+                }
             } else if (!isVehicleAssigned()) {
                 binding.tvStatementNoMotorNoTrailerError.visibility = View.VISIBLE
             }
@@ -476,33 +491,77 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, Validatio
         binding.etStatementPolicyHolderBPhoneNumber.error = null
         binding.etStatementPolicyHolderBEmail.setText(response.email)
         binding.etStatementPolicyHolderBEmail.error = null
+
+        val vehicle = response.insuranceCertificate?.vehicle
+        Log.i("vehicle", vehicle.toString())
+
+        if (vehicle is MotorDTO) {
+            binding.etStatementVehicleBMotorMarkType.setText(vehicle.markType)
+            binding.etStatementVehicleBMotorLicensePlate.setText(vehicle.licensePlate)
+            binding.etStatementVehicleBMotorCountryOfRegistration.setText(vehicle.countryOfRegistration)
+        } else if (vehicle is TrailerDTO) {
+            hasTrailer= updateTrailerButtonState(vehicle.hasRegistration)
+            binding.cbStatementTrailerBHasRegistration.isChecked= vehicle.hasRegistration
+            binding.etStatementTrailerBLicensePlate.setText(vehicle.licensePlate)
+            binding.etStatementTrailerBCountryOfRegistration.setText(vehicle.countryOfRegistration)
+        }
     }
 
     private fun importInsuranceInformation(
         model: NewStatementViewModel,
         response: PolicyHolderVehicleBResponse
     ) {
-        model.statementData.value?.apply {
-            this.vehicleBInsuranceCompanyName =
-                response.insuranceCertificate?.insuranceCompany?.name ?: ""
-            this.vehicleBInsuranceCompanyPolicyNumber =
-                response.insuranceCertificate?.policyNumber ?: ""
-            this.vehicleBInsuranceCompanyGreenCardNumber =
-                response.insuranceCertificate?.greenCardNumber ?: ""
-            this.vehicleBInsuranceCertificateAvailabilityDate =
-                response.insuranceCertificate?.availabilityDate?.toLocalDate()
-            this.vehicleBInsuranceCertificateExpirationDate =
-                response.insuranceCertificate?.expirationDate?.toLocalDate()
-            this.vehicleBInsuranceAgencyName =
-                response.insuranceCertificate?.insuranceAgency?.name ?: ""
-            this.vehicleBInsuranceAgencyAddress =
-                response.insuranceCertificate?.insuranceAgency?.address ?: ""
-            this.vehicleBInsuranceAgencyCountry =
-                response.insuranceCertificate?.insuranceAgency?.country ?: ""
-            this.vehicleBInsuranceAgencyPhoneNumber =
-                response.insuranceCertificate?.insuranceAgency?.phoneNumber ?: ""
-            this.vehicleBInsuranceAgencyEmail =
-                response.insuranceCertificate?.insuranceAgency?.email ?: ""
+        val vehicle = response.insuranceCertificate?.vehicle
+        if (vehicle is MotorDTO) {
+            model.statementData.value?.apply {
+                this.vehicleBInsuranceCompanyName =
+                    response.insuranceCertificate.insuranceCompany?.name ?: ""
+                this.vehicleBInsuranceCompanyPolicyNumber =
+                    response.insuranceCertificate.policyNumber ?: ""
+                this.vehicleBInsuranceCompanyGreenCardNumber =
+                    response.insuranceCertificate.greenCardNumber ?: ""
+                this.vehicleBInsuranceCertificateAvailabilityDate =
+                    response.insuranceCertificate.availabilityDate?.toLocalDate()
+                this.vehicleBInsuranceCertificateExpirationDate =
+                    response.insuranceCertificate.expirationDate?.toLocalDate()
+                this.vehicleBInsuranceAgencyName =
+                    response.insuranceCertificate.insuranceAgency?.name ?: ""
+                this.vehicleBInsuranceAgencyAddress =
+                    response.insuranceCertificate.insuranceAgency?.address ?: ""
+                this.vehicleBInsuranceAgencyCountry =
+                    response.insuranceCertificate.insuranceAgency?.country ?: ""
+                this.vehicleBInsuranceAgencyPhoneNumber =
+                    response.insuranceCertificate.insuranceAgency?.phoneNumber ?: ""
+                this.vehicleBInsuranceAgencyEmail =
+                    response.insuranceCertificate.insuranceAgency?.email ?: ""
+
+            }
+        } else if(vehicle is TrailerDTO){
+            model.statementData.value?.apply {
+                this.vehicleBTrailerInsuranceCompanyName =
+                    response.insuranceCertificate.insuranceCompany?.name ?: ""
+                this.vehicleBTrailerInsuranceCompanyPolicyNumber =
+                    response.insuranceCertificate.policyNumber ?: ""
+                this.vehicleBTrailerInsuranceCompanyGreenCardNumber =
+                    response.insuranceCertificate.greenCardNumber ?: ""
+                this.vehicleBTrailerInsuranceCertificateAvailabilityDate =
+                    response.insuranceCertificate.availabilityDate?.toLocalDate()
+                this.vehicleBTrailerInsuranceCertificateExpirationDate =
+                    response.insuranceCertificate.expirationDate?.toLocalDate()
+                this.vehicleBTrailerInsuranceAgencyName =
+                    response.insuranceCertificate.insuranceAgency?.name ?: ""
+                this.vehicleBTrailerInsuranceAgencyAddress =
+                    response.insuranceCertificate.insuranceAgency?.address ?: ""
+                this.vehicleBTrailerInsuranceAgencyCountry =
+                    response.insuranceCertificate.insuranceAgency?.country ?: ""
+                this.vehicleBTrailerInsuranceAgencyPhoneNumber =
+                    response.insuranceCertificate.insuranceAgency?.phoneNumber ?: ""
+                this.vehicleBTrailerInsuranceAgencyEmail =
+                    response.insuranceCertificate.insuranceAgency?.email ?: ""
+
+            }
         }
+
+
     }
 }
