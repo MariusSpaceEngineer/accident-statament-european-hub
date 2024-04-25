@@ -72,7 +72,7 @@ class VehicleBCircumstancesFragment : Fragment(), StatementDataHandler {
 
             updateViewModelFromUI(model)
 
-            navController.navigate(R.id.accidentStatementOverviewFragment)
+            navController.navigate(R.id.vehicleBMiscellaneousFragment)
         }
     }
 

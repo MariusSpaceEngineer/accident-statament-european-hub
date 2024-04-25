@@ -124,7 +124,7 @@ class VehicleBTrailerInsuranceFragment : Fragment(), StatementDataHandler, Valid
 
             if (fields.none { it.error != null }) {
                 // If no errors, navigate to the next fragment
-                navController.navigate(R.id.vehicleADriverFragment)
+                navController.navigate(R.id.vehicleBDriverFragment)
             }
 
         }

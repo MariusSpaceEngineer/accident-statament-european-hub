@@ -72,7 +72,7 @@ class VehicleACircumstancesFragment : Fragment(), StatementDataHandler {
             checkedCheckboxes = getCheckedCheckboxes(checkboxes)
             updateViewModelFromUI(model)
 
-            navController.navigate(R.id.vehicleBCircumstancesFragment)
+            navController.navigate(R.id.vehicleAMiscellaneousFragment)
         }
     }
 
