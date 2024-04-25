@@ -290,18 +290,20 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
         val motors = mutableListOf<MotorDTO>()
         if (statementData?.vehicleAMotorAbsent == false) {
             val motorA = MotorDTO(
-                statementData.vehicleAMotorMarkType,
+                null,
                 statementData.vehicleAMotorLicensePlate,
-                statementData.vehicleAMotorCountryOfRegistration
+                statementData.vehicleAMotorCountryOfRegistration,
+                statementData.vehicleAMotorMarkType,
             )
             motors.add(motorA)
         }
 
         if (statementData?.vehicleBMotorAbsent == false) {
             val motorB = MotorDTO(
-                statementData.vehicleBMotorMarkType,
+                null,
                 statementData.vehicleBMotorLicensePlate,
-                statementData.vehicleBMotorCountryOfRegistration
+                statementData.vehicleBMotorCountryOfRegistration,
+                statementData.vehicleBMotorMarkType
             )
             motors.add(motorB)
         }
@@ -309,43 +311,152 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
         val trailers = mutableListOf<TrailerDTO>()
         if (statementData?.vehicleATrailerPresent == true) {
             val trailerA = TrailerDTO(
-                statementData.vehicleATrailerHasRegistration,
+                null,
                 statementData.vehicleATrailerLicensePlate,
-                statementData.vehicleATrailerCountryOfRegistration
+                statementData.vehicleATrailerCountryOfRegistration,
+                statementData.vehicleATrailerHasRegistration
             )
             trailers.add(trailerA)
         }
         if (statementData?.vehicleBTrailerPresent == true) {
             val trailerB = TrailerDTO(
-                statementData.vehicleBTrailerHasRegistration,
+                null,
                 statementData.vehicleBTrailerLicensePlate,
-                statementData.vehicleBTrailerCountryOfRegistration
+                statementData.vehicleBTrailerCountryOfRegistration,
+                statementData.vehicleBTrailerHasRegistration
             )
             trailers.add(trailerB)
         }
 
+        //InsuranceCertificates vehicle A
+        val vehicleAInsuranceCertificates = mutableListOf<InsuranceCertificate>()
 
-        val insuranceCompanyVehicleA =
-            InsuranceCompany(null, statementData?.vehicleAInsuranceCompanyName)
+        if (statementData?.vehicleAMotorAbsent == false) {
+            val insuranceCompanyVehicleA =
+                InsuranceCompany(null, statementData.vehicleAInsuranceCompanyName)
 
-        val insuranceAgencyVehicleA = InsuranceAgency(
-            null,
-            statementData?.vehicleAInsuranceAgencyName,
-            statementData?.vehicleAInsuranceAgencyAddress,
-            statementData?.vehicleAInsuranceAgencyCountry,
-            statementData?.vehicleAInsuranceAgencyPhoneNumber,
-            statementData?.vehicleAInsuranceAgencyEmail
-        )
+            val insuranceAgencyVehicleA = InsuranceAgency(
+                null,
+                statementData.vehicleAInsuranceAgencyName,
+                statementData.vehicleAInsuranceAgencyAddress,
+                statementData.vehicleAInsuranceAgencyCountry,
+                statementData.vehicleAInsuranceAgencyPhoneNumber,
+                statementData.vehicleAInsuranceAgencyEmail
+            )
 
-        val insuranceCertificateVehicleA = InsuranceCertificate(
-            null,
-            statementData?.vehicleAInsuranceCompanyPolicyNumber,
-            statementData?.vehicleAInsuranceCompanyGreenCardNumber,
-            statementData?.vehicleAInsuranceCertificateAvailabilityDate?.toIsoString(),
-            statementData?.vehicleAInsuranceCertificateExpirationDate?.toIsoString(),
-            insuranceAgencyVehicleA,
-            insuranceCompanyVehicleA
-        )
+            val insuranceCertificateVehicleA = InsuranceCertificate(
+                null,
+                statementData.vehicleAInsuranceCompanyPolicyNumber,
+                statementData.vehicleAInsuranceCompanyGreenCardNumber,
+                statementData.vehicleAInsuranceCertificateAvailabilityDate?.toIsoString(),
+                statementData.vehicleAInsuranceCertificateExpirationDate?.toIsoString(),
+                insuranceAgencyVehicleA,
+                insuranceCompanyVehicleA,
+                motors.find { motorDTO ->
+                    motorDTO.licensePlate == statementData.vehicleAMotorLicensePlate
+                            && motorDTO.markType == statementData.vehicleAMotorMarkType
+                            && motorDTO.countryOfRegistration == statementData.vehicleAMotorCountryOfRegistration
+                }
+            )
+
+            vehicleAInsuranceCertificates.add(insuranceCertificateVehicleA)
+        }
+
+        if (statementData?.vehicleATrailerPresent == true) {
+            val insuranceCompanyVehicleA =
+                InsuranceCompany(null, statementData.vehicleATrailerInsuranceCompanyName)
+
+            val insuranceAgencyVehicleA = InsuranceAgency(
+                null,
+                statementData.vehicleATrailerInsuranceAgencyName,
+                statementData.vehicleATrailerInsuranceAgencyAddress,
+                statementData.vehicleATrailerInsuranceAgencyCountry,
+                statementData.vehicleATrailerInsuranceAgencyPhoneNumber,
+                statementData.vehicleATrailerInsuranceAgencyEmail
+            )
+
+            val insuranceCertificateVehicleA = InsuranceCertificate(
+                null,
+                statementData.vehicleATrailerInsuranceCompanyPolicyNumber,
+                statementData.vehicleATrailerInsuranceCompanyGreenCardNumber,
+                statementData.vehicleATrailerInsuranceCertificateAvailabilityDate?.toIsoString(),
+                statementData.vehicleATrailerInsuranceCertificateExpirationDate?.toIsoString(),
+                insuranceAgencyVehicleA,
+                insuranceCompanyVehicleA,
+                trailers.find { trailerDTO ->
+                    trailerDTO.licensePlate == statementData.vehicleATrailerLicensePlate
+                            && trailerDTO.countryOfRegistration == statementData.vehicleATrailerCountryOfRegistration
+                })
+
+            Log.i("trailer insurance", insuranceCertificateVehicleA.toString())
+
+            vehicleAInsuranceCertificates.add(insuranceCertificateVehicleA)
+        }
+
+        //InsuranceCertificates vehicle B
+        val vehicleBInsuranceCertificates = mutableListOf<InsuranceCertificate>()
+
+        if (statementData?.vehicleBMotorAbsent == false) {
+            val insuranceCompanyVehicleB =
+                InsuranceCompany(null, statementData.vehicleBInsuranceCompanyName)
+
+            val insuranceAgencyVehicleB = InsuranceAgency(
+                null,
+                statementData.vehicleBInsuranceAgencyName,
+                statementData.vehicleBInsuranceAgencyAddress,
+                statementData.vehicleBInsuranceAgencyCountry,
+                statementData.vehicleBInsuranceAgencyPhoneNumber,
+                statementData.vehicleBInsuranceAgencyEmail
+            )
+
+            val insuranceCertificateVehicleB = InsuranceCertificate(
+                null,
+                statementData.vehicleBInsuranceCompanyPolicyNumber,
+                statementData.vehicleBInsuranceCompanyGreenCardNumber,
+                statementData.vehicleBInsuranceCertificateAvailabilityDate?.toIsoString(),
+                statementData.vehicleBInsuranceCertificateExpirationDate?.toIsoString(),
+                insuranceAgencyVehicleB,
+                insuranceCompanyVehicleB,
+                motors.find { motorDTO ->
+                    motorDTO.licensePlate == statementData.vehicleBMotorLicensePlate
+                            && motorDTO.markType == statementData.vehicleBMotorMarkType
+                            && motorDTO.countryOfRegistration == statementData.vehicleBMotorCountryOfRegistration
+                }
+            )
+
+            vehicleBInsuranceCertificates.add(insuranceCertificateVehicleB)
+        }
+
+        if (statementData?.vehicleBTrailerPresent == true) {
+            val insuranceCompanyVehicleB =
+                InsuranceCompany(null, statementData.vehicleBTrailerInsuranceCompanyName)
+
+            val insuranceAgencyVehicleB = InsuranceAgency(
+                null,
+                statementData.vehicleBTrailerInsuranceAgencyName,
+                statementData.vehicleBTrailerInsuranceAgencyAddress,
+                statementData.vehicleBTrailerInsuranceAgencyCountry,
+                statementData.vehicleBTrailerInsuranceAgencyPhoneNumber,
+                statementData.vehicleBTrailerInsuranceAgencyEmail
+            )
+
+            val insuranceCertificateVehicleB = InsuranceCertificate(
+                null,
+                statementData.vehicleBTrailerInsuranceCompanyPolicyNumber,
+                statementData.vehicleBTrailerInsuranceCompanyGreenCardNumber,
+                statementData.vehicleBTrailerInsuranceCertificateAvailabilityDate?.toIsoString(),
+                statementData.vehicleBTrailerInsuranceCertificateExpirationDate?.toIsoString(),
+                insuranceAgencyVehicleB,
+                insuranceCompanyVehicleB,
+                trailers.find { trailerDTO ->
+                    trailerDTO.licensePlate == statementData.vehicleBTrailerLicensePlate
+                            && trailerDTO.countryOfRegistration == statementData.vehicleBTrailerCountryOfRegistration
+                })
+
+            Log.i("trailer insurance", insuranceCertificateVehicleB.toString())
+
+            vehicleBInsuranceCertificates.add(insuranceCertificateVehicleB)
+        }
 
         val policyHolderVehicleA = PolicyHolderDTO(
             statementData?.policyHolderAFirstName,
@@ -354,29 +465,7 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
             statementData?.policyHolderAPhoneNumber,
             statementData?.policyHolderAAddress,
             statementData?.policyHolderAPostalCode,
-            listOf(insuranceCertificateVehicleA)
-        )
-
-        val insuranceCompanyVehicleB =
-            InsuranceCompany(null, statementData?.vehicleBInsuranceCompanyName)
-
-        val insuranceAgencyVehicleB = InsuranceAgency(
-            null,
-            statementData?.vehicleBInsuranceAgencyName,
-            statementData?.vehicleBInsuranceAgencyAddress,
-            statementData?.vehicleBInsuranceAgencyCountry,
-            statementData?.vehicleBInsuranceAgencyPhoneNumber,
-            statementData?.vehicleBInsuranceAgencyEmail
-        )
-
-        val insuranceCertificateVehicleB = InsuranceCertificate(
-            null,
-            statementData?.vehicleBInsuranceCompanyPolicyNumber,
-            statementData?.vehicleBInsuranceCompanyGreenCardNumber,
-            statementData?.vehicleBInsuranceCertificateAvailabilityDate?.toIsoString(),
-            statementData?.vehicleBDriverDrivingLicenseExpirationDate?.toIsoString(),
-            insuranceAgencyVehicleB,
-            insuranceCompanyVehicleB
+            vehicleAInsuranceCertificates
         )
 
         val policyHolderVehicleB = PolicyHolderDTO(
@@ -386,28 +475,30 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
             statementData?.policyHolderBPhoneNumber,
             statementData?.policyHolderBAddress,
             statementData?.policyHolderBPostalCode,
-            listOf(insuranceCertificateVehicleB)
+            vehicleBInsuranceCertificates
         )
 
         val policyHolders = listOf(policyHolderVehicleA, policyHolderVehicleB)
 
-        val vehicleAAccidentPhotos: MutableList<AccidentImageDTO>? = if (!statementData?.vehicleAAccidentPhotos.isNullOrEmpty()) {
-            val tempList = mutableListOf<AccidentImageDTO>()
-            for (image: Bitmap in statementData?.vehicleAAccidentPhotos!!) {
-                val imageByte = image.toByteArray()
-                tempList.add(AccidentImageDTO(imageByte))
-            }
-            tempList
-        } else null
+        val vehicleAAccidentPhotos: MutableList<AccidentImageDTO>? =
+            if (!statementData?.vehicleAAccidentPhotos.isNullOrEmpty()) {
+                val tempList = mutableListOf<AccidentImageDTO>()
+                for (image: Bitmap in statementData?.vehicleAAccidentPhotos!!) {
+                    val imageByte = image.toByteArray()
+                    tempList.add(AccidentImageDTO(imageByte))
+                }
+                tempList
+            } else null
 
-        val vehicleBAccidentPhotos: MutableList<AccidentImageDTO>? = if (!statementData?.vehicleBAccidentPhotos.isNullOrEmpty()) {
-            val tempList = mutableListOf<AccidentImageDTO>()
-            for (image: Bitmap in statementData?.vehicleBAccidentPhotos!!) {
-                val imageByte = image.toByteArray()
-                tempList.add(AccidentImageDTO(imageByte))
-            }
-            tempList
-        } else null
+        val vehicleBAccidentPhotos: MutableList<AccidentImageDTO>? =
+            if (!statementData?.vehicleBAccidentPhotos.isNullOrEmpty()) {
+                val tempList = mutableListOf<AccidentImageDTO>()
+                for (image: Bitmap in statementData?.vehicleBAccidentPhotos!!) {
+                    val imageByte = image.toByteArray()
+                    tempList.add(AccidentImageDTO(imageByte))
+                }
+                tempList
+            } else null
 
 
         val vehicleACircumstances = model.vehicleACircumstances.value?.size ?: 0
@@ -427,13 +518,15 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
             policyHolders,
             motors,
             trailers,
-            model.vehicleACircumstances.value?.map { it.text.toString() },
+            model.vehicleACircumstances.value?.map
+            { it.text.toString() },
             statementData?.vehicleAPointOfImpactSketch?.toByteArray(),
             statementData?.vehicleADamageDescription,
             vehicleAAccidentPhotos,
             statementData?.vehicleARemarks,
             statementData?.driverASignature?.toByteArray(),
-            model.vehicleBCircumstances.value?.map { it.text.toString() },
+            model.vehicleBCircumstances.value?.map
+            { it.text.toString() },
             statementData?.vehicleBPointOfImpactSketch?.toByteArray(),
             statementData?.vehicleBDamageDescription,
             vehicleBAccidentPhotos,
