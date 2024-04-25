@@ -388,265 +388,458 @@
                             android:textSize="25sp"
                             android:textStyle="bold" />
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_a_card_motor_title"
+                        <LinearLayout
+                            android:id="@+id/ll_vehicle_a_motor_fields"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:layout_marginBottom="16dp"
-                            android:gravity="center"
-                            android:text="Motor"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            android:visibility="gone" />
+                            android:orientation="vertical"
+                            android:visibility="gone">
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_a_card_motor_mark_type"
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_motor_title"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="16dp"
+                                android:gravity="center"
+                                android:text="Motor"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="22sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_motor_mark_type"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_mark_type"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_motor_registration_number"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_registration_number"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_motor_country"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_country_of_registration"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_page_one_motor_edit"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="16dp"
+                                android:gravity="center"
+                                android:text="@string/edit_button"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ll_vehicle_a_motor_insurance"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_mark_type"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:visibility="gone" />
+                            android:orientation="vertical"
+                            android:visibility="gone">
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_a_card_motor_registration_number"
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="16dp"
+                                android:gravity="center"
+                                android:text="@string/statement_insurance_company_title"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="25sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_motor_insurance_company_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/name"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_motor_insurance_policy_number"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_policy_number"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_motor_insurance_green_card_number"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_green_card_number"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_motor_insurance_certificate_availability_date"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_insurance_cert_availability_date"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_motor_insurance_certificate_expiration_date"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_insurance_cert_expiration_date"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="16dp"
+                                android:gravity="center"
+                                android:text="@string/statement_insurance_agency_title"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="25sp"
+                                android:textStyle="bold" />
+
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_motor_insurance_agency_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/name"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_motor_insurance_agency_address"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_address"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_motor_insurance_agency_country"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_country"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_motor_insurance_agency_phone_number"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_phone_number"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_motor_insurance_agency_email"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_email"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_motor_insurance_damage_covered"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/material_damage_covered_checkbox"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_motor_insurance_page_edit"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="16dp"
+                                android:gravity="center"
+                                android:text="@string/edit_button"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ll_vehicle_a_trailer_fields"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_registration_number"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:visibility="gone" />
+                            android:orientation="vertical"
+                            android:visibility="gone">
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_a_card_motor_country"
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_trailer_title"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="16dp"
+                                android:gravity="center"
+                                android:text="@string/trailer_title"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="22sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_trailer_registration_number"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_registration_number"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_trailer_country"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_country_of_registration"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_trailer_no_registration"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/trailer_under_750kg_description"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp"
+                                android:visibility="gone" />
+
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_page_one_trailer_edit"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="16dp"
+                                android:gravity="center"
+                                android:text="@string/edit_button"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ll_vehicle_a_trailer_insurance"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_country_of_registration"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:visibility="gone" />
+                            android:orientation="vertical"
+                            android:visibility="gone">
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_a_card_trailer_title"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:layout_marginBottom="16dp"
-                            android:gravity="center"
-                            android:text="@string/trailer_title"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            android:visibility="gone" />
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="16dp"
+                                android:gravity="center"
+                                android:text="@string/statement_insurance_company_title"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="25sp"
+                                android:textStyle="bold" />
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_a_card_trailer_registration_number"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_registration_number"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:visibility="gone" />
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_trailer_insurance_company_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/name"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_a_card_trailer_country"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_country_of_registration"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:visibility="gone" />
-
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_a_card_trailer_no_registration"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/trailer_under_750kg_description"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:visibility="gone" />
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_trailer_insurance_policy_number"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_policy_number"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_a_page_one_edit"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="16dp"
-                            android:gravity="center"
-                            android:text="@string/edit_button"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:layout_marginBottom="16dp"
-                            android:gravity="center"
-                            android:text="@string/statement_insurance_company_title"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="25sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_a_card_insurance_company_name"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/name"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp" />
-
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_a_card_insurance_policy_number"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_policy_number"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp" />
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_trailer_insurance_green_card_number"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_green_card_number"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_a_card_insurance_green_card_number"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_green_card_number"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp" />
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_trailer_insurance_certificate_availability_date"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_insurance_cert_availability_date"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_a_card_insurance_certificate_availability_date"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_insurance_cert_availability_date"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp" />
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_trailer_insurance_certificate_expiration_date"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_insurance_cert_expiration_date"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_a_card_insurance_certificate_expiration_date"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_insurance_cert_expiration_date"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp" />
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="16dp"
+                                android:gravity="center"
+                                android:text="@string/statement_insurance_agency_title"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="25sp"
+                                android:textStyle="bold" />
 
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:layout_marginBottom="16dp"
-                            android:gravity="center"
-                            android:text="@string/statement_insurance_agency_title"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="25sp"
-                            android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_trailer_insurance_agency_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/name"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_trailer_insurance_agency_address"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_address"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_a_card_insurance_agency_name"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/name"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp" />
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_trailer_insurance_agency_country"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_country"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_a_card_insurance_agency_address"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_address"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp" />
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_trailer_insurance_agency_phone_number"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_phone_number"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_a_card_insurance_agency_country"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_country"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp" />
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_trailer_insurance_agency_email"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_email"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_a_card_insurance_agency_phone_number"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_phone_number"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp" />
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_card_trailer_insurance_damage_covered"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/material_damage_covered_checkbox"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_a_card_insurance_agency_email"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_email"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp" />
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_a_trailer_insurance_page_edit"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="16dp"
+                                android:gravity="center"
+                                android:text="@string/edit_button"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_a_card_insurance_damage_covered"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/material_damage_covered_checkbox"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp" />
-
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_a_page_two_edit"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="16dp"
-                            android:gravity="center"
-                            android:text="@string/edit_button"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                        </LinearLayout>
 
                         <TextView
                             android:layout_width="match_parent"
@@ -1034,277 +1227,458 @@
                             android:textSize="25sp"
                             android:textStyle="bold" />
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_b_card_motor_title"
+                        <LinearLayout
+                            android:id="@+id/ll_vehicle_b_motor_fields"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:layout_marginBottom="16dp"
-                            android:gravity="center"
-                            android:text="@string/motor_title"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            android:visibility="gone" />
+                            android:orientation="vertical"
+                            android:visibility="gone">
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_b_card_motor_mark_type"
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_motor_title"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="16dp"
+                                android:gravity="center"
+                                android:text="Motor"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="22sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_motor_mark_type"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_mark_type"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_motor_registration_number"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_registration_number"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_motor_country"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_country_of_registration"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_page_one_motor_edit"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="16dp"
+                                android:gravity="center"
+                                android:text="@string/edit_button"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ll_vehicle_b_motor_insurance"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_mark_type"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:textStyle="bold"
-                            android:visibility="gone" />
+                            android:orientation="vertical"
+                            android:visibility="gone">
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_b_card_motor_registration_number"
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="16dp"
+                                android:gravity="center"
+                                android:text="@string/statement_insurance_company_title"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="25sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_motor_insurance_company_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/name"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_motor_insurance_policy_number"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_policy_number"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_motor_insurance_green_card_number"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_green_card_number"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_motor_insurance_certificate_availability_date"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_insurance_cert_availability_date"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_motor_insurance_certificate_expiration_date"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_insurance_cert_expiration_date"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="16dp"
+                                android:gravity="center"
+                                android:text="@string/statement_insurance_agency_title"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="25sp"
+                                android:textStyle="bold" />
+
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_motor_insurance_agency_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/name"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_motor_insurance_agency_address"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_address"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_motor_insurance_agency_country"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_country"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_motor_insurance_agency_phone_number"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_phone_number"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_motor_insurance_agency_email"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_email"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_motor_insurance_damage_covered"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/material_damage_covered_checkbox"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_motor_insurance_page_edit"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="16dp"
+                                android:gravity="center"
+                                android:text="@string/edit_button"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ll_vehicle_b_trailer_fields"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_registration_number"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:textStyle="bold"
-                            android:visibility="gone" />
+                            android:orientation="vertical"
+                            android:visibility="gone">
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_b_card_motor_country"
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_trailer_title"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="16dp"
+                                android:gravity="center"
+                                android:text="@string/trailer_title"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="22sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_trailer_registration_number"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_registration_number"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_trailer_country"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_country_of_registration"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_trailer_no_registration"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/trailer_under_750kg_description"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp"
+                                android:visibility="gone" />
+
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_page_one_trailer_edit"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="16dp"
+                                android:gravity="center"
+                                android:text="@string/edit_button"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ll_vehicle_b_trailer_insurance"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_country_of_registration"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:textStyle="bold"
-                            android:visibility="gone" />
+                            android:orientation="vertical"
+                            android:visibility="gone">
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_b_card_trailer_title"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:layout_marginBottom="16dp"
-                            android:gravity="center"
-                            android:text="@string/trailer_title"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            android:visibility="gone" />
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="16dp"
+                                android:gravity="center"
+                                android:text="@string/statement_insurance_company_title"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="25sp"
+                                android:textStyle="bold" />
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_b_card_trailer_registration_number"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_registration_number"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:visibility="gone" />
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_trailer_insurance_company_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/name"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_b_card_trailer_country"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_country_of_registration"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:visibility="gone" />
-
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_b_card_trailer_no_registration"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/trailer_under_750kg_description"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:visibility="gone" />
-
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_b_page_one_edit"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="16dp"
-                            android:gravity="center"
-                            android:text="@string/edit_button"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:layout_marginBottom="16dp"
-                            android:gravity="center"
-                            android:text="@string/statement_insurance_company_title"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="25sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_b_card_insurance_company_name"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/name"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_b_card_insurance_policy_number"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_policy_number"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_trailer_insurance_policy_number"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_policy_number"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_b_card_insurance_green_card_number"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_green_card_number"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_trailer_insurance_green_card_number"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_green_card_number"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_b_card_insurance_certificate_availability_date"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_insurance_cert_availability_date"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_trailer_insurance_certificate_availability_date"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_insurance_cert_availability_date"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_b_card_insurance_certificate_expiration_date"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_insurance_cert_expiration_date"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:layout_marginBottom="16dp"
-                            android:gravity="center"
-                            android:text="@string/statement_insurance_agency_title"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="25sp"
-                            android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_trailer_insurance_certificate_expiration_date"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_insurance_cert_expiration_date"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_b_card_insurance_agency_name"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/name"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="16dp"
+                                android:gravity="center"
+                                android:text="@string/statement_insurance_agency_title"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="25sp"
+                                android:textStyle="bold" />
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_b_card_insurance_agency_address"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_address"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_b_card_insurance_agency_country"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_country"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_trailer_insurance_agency_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/name"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_b_card_insurance_agency_phone_number"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_phone_number"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_trailer_insurance_agency_address"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_address"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_b_card_insurance_agency_email"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/label_email"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_trailer_insurance_agency_country"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_country"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_b_card_insurance_damage_covered"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/material_damage_covered_checkbox"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_trailer_insurance_agency_phone_number"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_phone_number"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
-                        <TextView
-                            android:id="@+id/tv_statement_vehicle_b_page_two_edit"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="16dp"
-                            android:gravity="center"
-                            android:text="@string/edit_button"
-                            android:textAllCaps="true"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_trailer_insurance_agency_email"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/label_email"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_card_trailer_insurance_damage_covered"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/material_damage_covered_checkbox"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/tv_statement_vehicle_b_trailer_insurance_page_edit"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="16dp"
+                                android:gravity="center"
+                                android:text="@string/edit_button"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
 
                         <TextView
                             android:layout_width="match_parent"
