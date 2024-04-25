@@ -120,7 +120,13 @@ class VehicleBInsuranceFragment : Fragment(), StatementDataHandler, ValidationCo
             formHelper.validateFields(validationRules)
 
             if (fields.none { it.error != null }) {
-                navController.navigate(R.id.vehicleBDriverFragment)
+                // If no errors, navigate to the next fragment
+                if (model.statementData.value?.vehicleBTrailerHasRegistration == true) {
+                    navController.navigate(R.id.vehicleBTrailerInsuranceFragment)
+                }
+                else{
+                    navController.navigate(R.id.vehicleBDriverFragment)
+                }
             }
         }
 
