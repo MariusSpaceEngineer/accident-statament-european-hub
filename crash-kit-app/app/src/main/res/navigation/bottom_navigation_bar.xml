@@ -83,4 +83,8 @@
         android:id="@+id/vehicleATrailerInsuranceFragment"
         android:name="com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleATrailerInsuranceFragment"
         android:label="VehicleATrailerInsuranceFragment" />
+    <fragment
+        android:id="@+id/vehicleBTrailerInsuranceFragment"
+        android:name="com.inetum.realdolmen.crashkit.fragments.statement.vehicle_b.VehicleBTrailerInsuranceFragment"
+        android:label="VehicleBTrailerInsuranceFragment" />
 </navigation>
