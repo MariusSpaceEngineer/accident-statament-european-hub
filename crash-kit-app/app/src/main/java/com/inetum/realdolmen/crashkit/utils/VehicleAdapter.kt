@@ -58,11 +58,9 @@ class VehicleAdapter : JsonDeserializer<Vehicle>, JsonSerializer<Vehicle> {
 
         when (src) {
             is TrailerDTO -> {
-                jsonObject.addProperty("type", "Trailer")
                 jsonObject.addProperty("hasRegistration", src.hasRegistration)
             }
             is MotorDTO -> {
-                jsonObject.addProperty("type", "Motor")
                 jsonObject.addProperty("markType", src.markType)
             }
         }
