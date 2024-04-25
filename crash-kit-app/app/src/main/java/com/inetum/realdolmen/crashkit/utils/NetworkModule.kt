@@ -1,8 +1,7 @@
 package com.inetum.realdolmen.crashkit.utils
 
-import com.google.gson.GsonBuilder
+import com.google.gson.Gson
 import com.inetum.realdolmen.crashkit.BuildConfig
-import com.inetum.realdolmen.crashkit.dto.Vehicle
 import com.inetum.realdolmen.crashkit.services.ApiService
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -29,11 +28,7 @@ object NetworkModule {
             .build()
     }
 
-    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
-        val gson = GsonBuilder()
-            .registerTypeAdapter(Vehicle::class.java, VehicleAdapter())
-            .create()
-
+    fun provideRetrofit(okHttpClient: OkHttpClient, gson: Gson): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
@@ -45,3 +40,4 @@ object NetworkModule {
         return retrofit.create(ApiService::class.java)
     }
 }
+
