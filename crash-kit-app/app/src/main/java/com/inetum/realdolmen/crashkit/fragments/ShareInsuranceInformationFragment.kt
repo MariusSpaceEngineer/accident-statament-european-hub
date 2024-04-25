@@ -19,8 +19,10 @@ import com.inetum.realdolmen.crashkit.CrashKitApp
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentShareInsuranceInformationBinding
 import com.inetum.realdolmen.crashkit.dto.InsuranceCertificate
+import com.inetum.realdolmen.crashkit.dto.MotorDTO
 import com.inetum.realdolmen.crashkit.dto.PolicyHolderResponse
 import com.inetum.realdolmen.crashkit.dto.PolicyHolderVehicleBResponse
+import com.inetum.realdolmen.crashkit.dto.TrailerDTO
 import com.inetum.realdolmen.crashkit.utils.createSimpleDialog
 import com.inetum.realdolmen.crashkit.utils.showToast
 import kotlinx.coroutines.CoroutineScope
@@ -147,18 +149,28 @@ class ShareInsuranceInformationFragment : Fragment() {
         if (!insuranceCertificates.isNullOrEmpty()) {
             var selectedCertificate: InsuranceCertificate?
 
-            val insuranceCertificateStrings =
-                insuranceCertificates.map {
-                    "${getString(R.string.company_name)} ${it.insuranceCompany?.name}\n${
-                        getString(
-                            R.string.agency_name
-                        )
-                    } ${it.insuranceAgency?.name}\n${getString(R.string.label_policy_number)}: ${it.policyNumber}"
+            val insuranceCertificateStrings = insuranceCertificates.map { certificate ->
+                val vehicle = certificate.vehicle
+                val vehicleType = when (vehicle) {
+                    is MotorDTO -> "Motor"
+                    is TrailerDTO -> "Trailer"
+                    else -> "Unknown"
                 }
-                    .toTypedArray()
+                val markType = if (vehicle is MotorDTO) vehicle.markType else "N/A"
+
+                "Vehicle Type: $vehicleType\n" + "Company name: ${certificate.insuranceCompany?.name}\n" +
+                        "Agency name: ${certificate.insuranceAgency?.name}\n" +
+                        "Policy Number: ${certificate.policyNumber}\n" +
+                        "Mark Type: $markType\n" +
+                        "License Plate: ${vehicle?.licensePlate}\n" +
+                        "Country of Registration: ${vehicle?.countryOfRegistration}\n"
+            }.toMutableList()
+
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Select an Insurance Certificate")
-                .setSingleChoiceItems(insuranceCertificateStrings, -1) { dialog, which ->
+                .setSingleChoiceItems(
+                    insuranceCertificateStrings.toTypedArray(),
+                    -1) { dialog, which ->
                     selectedCertificate = insuranceCertificates[which]
                     dialog.dismiss()
 
