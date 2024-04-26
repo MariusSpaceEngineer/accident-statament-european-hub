@@ -7,7 +7,13 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.isChecked
+import androidx.test.espresso.matcher.ViewMatchers.isClickable
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.isEnabled
+import androidx.test.espresso.matcher.ViewMatchers.isNotChecked
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
@@ -85,11 +91,15 @@ class NewStatementFragmentInstrumentedUITest {
                 isDisplayed()
             )
         )
+        onView(withId(R.id.btn_statement_accident_previous))
+            .perform(ViewActions.scrollTo())
+            .check(matches(isDisplayed()))
+        onView(withId(R.id.cb_statement_witness_present)).check(matches(isDisplayed()))
         onView(withId(R.id.et_statement_witness_name)).check(matches(isDisplayed()))
         onView(withId(R.id.et_statement_witness_address)).check(matches(isDisplayed()))
         onView(withId(R.id.et_statement_witness_phone)).check(matches(isDisplayed()))
         onView(withId(R.id.btn_statement_accident_next)).check(matches(isDisplayed()))
-        onView(withId(R.id.btn_statement_accident_previous)).check(matches(isDisplayed()))
+
 
         // Add tests to check if the user can add text to every EditText
         onView(withId(R.id.et_statement_accident_location)).perform(
@@ -109,6 +119,12 @@ class NewStatementFragmentInstrumentedUITest {
             ViewActions.closeSoftKeyboard()
         )
 
+        // Check the entered text
+        onView(withId(R.id.et_statement_accident_location)).check(matches(withText("Test Location")))
+        onView(withId(R.id.et_statement_witness_name)).check(matches(withText("Test Name")))
+        onView(withId(R.id.et_statement_witness_address)).check(matches(withText("Test Address")))
+        onView(withId(R.id.et_statement_witness_phone)).check(matches(withText("Test Phone")))
+
         //Tests to check if the checkboxes work
         onView(withId(R.id.cb_statement_accident_injured)).perform(ViewActions.click())
         onView(withId(R.id.cb_statement_accident_material_damage_other_vehicles)).perform(
@@ -121,6 +137,16 @@ class NewStatementFragmentInstrumentedUITest {
         onView(withId(R.id.cb_statement_accident_material_damage_other_objects)).perform(
             ViewActions.click()
         )
+        onView(withId(R.id.cb_statement_witness_present)).perform(
+            ViewActions.click()
+        )
+
+        //Check to see if the witness fields are still visible
+        onView(withId(R.id.et_statement_witness_name)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.et_statement_witness_address)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.et_statement_witness_phone)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.btn_statement_accident_next)).check(matches(not(isDisplayed())))
+
 
         //Check to see if the buttons are clickable
         onView(withId(R.id.btn_date_time_picker)).check(matches(isClickable()))
@@ -143,12 +169,12 @@ class NewStatementFragmentInstrumentedUITest {
                 isNotChecked()
             )
         )
+        onView(withId(R.id.cb_statement_witness_present)).check(
+            matches(
+                isChecked()
+            )
+        )
 
-        // Check the entered text
-        onView(withId(R.id.et_statement_accident_location)).check(matches(withText("Test Location")))
-        onView(withId(R.id.et_statement_witness_name)).check(matches(withText("Test Name")))
-        onView(withId(R.id.et_statement_witness_address)).check(matches(withText("Test Address")))
-        onView(withId(R.id.et_statement_witness_phone)).check(matches(withText("Test Phone")))
     }
 
 }
