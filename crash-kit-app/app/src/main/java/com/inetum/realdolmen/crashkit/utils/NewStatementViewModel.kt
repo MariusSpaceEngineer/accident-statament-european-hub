@@ -16,24 +16,25 @@ class NewStatementViewModel : ViewModel() {
     }
 
     val vehicleACircumstances: MutableLiveData<List<CheckBox>> by lazy {
-        MutableLiveData<List<CheckBox>>()
+        MutableLiveData<List<CheckBox>>(emptyList())
     }
 
     val vehicleBCircumstances: MutableLiveData<List<CheckBox>> by lazy {
-        MutableLiveData<List<CheckBox>>()
+        MutableLiveData<List<CheckBox>>(emptyList())
     }
 
     val accidentSketchShapes: MutableLiveData<List<Triple<IAccidentDrawable, Point, TextView?>>> by lazy {
-        MutableLiveData<List<Triple<IAccidentDrawable, Point, TextView?>>>()
+        MutableLiveData<List<Triple<IAccidentDrawable, Point, TextView?>>>(emptyList())
     }
 
     val pointOfImpactVehicleASketchShapes: MutableLiveData<List<Pair<IAccidentDrawable, Point>>> by lazy {
-        MutableLiveData<List<Pair<IAccidentDrawable, Point>>>()
+        MutableLiveData<List<Pair<IAccidentDrawable, Point>>>(emptyList())
     }
 
     val pointOfImpactVehicleBSketchShapes: MutableLiveData<List<Pair<IAccidentDrawable, Point>>> by lazy {
-        MutableLiveData<List<Pair<IAccidentDrawable, Point>>>()
+        MutableLiveData<List<Pair<IAccidentDrawable, Point>>>(emptyList())
     }
+
 }
 
 data class StatementData(
