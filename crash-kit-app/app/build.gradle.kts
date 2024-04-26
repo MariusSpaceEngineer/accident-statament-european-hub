@@ -74,6 +74,8 @@ dependencies {
     testImplementation ("androidx.arch.core:core-testing:2.2.0") // For LiveData testing
     testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1") // For testing coroutines
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+
     //For instrumented tests
     androidTestImplementation ("androidx.test:runner:1.5.2")
     androidTestImplementation ("androidx.test:rules:1.5.0")
