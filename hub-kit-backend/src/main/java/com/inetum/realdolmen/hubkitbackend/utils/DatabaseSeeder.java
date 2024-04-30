@@ -125,10 +125,22 @@ public class DatabaseSeeder {
                     .password(new BCryptPasswordEncoder().encode("1234"))
                     .build();
 
+            var policyHolder2 = PolicyHolder.builder()
+                    .firstName("John")
+                    .lastName("Bravo")
+                    .address("Bredabaan 256, 2027 Antwerpen")
+                    .postalCode("2027")
+                    .phoneNumber("0465879425")
+                    .email("johnbravo@gmail.com")
+                    .role(Roles.POLICY_HOLDER)
+                    .password(new BCryptPasswordEncoder().encode("1234"))
+                    .build();
+
             var insuranceCertificates = new ArrayList<InsuranceCertificate>(insuranceCertificateRepository.findAll());
             policyHolder.setInsuranceCertificates(insuranceCertificates);
 
             userRepository.save(policyHolder);
+            userRepository.save(policyHolder2);
             log.info("Policy Holder Seeded");
         } else {
             log.info("Policy Holder Seeding Not Required");
