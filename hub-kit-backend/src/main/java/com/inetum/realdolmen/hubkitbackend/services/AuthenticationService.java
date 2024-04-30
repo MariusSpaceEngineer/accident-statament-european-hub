@@ -5,6 +5,7 @@ import com.inetum.realdolmen.hubkitbackend.exceptions.*;
 import com.inetum.realdolmen.hubkitbackend.models.PolicyHolder;
 import com.inetum.realdolmen.hubkitbackend.repositories.UserRepository;
 import com.inetum.realdolmen.hubkitbackend.utils.LoginRequest;
+import com.inetum.realdolmen.hubkitbackend.utils.MailService;
 import com.inetum.realdolmen.hubkitbackend.utils.PolicyHolderRegisterRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.*;
@@ -21,6 +22,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final MailService mailService;
 
     public String register(PolicyHolderRegisterRequest request) throws Exception {
 
@@ -39,6 +41,8 @@ public class AuthenticationService {
                     .build();
 
             repository.save(policyHolder);
+
+            mailService.sendWelcomeMail(policyHolder.getEmail(), policyHolder.getFirstName());
 
             return jwtService.generateToken(policyHolder);
         }
