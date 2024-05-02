@@ -4,9 +4,7 @@ import com.inetum.realdolmen.hubkitbackend.dto.*;
 import com.inetum.realdolmen.hubkitbackend.exceptions.AccidentStatementCreationFailed;
 import com.inetum.realdolmen.hubkitbackend.exceptions.FetchLocationAddressFailedException;
 import com.inetum.realdolmen.hubkitbackend.exceptions.MissingPropertyException;
-import com.inetum.realdolmen.hubkitbackend.mappers.AccidentStatementMapper;
-import com.inetum.realdolmen.hubkitbackend.mappers.MotorMapper;
-import com.inetum.realdolmen.hubkitbackend.mappers.TrailerMapper;
+import com.inetum.realdolmen.hubkitbackend.mappers.*;
 import com.inetum.realdolmen.hubkitbackend.models.*;
 import com.inetum.realdolmen.hubkitbackend.repositories.*;
 import com.itextpdf.io.image.ImageData;
@@ -16,7 +14,6 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.*;
-import com.itextpdf.layout.properties.AreaBreakType;
 import com.opencagedata.jopencage.JOpenCageGeocoder;
 import com.opencagedata.jopencage.model.JOpenCageReverseRequest;
 import jakarta.annotation.PostConstruct;
@@ -25,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -41,10 +39,13 @@ public class AccidentStatementService {
     private final InsuranceAgencyRepository insuranceAgencyRepository;
     private final InsuranceCompanyRepository insuranceCompanyRepository;
     private final PolicyHolderRepository policyHolderRepository;
+    private final VehicleRepository vehicleRepository;
 
     private final AccidentStatementMapper accidentStatementMapper;
     private final MotorMapper motorMapper;
     private final TrailerMapper trailerMapper;
+    private final InsuranceCertificateMapper insuranceCertificateMapper;
+    private final InsuranceAgencyMapper insuranceAgencyMapper;
 
     @Value("${open-cage-api.key}")
     private String openCageApiKey;
@@ -98,56 +99,130 @@ public class AccidentStatementService {
                 }
             }
 
-            //TODO check which fields can be null in policyHolder, InsuranceCertificate, InsuranceAgency and InsuranceCompany
-            //TODO make sure the loop goes over all insurance certificates of a policy holder + assign the vehicles to it and check if they exist
-
-
-            //Each policyHolder has insuranceCertificates, if those insuranceCertificates exist they have to be updated
-            //If they don't exist they have to be created
-            //If the policyholder exists and the insuranceCertificate is assigned to him also, they both have to be updated
-            //If the policyholder exists and the insuranceCertificate is not assigned to him, it has to be assigned
-            //If the policyholder doesn't exist it has to be made and the insuranceCertificate assigned to him
-
-            // Save insurance certificates
             for (PolicyHolder policyHolder : accidentStatement.getPolicyHolders()) {
-                var insuranceCertificate = policyHolder.getInsuranceCertificates().getFirst();
-                if (insuranceCertificate.getGreenCardNumber() == null || insuranceCertificate.getGreenCardNumber().isEmpty() || insuranceCertificate.getPolicyNumber() == null || insuranceCertificate.getPolicyNumber().isEmpty()) {
-                    throw new MissingPropertyException("PolicyHolder's green card number and policy number cannot be null");
+                List<InsuranceCertificate> updatedCertificates = new ArrayList<>();
+                for (InsuranceCertificate insuranceCertificate : policyHolder.getInsuranceCertificates()) {
+                    if (insuranceCertificate.getGreenCardNumber() == null || insuranceCertificate.getGreenCardNumber().isEmpty() || insuranceCertificate.getPolicyNumber() == null || insuranceCertificate.getPolicyNumber().isEmpty()) {
+                        throw new MissingPropertyException("PolicyHolder's green card number and policy number cannot be null");
+                    }
+                    //Check to see if tge certificate exists
+                    var existingCertificate = insuranceCertificateRepository.findByGreenCardNumberAndPolicyNumber(insuranceCertificate.getGreenCardNumber(), insuranceCertificate.getPolicyNumber());
+                    //If it exists
+                    if (existingCertificate.isPresent()) {
+                        //First all the new properties have to be added from the new certificate to the existing certificate
+                        var updatedCertificate = insuranceCertificateMapper.updateFromEntity(insuranceCertificate, existingCertificate.get());
+                        updatedCertificate.setVehicle(insuranceCertificate.getVehicle());
+
+                        //Check all the entities in the certificate if they exist and are updated
+                        //If the insuranceCompany doesn't exist it saves it in the database
+                        // otherwise it gets the one from the database
+                        var insuranceCompany = insuranceCompanyRepository.findByName(updatedCertificate.getInsuranceCompany().getName());
+                        if (insuranceCompany.isPresent()) {
+                            updatedCertificate.setInsuranceCompany(insuranceCompany.get());
+                        } else {
+                            // Save the new InsuranceCompany to the database
+                            updatedCertificate.setInsuranceCompany(insuranceCompanyRepository.save(updatedCertificate.getInsuranceCompany()));
+                        }
+
+                        //If the vehicle doesn't exist it saves it in the database
+                        // otherwise it gets the one from the database and updates it with the new values and saves it
+                        var vehicle = vehicleRepository.findVehicleByLicensePlate(updatedCertificate.getVehicle().getLicensePlate());
+                        if (vehicle.isPresent()) {
+                            if (vehicle.get() instanceof Motor) {
+                                var updatedMotor = motorMapper.updateFromEntity((Motor) insuranceCertificate.getVehicle(), (Motor) vehicle.get());
+                                // No need to save the updated Motor here, it will be saved when the transaction commits
+                                updatedCertificate.setVehicle(updatedMotor);
+                            } else if (vehicle.get() instanceof Trailer) {
+                                var updatedTrailer = trailerMapper.updateFromEntity((Trailer) insuranceCertificate.getVehicle(), (Trailer) vehicle.get());
+                                // No need to save the updated Trailer here, it will be saved when the transaction commits
+                                updatedCertificate.setVehicle(updatedTrailer);
+                            }
+                        } else {
+                            // Save the new Vehicle to the database
+                            updatedCertificate.setVehicle(vehicleRepository.save(insuranceCertificate.getVehicle()));
+                        }
+
+
+                        var insuranceAgency = insuranceAgencyRepository.findByNameAndAddressAndCountry(updatedCertificate.getInsuranceAgency().getName(), updatedCertificate.getInsuranceAgency().getAddress(), updatedCertificate.getInsuranceAgency().getCountry());
+                        if (insuranceAgency.isPresent()) {
+                            var updatedInsuranceAgency = insuranceAgencyMapper.updateFromEntity(updatedCertificate.getInsuranceAgency(), insuranceAgency.get());
+                            // Save the updated InsuranceAgency back to the database
+                            updatedCertificate.setInsuranceAgency(updatedInsuranceAgency);
+                        } else {
+                            // Save the new InsuranceAgency to the database
+                            updatedCertificate.setInsuranceAgency(insuranceAgencyRepository.save(updatedCertificate.getInsuranceAgency()));
+                        }
+
+                        // Save the updated InsuranceCertificate back to the database
+                        // Set the insurance certificate to the policyholder
+                        insuranceCertificate = insuranceCertificateRepository.save(updatedCertificate);
+                        updatedCertificates.add(insuranceCertificate);
+                    }
+                    //If the certificate doesn't exist
+                    else {
+                        //First all the entities inside the certificate have to be checked and saved
+
+                        //If the insuranceCompany doesn't exist it saves it in the database
+                        // otherwise it gets the one from the database
+                        var insuranceCompany = insuranceCompanyRepository.findByName(insuranceCertificate.getInsuranceCompany().getName());
+                        if (insuranceCompany.isPresent()) {
+                            insuranceCertificate.setInsuranceCompany(insuranceCompany.get());
+                        } else {
+                            // Save the new InsuranceCompany to the database
+                            insuranceCertificate.setInsuranceCompany(insuranceCompanyRepository.save(insuranceCertificate.getInsuranceCompany()));
+                        }
+
+                        //If the vehicle doesn't exist it saves it in the database
+                        // otherwise it gets the one from the database and updates it with the new values and saves it
+                        var vehicle = vehicleRepository.findVehicleByLicensePlate(insuranceCertificate.getVehicle().getLicensePlate());
+                        if (vehicle.isPresent()) {
+                            if (vehicle.get() instanceof Motor) {
+                                var updatedMotor = motorMapper.updateFromEntity((Motor) insuranceCertificate.getVehicle(), (Motor) vehicle.get());
+                                // No need to save the updated Motor here, it will be saved when the transaction commits
+                                insuranceCertificate.setVehicle(updatedMotor);
+                            } else if (vehicle.get() instanceof Trailer) {
+                                var updatedTrailer = trailerMapper.updateFromEntity((Trailer) insuranceCertificate.getVehicle(), (Trailer) vehicle.get());
+                                // No need to save the updated Trailer here, it will be saved when the transaction commits
+                                insuranceCertificate.setVehicle(updatedTrailer);
+                            }
+                        } else {
+                            // Save the new Vehicle to the database
+                            insuranceCertificate.setVehicle(vehicleRepository.save(insuranceCertificate.getVehicle()));
+                        }
+
+                        //If the insuranceAgency doesn't exist it saves it in the database
+                        // otherwise it gets the one from the database and updates it with the new values and saves it
+                        var insuranceAgency = insuranceAgencyRepository.findByNameAndAddressAndCountry(insuranceCertificate.getInsuranceAgency().getName(), insuranceCertificate.getInsuranceAgency().getAddress(), insuranceCertificate.getInsuranceAgency().getCountry());
+                        if (insuranceAgency.isPresent()) {
+                            var updatedInsuranceAgency = insuranceAgencyMapper.updateFromEntity(insuranceCertificate.getInsuranceAgency(), insuranceAgency.get());
+                            insuranceCertificate.setInsuranceAgency(updatedInsuranceAgency);
+                        } else {
+                            // Save the new InsuranceAgency to the database
+                            insuranceCertificate.setInsuranceAgency(insuranceAgencyRepository.save(insuranceCertificate.getInsuranceAgency()));
+
+                        }
+
+                        insuranceCertificate = insuranceCertificateRepository.save(insuranceCertificate);
+                        updatedCertificates.add(insuranceCertificate);
+                    }
                 }
-                var existingCertificate = insuranceCertificateRepository.findByGreenCardNumberAndPolicyNumber(insuranceCertificate.getGreenCardNumber(), insuranceCertificate.getPolicyNumber());
-                if (existingCertificate.isEmpty()) {
-                    var existingInsuranceAgency = insuranceAgencyRepository.findByNameAndAddressAndCountry(
-                            insuranceCertificate.getInsuranceAgency().getName(),
-                            insuranceCertificate.getInsuranceAgency().getAddress(),
-                            insuranceCertificate.getInsuranceAgency().getCountry());
 
-                    var existingInsuranceCompany = insuranceCompanyRepository.findByName(
-                            insuranceCertificate.getInsuranceCompany().getName());
-
-                    if (existingInsuranceAgency.isPresent()) {
-                        insuranceCertificate.setInsuranceAgency(existingInsuranceAgency.get());
-                    } else {
-                        insuranceAgencyRepository.save(insuranceCertificate.getInsuranceAgency());
-                    }
-
-                    if (existingInsuranceCompany.isPresent()) {
-                        insuranceCertificate.setInsuranceCompany(existingInsuranceCompany.get());
-                    } else {
-                        insuranceCompanyRepository.save(insuranceCertificate.getInsuranceCompany());
-                    }
-                    insuranceCertificateRepository.save(insuranceCertificate);
-                    policyHolderRepository.save(policyHolder);
-
+                policyHolder.setInsuranceCertificates(updatedCertificates);
+                // Save the PolicyHolder
+                var existingPolicyHolder = policyHolderRepository.findByInsuranceCertificateId(policyHolder.getInsuranceCertificates().getFirst().getId());
+                if (existingPolicyHolder.isEmpty()) {
+                    // If the PolicyHolder doesn't exist, save it
+                    var savedPolicyHolder = policyHolderRepository.save(policyHolder);
+                    var index = accidentStatement.getPolicyHolders().indexOf(policyHolder);
+                    // Set the saved PolicyHolder to the accidentStatement
+                    accidentStatement.getPolicyHolders().set(index, savedPolicyHolder);
                 } else {
-                    var existingPolicyHolder = policyHolderRepository.findByInsuranceCertificateId(existingCertificate.get().getId());
-                    if (existingPolicyHolder.isPresent()) {
-                        var index = accidentStatement.getPolicyHolders().indexOf(policyHolder);
-                        accidentStatement.getPolicyHolders().set(index, existingPolicyHolder.get());
-                    }
+                    // If the PolicyHolder already exists, set it to the accidentStatement
+                    var index = accidentStatement.getPolicyHolders().indexOf(policyHolder);
+                    accidentStatement.getPolicyHolders().set(index, existingPolicyHolder.get());
                 }
-            }
 
-            policyHolderRepository.saveAll(accidentStatement.getPolicyHolders());
+            }
 
             createPdf(accidentStatement);
 
@@ -198,7 +273,8 @@ public class AccidentStatementService {
         }
     }
 
-    private void assignAndMapVehicleDTOsToAccidentStatement(AccidentStatementDTO accidentStatementDTO, AccidentStatement accidentStatement) {
+    private void assignAndMapVehicleDTOsToAccidentStatement(AccidentStatementDTO
+                                                                    accidentStatementDTO, AccidentStatement accidentStatement) {
         List<InsuranceCertificateDTO> policyHolderAInsuranceCertificates = accidentStatementDTO.getPolicyHolders().get(0).getInsuranceCertificates();
         List<InsuranceCertificateDTO> policyHolderBInsuranceCertificates = accidentStatementDTO.getPolicyHolders().get(1).getInsuranceCertificates();
 
@@ -286,11 +362,8 @@ public class AccidentStatementService {
     }
 
 
-
-
-
     private void addVehicleBInformationToDocument(AccidentStatement accidentStatement, Cell document) {
-        Text policyHolderTitle= createBoldResizedText("Policy Holder B", 14);
+        Text policyHolderTitle = createBoldResizedText("Policy Holder B", 14);
         document.add(new Paragraph(policyHolderTitle));
         document.add(new Paragraph("\n"));
 
@@ -302,14 +375,14 @@ public class AccidentStatementService {
         document.add(new Paragraph("Email: " + accidentStatement.getPolicyHolders().getLast().getEmail()));
         document.add(new Paragraph("\n\n\n\n"));
 
-        Text vehicleTitle= createBoldText("Vehicle");
+        Text vehicleTitle = createBoldText("Vehicle");
         document.add(new Paragraph(vehicleTitle));
 
         PolicyHolder policyHolderVehicleB = accidentStatement.getPolicyHolders().getLast();
         List<InsuranceCertificate> insuranceCertificates = policyHolderVehicleB.getInsuranceCertificates();
         for (InsuranceCertificate insuranceCertificate : insuranceCertificates) {
             if (insuranceCertificate.getVehicle() instanceof Motor motor) {
-                Text motorTitle= createBoldText("Motor");
+                Text motorTitle = createBoldText("Motor");
                 document.add(new Paragraph(motorTitle));
 
                 document.add(new Paragraph("Mark, Type: " + motor.getMarkType()));
@@ -317,7 +390,7 @@ public class AccidentStatementService {
                 document.add(new Paragraph("Country of Registration: " + motor.getCountryOfRegistration()));
                 document.add(new Paragraph("\n"));
 
-                Text insuranceCompanyTitle= createBoldText("Insurance Company");
+                Text insuranceCompanyTitle = createBoldText("Insurance Company");
                 document.add(new Paragraph(insuranceCompanyTitle));
 
                 document.add(new Paragraph("Name: " + insuranceCertificate.getInsuranceCompany().getName()));
@@ -327,7 +400,7 @@ public class AccidentStatementService {
                 document.add(new Paragraph("From: " + insuranceCertificate.getAvailabilityDate() + " To: " + insuranceCertificate.getExpirationDate()));
                 document.add(new Paragraph("\n"));
 
-                Text insuranceAgencyTitle= createBoldText("Insurance Agency");
+                Text insuranceAgencyTitle = createBoldText("Insurance Agency");
                 document.add(new Paragraph(insuranceAgencyTitle));
 
                 document.add(new Paragraph("Name: " + insuranceCertificate.getInsuranceAgency().getName()));
@@ -342,14 +415,14 @@ public class AccidentStatementService {
         }
         for (InsuranceCertificate insuranceCertificate : insuranceCertificates) {
             if (insuranceCertificate.getVehicle() instanceof Trailer trailer) {
-                Text trailerTitle= createBoldText("Trailer");
+                Text trailerTitle = createBoldText("Trailer");
                 document.add(new Paragraph(trailerTitle));
 
                 document.add(new Paragraph("Registration Number: " + trailer.getLicensePlate()));
                 document.add(new Paragraph("Country of Registration: " + trailer.getCountryOfRegistration()));
                 document.add(new Paragraph("\n"));
 
-                Text insuranceCompanyTitle= createBoldText("Insurance Company");
+                Text insuranceCompanyTitle = createBoldText("Insurance Company");
                 document.add(new Paragraph(insuranceCompanyTitle));
 
                 document.add(new Paragraph("Name: " + insuranceCertificate.getInsuranceCompany().getName()));
@@ -359,7 +432,7 @@ public class AccidentStatementService {
                 document.add(new Paragraph("From: " + insuranceCertificate.getAvailabilityDate() + " To: " + insuranceCertificate.getExpirationDate()));
                 document.add(new Paragraph("\n"));
 
-                Text insuranceAgencyTitle= createBoldText("Insurance Agency");
+                Text insuranceAgencyTitle = createBoldText("Insurance Agency");
                 document.add(new Paragraph(insuranceAgencyTitle));
 
                 document.add(new Paragraph("Name: " + insuranceCertificate.getInsuranceAgency().getName()));
@@ -373,7 +446,7 @@ public class AccidentStatementService {
                 break;
             }
         }
-        Text driverTitle= createBoldText("Driver");
+        Text driverTitle = createBoldText("Driver");
         document.add(new Paragraph(driverTitle));
 
         document.add(new Paragraph("Name: " + accidentStatement.getDrivers().getLast().getLastName()));
@@ -405,14 +478,14 @@ public class AccidentStatementService {
             ImageData imageData = ImageDataFactory.create(driverBSignature);
             Image image = new Image(imageData);
             image.scaleToFit(150, 150);  // Set the size of the image
-            Text driverBSignatureTitle= createBoldText("Driver B Signature");
+            Text driverBSignatureTitle = createBoldText("Driver B Signature");
             document.add(new Paragraph(driverBSignatureTitle));
             document.add(image);
         }
     }
 
     private void addVehicleAInformationToDocument(AccidentStatement accidentStatement, Cell document) {
-        Text policyHolderTitle= createBoldResizedText("Policy Holder A", 14);
+        Text policyHolderTitle = createBoldResizedText("Policy Holder A", 14);
         document.add(new Paragraph(policyHolderTitle));
         document.add(new Paragraph("\n"));
 
@@ -424,14 +497,14 @@ public class AccidentStatementService {
         document.add(new Paragraph("Email: " + accidentStatement.getPolicyHolders().getFirst().getEmail()));
         document.add(new Paragraph("\n"));
 
-        Text vehicleTitle= createBoldText("Vehicle");
+        Text vehicleTitle = createBoldText("Vehicle");
         document.add(new Paragraph(vehicleTitle));
 
         PolicyHolder policyHolderVehicleA = accidentStatement.getPolicyHolders().getFirst();
         List<InsuranceCertificate> insuranceCertificates = policyHolderVehicleA.getInsuranceCertificates();
         for (InsuranceCertificate insuranceCertificate : insuranceCertificates) {
             if (insuranceCertificate.getVehicle() instanceof Motor motor) {
-                Text motorTitle= createBoldText("Motor");
+                Text motorTitle = createBoldText("Motor");
                 document.add(new Paragraph(motorTitle));
 
                 document.add(new Paragraph("Mark, Type: " + motor.getMarkType()));
@@ -439,7 +512,7 @@ public class AccidentStatementService {
                 document.add(new Paragraph("Country of Registration: " + motor.getCountryOfRegistration()));
                 document.add(new Paragraph("\n"));
 
-                Text insuranceCompanyTitle= createBoldText("Insurance Company");
+                Text insuranceCompanyTitle = createBoldText("Insurance Company");
                 document.add(new Paragraph(insuranceCompanyTitle));
 
                 document.add(new Paragraph("Name: " + insuranceCertificate.getInsuranceCompany().getName()));
@@ -449,7 +522,7 @@ public class AccidentStatementService {
                 document.add(new Paragraph("From: " + insuranceCertificate.getAvailabilityDate() + " To: " + insuranceCertificate.getExpirationDate()));
                 document.add(new Paragraph("\n"));
 
-                Text insuranceAgencyTitle= createBoldText("Insurance Agency");
+                Text insuranceAgencyTitle = createBoldText("Insurance Agency");
                 document.add(new Paragraph(insuranceAgencyTitle));
 
                 document.add(new Paragraph("Name: " + insuranceCertificate.getInsuranceAgency().getName()));
@@ -464,14 +537,14 @@ public class AccidentStatementService {
         }
         for (InsuranceCertificate insuranceCertificate : insuranceCertificates) {
             if (insuranceCertificate.getVehicle() instanceof Trailer trailer) {
-                Text trailerTitle= createBoldText("Trailer");
+                Text trailerTitle = createBoldText("Trailer");
                 document.add(new Paragraph(trailerTitle));
 
                 document.add(new Paragraph("Registration Number: " + trailer.getLicensePlate()));
                 document.add(new Paragraph("Country of Registration: " + trailer.getCountryOfRegistration()));
                 document.add(new Paragraph("\n"));
 
-                Text insuranceCompanyTitle= createBoldText("Insurance Company");
+                Text insuranceCompanyTitle = createBoldText("Insurance Company");
                 document.add(new Paragraph(insuranceCompanyTitle));
 
                 document.add(new Paragraph("Name: " + insuranceCertificate.getInsuranceCompany().getName()));
@@ -481,7 +554,7 @@ public class AccidentStatementService {
                 document.add(new Paragraph("From: " + insuranceCertificate.getAvailabilityDate() + " To: " + insuranceCertificate.getExpirationDate()));
                 document.add(new Paragraph("\n"));
 
-                Text insuranceAgencyTitle= createBoldText("Insurance Agency");
+                Text insuranceAgencyTitle = createBoldText("Insurance Agency");
                 document.add(new Paragraph(insuranceAgencyTitle));
 
                 document.add(new Paragraph("Name: " + insuranceCertificate.getInsuranceAgency().getName()));
@@ -495,7 +568,7 @@ public class AccidentStatementService {
                 break;
             }
         }
-        Text driverTitle= createBoldText("Driver");
+        Text driverTitle = createBoldText("Driver");
         document.add(new Paragraph(driverTitle));
 
         document.add(new Paragraph("Name: " + accidentStatement.getDrivers().getFirst().getLastName()));
@@ -527,14 +600,14 @@ public class AccidentStatementService {
             ImageData imageData = ImageDataFactory.create(driverASignature);
             Image image = new Image(imageData);
             image.scaleToFit(150, 150);  // Set the size of the image
-            Text driverASignatureTitle= createBoldText("Driver A Signature");
+            Text driverASignatureTitle = createBoldText("Driver A Signature");
             document.add(new Paragraph(driverASignatureTitle));
             document.add(image);
         }
     }
 
     private void addGeneralInformationToDocument(AccidentStatement accidentStatement, Cell document) {
-        Text accidentStatementTitle= createBoldResizedText("Accident Statement", 20);
+        Text accidentStatementTitle = createBoldResizedText("Accident Statement", 20);
         document.add(new Paragraph(accidentStatementTitle));
         document.add(new Paragraph("\n"));
 
@@ -543,14 +616,14 @@ public class AccidentStatementService {
         document.add(new Paragraph("Injured: " + accidentStatement.getInjured()));
         document.add(new Paragraph("\n"));
 
-        Text materialDamageTitle= createBoldResizedText("Material Damage", 14);
+        Text materialDamageTitle = createBoldResizedText("Material Damage", 14);
         document.add(new Paragraph(materialDamageTitle));
 
         document.add(new Paragraph("Damage to Other Vehicles: " + (accidentStatement.getDamageToOtherCars() ? "Yes" : "No")));
         document.add(new Paragraph("Damage to Other Objects: " + (accidentStatement.getDamageToObjects() ? "Yes" : "No")));
         document.add(new Paragraph("\n"));
 
-        Text witnessTitle= createBoldResizedText("Witness", 14);
+        Text witnessTitle = createBoldResizedText("Witness", 14);
         document.add(new Paragraph(witnessTitle));
 
         document.add(new Paragraph("Name: " + accidentStatement.getWitness().getName()));
@@ -564,7 +637,7 @@ public class AccidentStatementService {
             Image image = new Image(imageData);
             image.scaleToFit(500, 500);  // Set the size of the image
 
-            Text accidentSketchTitle= createBoldResizedText("Accident Sketch", 14);
+            Text accidentSketchTitle = createBoldResizedText("Accident Sketch", 14);
             document.add(new Paragraph(accidentSketchTitle));
 
             document.add(image);
