@@ -13,5 +13,8 @@ public interface MotorMapper {
     MotorDTO toDTO(Motor motor);
 
     @Mapping(target = "id", ignore = true)
-    Motor updateFromDTO(MotorDTO insuranceAgencyDTO, @MappingTarget Motor insuranceAgency);
+    Motor updateFromDTO(MotorDTO motorDTO, @MappingTarget Motor motor);
+
+    @Mapping(target = "id", ignore = true)
+    Motor updateFromEntity(Motor newMotor, @MappingTarget Motor oldMotor);
 }

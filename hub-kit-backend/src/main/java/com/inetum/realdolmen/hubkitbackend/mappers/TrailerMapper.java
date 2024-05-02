@@ -15,4 +15,7 @@ public interface TrailerMapper {
 
     @Mapping(target = "id", ignore = true)
     Trailer updateFromDTO(TrailerDTO insuranceAgencyDTO, @MappingTarget Trailer insuranceAgency);
+
+    @Mapping(target = "id", ignore = true)
+    Trailer updateFromEntity(Trailer newTrailer, @MappingTarget Trailer oldTrailer);
 }

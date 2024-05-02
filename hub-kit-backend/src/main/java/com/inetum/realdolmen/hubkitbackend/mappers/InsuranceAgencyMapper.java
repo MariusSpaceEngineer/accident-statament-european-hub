@@ -13,6 +13,9 @@ public interface InsuranceAgencyMapper {
     InsuranceAgency updateFromDTO(InsuranceAgencyDTO insuranceAgencyDTO, @MappingTarget InsuranceAgency insuranceAgency);
 
     @Mapping(target = "id", ignore = true)
+    InsuranceAgency updateFromEntity(InsuranceAgency newInsuranceAgency, @MappingTarget InsuranceAgency insuranceAgency);
+
+    @Mapping(target = "id", ignore = true)
     InsuranceAgency fromDTO(InsuranceAgencyDTO insuranceCompanyDTO);
 
 }
