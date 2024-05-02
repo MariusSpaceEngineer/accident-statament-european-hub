@@ -7,13 +7,13 @@ import com.inetum.realdolmen.hubkitbackend.exceptions.MissingPropertyException;
 import com.inetum.realdolmen.hubkitbackend.mappers.*;
 import com.inetum.realdolmen.hubkitbackend.models.*;
 import com.inetum.realdolmen.hubkitbackend.repositories.*;
+import com.inetum.realdolmen.hubkitbackend.utils.MailService;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
-import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.UnitValue;
@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +50,8 @@ public class AccidentStatementService {
     private final TrailerMapper trailerMapper;
     private final InsuranceCertificateMapper insuranceCertificateMapper;
     private final InsuranceAgencyMapper insuranceAgencyMapper;
+
+    private final MailService mailService;
 
     @Value("${open-cage-api.key}")
     private String openCageApiKey;
@@ -104,7 +107,8 @@ public class AccidentStatementService {
 
             processCertificates(accidentStatement);
 
-            createPdf(accidentStatement);
+            var pdf= createPdf(accidentStatement);
+            mailService.sendStatement("stoicamarius9010@gmail.com", "Marius", pdf);
 
             accidentStatementRepository.save(accidentStatement);
 
@@ -153,7 +157,7 @@ public class AccidentStatementService {
 
     private void createNewCertificate(InsuranceCertificate insuranceCertificate, List<InsuranceCertificate> updatedCertificates) {
         updateEntities(insuranceCertificate);
-        var savedCertificate =insuranceCertificateRepository.save(insuranceCertificate);
+        var savedCertificate = insuranceCertificateRepository.save(insuranceCertificate);
         updatedCertificates.add(savedCertificate);
 
     }
@@ -299,13 +303,17 @@ public class AccidentStatementService {
         }
     }
 
-    public void createPdf(AccidentStatement accidentStatement) {
+    public File createPdf(AccidentStatement accidentStatement) {
+        File pdfFile = null;
         try {
             // Get the user's desktop path
             String desktopPath = "C:\\Users\\MSICS85\\OneDrive - RealDolmen\\Desktop\\";
 
+            // Define the output PDF file
+            pdfFile = new File(desktopPath + "AccidentStatement.pdf");
+
             // Initialize PDF writer
-            PdfWriter writer = new PdfWriter(desktopPath + "AccidentStatement.pdf");
+            PdfWriter writer = new PdfWriter(pdfFile);
 
             // Initialize PDF document
             PdfDocument pdf = new PdfDocument(writer);
@@ -342,6 +350,7 @@ public class AccidentStatementService {
         } catch (Exception e) {
             System.out.println("Error occurred while creating PDF: " + e.getMessage());
         }
+        return pdfFile;
     }
 
 
@@ -455,11 +464,11 @@ public class AccidentStatementService {
             document.add(new Paragraph(vehicleBPointOfImpact));
             document.add(image);
         }
-        List<AccidentImage> vehicleBAccidentImages= accidentStatement.getVehicleBAccidentImages();
-        if (vehicleBAccidentImages != null){
+        List<AccidentImage> vehicleBAccidentImages = accidentStatement.getVehicleBAccidentImages();
+        if (vehicleBAccidentImages != null) {
             Text vehicleBAccidentImagesTitle = createBoldText("Vehicle B Accident Images:");
             document.add(new Paragraph(vehicleBAccidentImagesTitle));
-            for (AccidentImage accidentImage : vehicleBAccidentImages){
+            for (AccidentImage accidentImage : vehicleBAccidentImages) {
                 ImageData imageData = ImageDataFactory.create(accidentImage.getData());
                 Image image = new Image(imageData);
                 image.scaleToFit(250, 250);  // Set the size of the image
@@ -470,7 +479,7 @@ public class AccidentStatementService {
 
         Text vehicleBCircumstances = createBoldText("Vehicle B Circumstances:");
         document.add(new Paragraph(vehicleBCircumstances));
-        for (String circumstance: accidentStatement.getVehicleACircumstances()){
+        for (String circumstance : accidentStatement.getVehicleACircumstances()) {
             document.add(new Paragraph("- " + circumstance));
         }
 
@@ -599,11 +608,11 @@ public class AccidentStatementService {
             document.add(image);
         }
 
-        List<AccidentImage> vehicleAAccidentImages= accidentStatement.getVehicleAAccidentImages();
-        if (vehicleAAccidentImages != null){
+        List<AccidentImage> vehicleAAccidentImages = accidentStatement.getVehicleAAccidentImages();
+        if (vehicleAAccidentImages != null) {
             Text vehicleAAccidentImagesTitle = createBoldText("Vehicle A Accident Images:");
             document.add(new Paragraph(vehicleAAccidentImagesTitle));
-            for (AccidentImage accidentImage : vehicleAAccidentImages){
+            for (AccidentImage accidentImage : vehicleAAccidentImages) {
                 ImageData imageData = ImageDataFactory.create(accidentImage.getData());
                 Image image = new Image(imageData);
                 image.scaleToFit(250, 250);  // Set the size of the image
@@ -614,7 +623,7 @@ public class AccidentStatementService {
 
         Text vehicleACircumstances = createBoldText("Vehicle A Circumstances:");
         document.add(new Paragraph(vehicleACircumstances));
-        for (String circumstance: accidentStatement.getVehicleACircumstances()){
+        for (String circumstance : accidentStatement.getVehicleACircumstances()) {
             document.add(new Paragraph("- " + circumstance));
         }
 
