@@ -113,7 +113,7 @@ class VehicleBMiscellaneousFragment : Fragment(), StatementDataHandler {
         pointOfImpactSketchView = view.findViewById(R.id.poi_vehicle_b_sketch)
         pointOfImpactSketchView.viewModel = model
 
-        if (model.pointOfImpactVehicleBSketchShapes.value != null) {
+        if (!model.pointOfImpactVehicleBSketchShapes.value.isNullOrEmpty()) {
             model.pointOfImpactVehicleBSketchShapes.observe(viewLifecycleOwner) { shapes ->
                 // Only add new shapes
                 shapes.forEach { newShape ->
