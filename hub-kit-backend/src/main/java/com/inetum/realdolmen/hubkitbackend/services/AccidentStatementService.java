@@ -13,7 +13,10 @@ import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.element.*;
+import com.itextpdf.layout.properties.HorizontalAlignment;
+import com.itextpdf.layout.properties.UnitValue;
 import com.opencagedata.jopencage.JOpenCageGeocoder;
 import com.opencagedata.jopencage.model.JOpenCageReverseRequest;
 import jakarta.annotation.PostConstruct;
@@ -310,8 +313,12 @@ public class AccidentStatementService {
             // Initialize document
             Document document = new Document(pdf, PageSize.A4);
 
+            // Create a table with two columns of equal width
+            float[] columnWidths = {1f, 1f};  // Relative column widths
             // Create a table with two columns
-            Table table = new Table(2);
+            Table table = new Table(columnWidths);
+
+            table.setWidth(UnitValue.createPercentValue(100));
 
             // Add the general information to the first row, spanning both columns
             Cell generalCell = new Cell(1, 2);
@@ -442,11 +449,31 @@ public class AccidentStatementService {
         if (vehicleBInitialImpactSketch != null) {
             ImageData imageData = ImageDataFactory.create(vehicleBInitialImpactSketch);
             Image image = new Image(imageData);
-            image.scaleToFit(500, 500);  // Set the size of the image
+            image.scaleToFit(250, 250);  // Set the size of the image
+            image.setHorizontalAlignment(HorizontalAlignment.CENTER);
             Text vehicleBPointOfImpact = createBoldText("Vehicle B Point of Impact:");
             document.add(new Paragraph(vehicleBPointOfImpact));
             document.add(image);
         }
+        List<AccidentImage> vehicleBAccidentImages= accidentStatement.getVehicleBAccidentImages();
+        if (vehicleBAccidentImages != null){
+            Text vehicleBAccidentImagesTitle = createBoldText("Vehicle B Accident Images:");
+            document.add(new Paragraph(vehicleBAccidentImagesTitle));
+            for (AccidentImage accidentImage : vehicleBAccidentImages){
+                ImageData imageData = ImageDataFactory.create(accidentImage.getData());
+                Image image = new Image(imageData);
+                image.scaleToFit(250, 250);  // Set the size of the image
+                image.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                document.add(image);
+            }
+        }
+
+        Text vehicleBCircumstances = createBoldText("Vehicle B Circumstances:");
+        document.add(new Paragraph(vehicleBCircumstances));
+        for (String circumstance: accidentStatement.getVehicleACircumstances()){
+            document.add(new Paragraph("- " + circumstance));
+        }
+
         document.add(new Paragraph("Visible Damage Vehicle B: " + accidentStatement.getVehicleBVisibleDamageDescription()));
         document.add(new Paragraph("Remarks Vehicle B: " + accidentStatement.getVehicleBRemark()));
         byte[] driverBSignature = accidentStatement.getVehicleBSignature();
@@ -454,6 +481,7 @@ public class AccidentStatementService {
             ImageData imageData = ImageDataFactory.create(driverBSignature);
             Image image = new Image(imageData);
             image.scaleToFit(150, 150);  // Set the size of the image
+            image.setHorizontalAlignment(HorizontalAlignment.CENTER);
             Text driverBSignatureTitle = createBoldText("Driver B Signature");
             document.add(new Paragraph(driverBSignatureTitle));
             document.add(image);
@@ -564,11 +592,32 @@ public class AccidentStatementService {
         if (vehicleAInitialImpactSketch != null) {
             ImageData imageData = ImageDataFactory.create(vehicleAInitialImpactSketch);
             Image image = new Image(imageData);
-            image.scaleToFit(500, 500);  // Set the size of the image
+            image.scaleToFit(250, 250);  // Set the size of the image
+            image.setHorizontalAlignment(HorizontalAlignment.CENTER);
             Text vehicleAPointOfImpact = createBoldText("Vehicle A Point of Impact:");
             document.add(new Paragraph(vehicleAPointOfImpact));
             document.add(image);
         }
+
+        List<AccidentImage> vehicleAAccidentImages= accidentStatement.getVehicleAAccidentImages();
+        if (vehicleAAccidentImages != null){
+            Text vehicleAAccidentImagesTitle = createBoldText("Vehicle A Accident Images:");
+            document.add(new Paragraph(vehicleAAccidentImagesTitle));
+            for (AccidentImage accidentImage : vehicleAAccidentImages){
+                ImageData imageData = ImageDataFactory.create(accidentImage.getData());
+                Image image = new Image(imageData);
+                image.scaleToFit(250, 250);  // Set the size of the image
+                image.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                document.add(image);
+            }
+        }
+
+        Text vehicleACircumstances = createBoldText("Vehicle A Circumstances:");
+        document.add(new Paragraph(vehicleACircumstances));
+        for (String circumstance: accidentStatement.getVehicleACircumstances()){
+            document.add(new Paragraph("- " + circumstance));
+        }
+
         document.add(new Paragraph("Visible Damage Vehicle A: " + accidentStatement.getVehicleAVisibleDamageDescription()));
         document.add(new Paragraph("Remarks Vehicle A: " + accidentStatement.getVehicleARemark()));
         byte[] driverASignature = accidentStatement.getVehicleASignature();
@@ -576,6 +625,7 @@ public class AccidentStatementService {
             ImageData imageData = ImageDataFactory.create(driverASignature);
             Image image = new Image(imageData);
             image.scaleToFit(150, 150);  // Set the size of the image
+            image.setHorizontalAlignment(HorizontalAlignment.CENTER);
             Text driverASignatureTitle = createBoldText("Driver A Signature");
             document.add(new Paragraph(driverASignatureTitle));
             document.add(image);
@@ -589,7 +639,7 @@ public class AccidentStatementService {
 
         document.add(new Paragraph("Date of Accident: " + accidentStatement.getDate()));
         document.add(new Paragraph("Location: " + accidentStatement.getLocation()));
-        document.add(new Paragraph("Injured: " + accidentStatement.getInjured()));
+        document.add(new Paragraph("Injured: " + (accidentStatement.getInjured() ? "Yes" : "No")));
         document.add(new Paragraph("\n"));
 
         Text materialDamageTitle = createBoldResizedText("Material Damage", 14);
