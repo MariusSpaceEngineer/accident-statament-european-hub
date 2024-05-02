@@ -99,130 +99,7 @@ public class AccidentStatementService {
                 }
             }
 
-            for (PolicyHolder policyHolder : accidentStatement.getPolicyHolders()) {
-                List<InsuranceCertificate> updatedCertificates = new ArrayList<>();
-                for (InsuranceCertificate insuranceCertificate : policyHolder.getInsuranceCertificates()) {
-                    if (insuranceCertificate.getGreenCardNumber() == null || insuranceCertificate.getGreenCardNumber().isEmpty() || insuranceCertificate.getPolicyNumber() == null || insuranceCertificate.getPolicyNumber().isEmpty()) {
-                        throw new MissingPropertyException("PolicyHolder's green card number and policy number cannot be null");
-                    }
-                    //Check to see if tge certificate exists
-                    var existingCertificate = insuranceCertificateRepository.findByGreenCardNumberAndPolicyNumber(insuranceCertificate.getGreenCardNumber(), insuranceCertificate.getPolicyNumber());
-                    //If it exists
-                    if (existingCertificate.isPresent()) {
-                        //First all the new properties have to be added from the new certificate to the existing certificate
-                        var updatedCertificate = insuranceCertificateMapper.updateFromEntity(insuranceCertificate, existingCertificate.get());
-                        updatedCertificate.setVehicle(insuranceCertificate.getVehicle());
-
-                        //Check all the entities in the certificate if they exist and are updated
-                        //If the insuranceCompany doesn't exist it saves it in the database
-                        // otherwise it gets the one from the database
-                        var insuranceCompany = insuranceCompanyRepository.findByName(updatedCertificate.getInsuranceCompany().getName());
-                        if (insuranceCompany.isPresent()) {
-                            updatedCertificate.setInsuranceCompany(insuranceCompany.get());
-                        } else {
-                            // Save the new InsuranceCompany to the database
-                            updatedCertificate.setInsuranceCompany(insuranceCompanyRepository.save(updatedCertificate.getInsuranceCompany()));
-                        }
-
-                        //If the vehicle doesn't exist it saves it in the database
-                        // otherwise it gets the one from the database and updates it with the new values and saves it
-                        var vehicle = vehicleRepository.findVehicleByLicensePlate(updatedCertificate.getVehicle().getLicensePlate());
-                        if (vehicle.isPresent()) {
-                            if (vehicle.get() instanceof Motor) {
-                                var updatedMotor = motorMapper.updateFromEntity((Motor) insuranceCertificate.getVehicle(), (Motor) vehicle.get());
-                                // No need to save the updated Motor here, it will be saved when the transaction commits
-                                updatedCertificate.setVehicle(updatedMotor);
-                            } else if (vehicle.get() instanceof Trailer) {
-                                var updatedTrailer = trailerMapper.updateFromEntity((Trailer) insuranceCertificate.getVehicle(), (Trailer) vehicle.get());
-                                // No need to save the updated Trailer here, it will be saved when the transaction commits
-                                updatedCertificate.setVehicle(updatedTrailer);
-                            }
-                        } else {
-                            // Save the new Vehicle to the database
-                            updatedCertificate.setVehicle(vehicleRepository.save(insuranceCertificate.getVehicle()));
-                        }
-
-
-                        var insuranceAgency = insuranceAgencyRepository.findByNameAndAddressAndCountry(updatedCertificate.getInsuranceAgency().getName(), updatedCertificate.getInsuranceAgency().getAddress(), updatedCertificate.getInsuranceAgency().getCountry());
-                        if (insuranceAgency.isPresent()) {
-                            var updatedInsuranceAgency = insuranceAgencyMapper.updateFromEntity(updatedCertificate.getInsuranceAgency(), insuranceAgency.get());
-                            // Save the updated InsuranceAgency back to the database
-                            updatedCertificate.setInsuranceAgency(updatedInsuranceAgency);
-                        } else {
-                            // Save the new InsuranceAgency to the database
-                            updatedCertificate.setInsuranceAgency(insuranceAgencyRepository.save(updatedCertificate.getInsuranceAgency()));
-                        }
-
-                        // Save the updated InsuranceCertificate back to the database
-                        // Set the insurance certificate to the policyholder
-                        insuranceCertificate = insuranceCertificateRepository.save(updatedCertificate);
-                        updatedCertificates.add(insuranceCertificate);
-                    }
-                    //If the certificate doesn't exist
-                    else {
-                        //First all the entities inside the certificate have to be checked and saved
-
-                        //If the insuranceCompany doesn't exist it saves it in the database
-                        // otherwise it gets the one from the database
-                        var insuranceCompany = insuranceCompanyRepository.findByName(insuranceCertificate.getInsuranceCompany().getName());
-                        if (insuranceCompany.isPresent()) {
-                            insuranceCertificate.setInsuranceCompany(insuranceCompany.get());
-                        } else {
-                            // Save the new InsuranceCompany to the database
-                            insuranceCertificate.setInsuranceCompany(insuranceCompanyRepository.save(insuranceCertificate.getInsuranceCompany()));
-                        }
-
-                        //If the vehicle doesn't exist it saves it in the database
-                        // otherwise it gets the one from the database and updates it with the new values and saves it
-                        var vehicle = vehicleRepository.findVehicleByLicensePlate(insuranceCertificate.getVehicle().getLicensePlate());
-                        if (vehicle.isPresent()) {
-                            if (vehicle.get() instanceof Motor) {
-                                var updatedMotor = motorMapper.updateFromEntity((Motor) insuranceCertificate.getVehicle(), (Motor) vehicle.get());
-                                // No need to save the updated Motor here, it will be saved when the transaction commits
-                                insuranceCertificate.setVehicle(updatedMotor);
-                            } else if (vehicle.get() instanceof Trailer) {
-                                var updatedTrailer = trailerMapper.updateFromEntity((Trailer) insuranceCertificate.getVehicle(), (Trailer) vehicle.get());
-                                // No need to save the updated Trailer here, it will be saved when the transaction commits
-                                insuranceCertificate.setVehicle(updatedTrailer);
-                            }
-                        } else {
-                            // Save the new Vehicle to the database
-                            insuranceCertificate.setVehicle(vehicleRepository.save(insuranceCertificate.getVehicle()));
-                        }
-
-                        //If the insuranceAgency doesn't exist it saves it in the database
-                        // otherwise it gets the one from the database and updates it with the new values and saves it
-                        var insuranceAgency = insuranceAgencyRepository.findByNameAndAddressAndCountry(insuranceCertificate.getInsuranceAgency().getName(), insuranceCertificate.getInsuranceAgency().getAddress(), insuranceCertificate.getInsuranceAgency().getCountry());
-                        if (insuranceAgency.isPresent()) {
-                            var updatedInsuranceAgency = insuranceAgencyMapper.updateFromEntity(insuranceCertificate.getInsuranceAgency(), insuranceAgency.get());
-                            insuranceCertificate.setInsuranceAgency(updatedInsuranceAgency);
-                        } else {
-                            // Save the new InsuranceAgency to the database
-                            insuranceCertificate.setInsuranceAgency(insuranceAgencyRepository.save(insuranceCertificate.getInsuranceAgency()));
-
-                        }
-
-                        insuranceCertificate = insuranceCertificateRepository.save(insuranceCertificate);
-                        updatedCertificates.add(insuranceCertificate);
-                    }
-                }
-
-                policyHolder.setInsuranceCertificates(updatedCertificates);
-                // Save the PolicyHolder
-                var existingPolicyHolder = policyHolderRepository.findByInsuranceCertificateId(policyHolder.getInsuranceCertificates().getFirst().getId());
-                if (existingPolicyHolder.isEmpty()) {
-                    // If the PolicyHolder doesn't exist, save it
-                    var savedPolicyHolder = policyHolderRepository.save(policyHolder);
-                    var index = accidentStatement.getPolicyHolders().indexOf(policyHolder);
-                    // Set the saved PolicyHolder to the accidentStatement
-                    accidentStatement.getPolicyHolders().set(index, savedPolicyHolder);
-                } else {
-                    // If the PolicyHolder already exists, set it to the accidentStatement
-                    var index = accidentStatement.getPolicyHolders().indexOf(policyHolder);
-                    accidentStatement.getPolicyHolders().set(index, existingPolicyHolder.get());
-                }
-
-            }
+            processCertificates(accidentStatement);
 
             createPdf(accidentStatement);
 
@@ -236,6 +113,105 @@ public class AccidentStatementService {
             throw new AccidentStatementCreationFailed("Error occurred while creating Accident Statement");
         }
     }
+
+    public void processCertificates(AccidentStatement accidentStatement) throws MissingPropertyException {
+        for (PolicyHolder policyHolder : accidentStatement.getPolicyHolders()) {
+            List<InsuranceCertificate> updatedCertificates = new ArrayList<>();
+            for (InsuranceCertificate insuranceCertificate : policyHolder.getInsuranceCertificates()) {
+                validateCertificate(insuranceCertificate);
+                if (certificateExists(insuranceCertificate)) {
+                    updateExistingCertificate(insuranceCertificate, updatedCertificates);
+                } else {
+                    createNewCertificate(insuranceCertificate, updatedCertificates);
+                }
+            }
+            savePolicyHolder(policyHolder, accidentStatement, updatedCertificates);
+        }
+    }
+
+    private void validateCertificate(InsuranceCertificate insuranceCertificate) throws MissingPropertyException {
+        if (insuranceCertificate.getGreenCardNumber() == null || insuranceCertificate.getGreenCardNumber().isEmpty() || insuranceCertificate.getPolicyNumber() == null || insuranceCertificate.getPolicyNumber().isEmpty()) {
+            throw new MissingPropertyException("PolicyHolder's green card number and policy number cannot be null");
+        }
+    }
+
+    private boolean certificateExists(InsuranceCertificate insuranceCertificate) {
+        return insuranceCertificateRepository.findByGreenCardNumberAndPolicyNumber(insuranceCertificate.getGreenCardNumber(), insuranceCertificate.getPolicyNumber()).isPresent();
+    }
+
+    private void updateExistingCertificate(InsuranceCertificate insuranceCertificate, List<InsuranceCertificate> updatedCertificates) {
+        var existingCertificate = insuranceCertificateRepository.findByGreenCardNumberAndPolicyNumber(insuranceCertificate.getGreenCardNumber(), insuranceCertificate.getPolicyNumber()).get();
+        var updatedCertificate = insuranceCertificateMapper.updateFromEntity(insuranceCertificate, existingCertificate);
+        updatedCertificate.setVehicle(insuranceCertificate.getVehicle());
+        updateEntities(updatedCertificate);
+        insuranceCertificate = insuranceCertificateRepository.save(updatedCertificate);
+        updatedCertificates.add(insuranceCertificate);
+    }
+
+    private void createNewCertificate(InsuranceCertificate insuranceCertificate, List<InsuranceCertificate> updatedCertificates) {
+        updateEntities(insuranceCertificate);
+        var savedCertificate =insuranceCertificateRepository.save(insuranceCertificate);
+        updatedCertificates.add(savedCertificate);
+
+    }
+
+    private void updateEntities(InsuranceCertificate insuranceCertificate) {
+        updateInsuranceCompany(insuranceCertificate);
+        updateVehicle(insuranceCertificate);
+        updateInsuranceAgency(insuranceCertificate);
+    }
+
+    private void updateInsuranceCompany(InsuranceCertificate insuranceCertificate) {
+        var insuranceCompany = insuranceCompanyRepository.findByName(insuranceCertificate.getInsuranceCompany().getName());
+        if (insuranceCompany.isPresent()) {
+            insuranceCertificate.setInsuranceCompany(insuranceCompany.get());
+        } else {
+            insuranceCertificate.setInsuranceCompany(insuranceCompanyRepository.save(insuranceCertificate.getInsuranceCompany()));
+        }
+    }
+
+    private void updateVehicle(InsuranceCertificate insuranceCertificate) {
+        var vehicle = vehicleRepository.findVehicleByLicensePlate(insuranceCertificate.getVehicle().getLicensePlate());
+        if (vehicle.isPresent()) {
+            if (vehicle.get() instanceof Motor) {
+                var updatedMotor = motorMapper.updateFromEntity((Motor) insuranceCertificate.getVehicle(), (Motor) vehicle.get());
+                insuranceCertificate.setVehicle(updatedMotor);
+            } else if (vehicle.get() instanceof Trailer) {
+                var updatedTrailer = trailerMapper.updateFromEntity((Trailer) insuranceCertificate.getVehicle(), (Trailer) vehicle.get());
+                insuranceCertificate.setVehicle(updatedTrailer);
+            }
+        } else {
+            insuranceCertificate.setVehicle(vehicleRepository.save(insuranceCertificate.getVehicle()));
+        }
+    }
+
+    private void updateInsuranceAgency(InsuranceCertificate insuranceCertificate) {
+        var insuranceAgency = insuranceAgencyRepository.findByNameAndAddressAndCountry(insuranceCertificate.getInsuranceAgency().getName(), insuranceCertificate.getInsuranceAgency().getAddress(), insuranceCertificate.getInsuranceAgency().getCountry());
+        if (insuranceAgency.isPresent()) {
+            var updatedInsuranceAgency = insuranceAgencyMapper.updateFromEntity(insuranceCertificate.getInsuranceAgency(), insuranceAgency.get());
+            insuranceCertificate.setInsuranceAgency(updatedInsuranceAgency);
+        } else {
+            insuranceCertificate.setInsuranceAgency(insuranceAgencyRepository.save(insuranceCertificate.getInsuranceAgency()));
+        }
+    }
+
+    private void savePolicyHolder(PolicyHolder policyHolder, AccidentStatement accidentStatement, List<InsuranceCertificate> updatedCertificates) {
+        policyHolder.setInsuranceCertificates(updatedCertificates);
+        var existingPolicyHolder = policyHolderRepository.findByEmail(policyHolder.getEmail());
+        if (existingPolicyHolder.isEmpty()) {
+            var savedPolicyHolder = policyHolderRepository.save(policyHolder);
+            updateAccidentStatement(accidentStatement, policyHolder, savedPolicyHolder);
+        } else {
+            existingPolicyHolder.get().setInsuranceCertificates(updatedCertificates);
+            updateAccidentStatement(accidentStatement, policyHolder, existingPolicyHolder.get());
+        }
+    }
+
+    private void updateAccidentStatement(AccidentStatement accidentStatement, PolicyHolder oldPolicyHolder, PolicyHolder newPolicyHolder) {
+        var index = accidentStatement.getPolicyHolders().indexOf(oldPolicyHolder);
+        accidentStatement.getPolicyHolders().set(index, newPolicyHolder);
+    }
+
 
     private void saveWitness(AccidentStatement accidentStatement) throws MissingPropertyException {
         var witness = accidentStatement.getWitness();
