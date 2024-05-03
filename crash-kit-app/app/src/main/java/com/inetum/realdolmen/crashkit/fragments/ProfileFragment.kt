@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
@@ -110,8 +111,8 @@ class ProfileFragment : Fragment(), ValidationConfigure {
     private lateinit var personalFormHelper: FormHelper
 
     private var insuranceInformationFields: List<TextView> = listOf()
-    private var insuranceInformationValidationRules: List<Triple<EditText, (String?) -> Boolean, String>> =
-        listOf()
+    private var insuranceInformationValidationRules: MutableList<Triple<EditText, (String?) -> Boolean, String>> =
+        mutableListOf()
     private lateinit var insuranceFormHelper: FormHelper
 
     private lateinit var fieldPersonalFirstName: TextView
@@ -160,6 +161,8 @@ class ProfileFragment : Fragment(), ValidationConfigure {
 
         setupInsuranceInformationCardFields()
         setupInsuranceCardButtonListeners()
+
+        setupInsuranceCardCheckboxListeners()
     }
 
     override fun onDestroyView() {
@@ -248,56 +251,56 @@ class ProfileFragment : Fragment(), ValidationConfigure {
         )
 
         this.insuranceInformationValidationRules =
-            listOf<Triple<EditText, (String?) -> Boolean, String>>(
+            mutableListOf(
                 Triple(
                     binding.etProfileInsuranceCompanyNameValue,
                     { value -> value.isNullOrEmpty() },
-                    personalFormHelper.errors.fieldRequired
+                    insuranceFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfileInsuranceCompanyNameValue,
                     { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                    personalFormHelper.errors.noDigitsAllowed
+                    insuranceFormHelper.errors.noDigitsAllowed
                 ),
                 Triple(
                     binding.etProfileInsuranceCompanyPolicyNumberValue,
                     { value -> value.isNullOrEmpty() },
-                    personalFormHelper.errors.fieldRequired
+                    insuranceFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfileInsuranceCompanyGreenCardNumberValue,
                     { value -> value.isNullOrEmpty() },
-                    personalFormHelper.errors.fieldRequired
+                    insuranceFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfileInsuranceCompanyInsuranceAvailabilityDateValue,
                     { value -> value.isNullOrEmpty() },
-                    personalFormHelper.errors.fieldRequired
+                    insuranceFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfileInsuranceCompanyInsuranceAvailabilityDateValue, { value ->
                         value?.toLocalDate()?.isAfter(LocalDate.now()) ?: false
-                    }, personalFormHelper.errors.futureDate
+                    }, insuranceFormHelper.errors.futureDate
                 ),
                 Triple(
                     binding.etProfileInsuranceCompanyInsuranceExpirationDateValue,
                     { value -> value.isNullOrEmpty() },
-                    personalFormHelper.errors.fieldRequired
+                    insuranceFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfileInsuranceAgencyNameValue,
                     { value -> value.isNullOrEmpty() },
-                    personalFormHelper.errors.fieldRequired
+                    insuranceFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfileInsuranceAgencyNameValue,
                     { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                    personalFormHelper.errors.noDigitsAllowed
+                    insuranceFormHelper.errors.noDigitsAllowed
                 ),
                 Triple(
                     binding.etProfileInsuranceAgencyEmailValue,
                     { value -> value.isNullOrEmpty() },
-                    personalFormHelper.errors.fieldRequired
+                    insuranceFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfileInsuranceAgencyEmailValue,
@@ -306,44 +309,66 @@ class ProfileFragment : Fragment(), ValidationConfigure {
                             value
                         ).matches()
                     },
-                    personalFormHelper.errors.invalidEmail
+                    insuranceFormHelper.errors.invalidEmail
                 ),
                 Triple(
                     binding.etProfileInsuranceAgencyPhoneNumberValue,
                     { value -> value.isNullOrEmpty() },
-                    personalFormHelper.errors.fieldRequired
+                    insuranceFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfileInsuranceAgencyAddressValue,
                     { value -> value.isNullOrEmpty() },
-                    personalFormHelper.errors.fieldRequired
+                    insuranceFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfileInsuranceAgencyCountryValue,
                     { value -> value.isNullOrEmpty() },
-                    personalFormHelper.errors.fieldRequired
+                    insuranceFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfileInsuranceAgencyCountryValue,
                     { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                    personalFormHelper.errors.noDigitsAllowed
+                    insuranceFormHelper.errors.noDigitsAllowed
                 ),
                 Triple(
                     binding.etProfileInsuranceVehicleLicensePlateValue,
                     { value -> value.isNullOrEmpty() },
-                    personalFormHelper.errors.fieldRequired
+                    insuranceFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfileInsuranceVehicleCountryOfRegistrationValue,
                     { value -> value.isNullOrEmpty() },
-                    personalFormHelper.errors.fieldRequired
+                    insuranceFormHelper.errors.fieldRequired
                 ),
                 Triple(
                     binding.etProfileInsuranceVehicleCountryOfRegistrationValue,
                     { value -> !value.isNullOrEmpty() && value.any { it.isDigit() } },
-                    personalFormHelper.errors.noDigitsAllowed
+                    insuranceFormHelper.errors.noDigitsAllowed
                 ),
             )
+    }
+
+    private fun setupInsuranceCardCheckboxListeners() {
+        binding.cbProfileInsuranceAgencyVehicleIsTrailer.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                binding.tilProfileInsuranceAgencyVehicleMarkTypeLabel.visibility = View.GONE
+                binding.etProfileInsuranceAgencyVehicleMarkTypeValue.setText("")
+                // Remove the validation rule unrelated to the trailer
+                insuranceInformationValidationRules.removeAll { it.first == binding.etProfileInsuranceAgencyVehicleMarkTypeValue }
+
+            } else {
+                binding.tilProfileInsuranceAgencyVehicleMarkTypeLabel.visibility = View.VISIBLE
+                // Add the validation rule related to the motor
+                insuranceInformationValidationRules.add(
+                    Triple(
+                        binding.etProfileInsuranceAgencyVehicleMarkTypeValue,
+                        { value -> value.isNullOrEmpty() },
+                        insuranceFormHelper.errors.fieldRequired
+                    )
+                )
+            }
+        }
     }
 
     private fun setupInsuranceInformationCardFields() {
@@ -460,7 +485,8 @@ class ProfileFragment : Fragment(), ValidationConfigure {
         fieldInsuranceAgencyCountry: TextView,
         fieldInsuranceVehicleMarkType: TextView,
         fieldInsuranceVehicleLicensePlate: TextView,
-        fieldInsuranceVehicleCountryOfRegistration: TextView
+        fieldInsuranceVehicleCountryOfRegistration: TextView,
+        fieldMaterialDamageCovered: CheckBox,
     ) {
         val insuranceAgency = InsuranceAgency(
             selectedCertificate?.insuranceAgency?.id,
@@ -497,7 +523,7 @@ class ProfileFragment : Fragment(), ValidationConfigure {
             fieldGreenCardNumber.text.toString(),
             fieldInsuranceCertAvailabilityDate.text.toString().toLocalDate()?.toIsoString(),
             fieldInsuranceCertExpirationDate.text.toString().toLocalDate()?.toIsoString(),
-            null,
+            fieldMaterialDamageCovered.isChecked,
             insuranceAgency,
             insuranceCompany,
             vehicle
@@ -696,7 +722,7 @@ class ProfileFragment : Fragment(), ValidationConfigure {
                     if (which == insuranceCertificateStrings.lastIndex) {
                         selectedCertificate = null
 
-                        binding.tilProfileInsuranceAgencyVehicleMarkTypeLabel.visibility=View.VISIBLE
+                        binding.cbProfileInsuranceAgencyVehicleIsTrailer.isChecked = false
 
                         binding.etProfileInsuranceCompanyPolicyNumberValue.setText("")
                         binding.etProfileInsuranceCompanyGreenCardNumberValue.setText("")
@@ -711,6 +737,7 @@ class ProfileFragment : Fragment(), ValidationConfigure {
                         binding.etProfileInsuranceAgencyVehicleMarkTypeValue.setText("")
                         binding.etProfileInsuranceVehicleLicensePlateValue.setText("")
                         binding.etProfileInsuranceVehicleCountryOfRegistrationValue.setText("")
+                        binding.cbProfileInsuranceVehicleMaterialDamageCovered.isChecked = false
 
                     } else {
                         selectedCertificate = insuranceCertificates?.get(which)
@@ -728,6 +755,8 @@ class ProfileFragment : Fragment(), ValidationConfigure {
                         binding.etProfileInsuranceCompanyInsuranceExpirationDateValue.setText(
                             selectedCertificate?.expirationDate?.toLocalDate()?.to24Format() ?: ""
                         )
+                        binding.cbProfileInsuranceVehicleMaterialDamageCovered.isChecked =
+                            selectedCertificate?.materialDamageCovered ?: false
                         if (selectedCertificate?.insuranceCompany != null) {
                             binding.etProfileInsuranceCompanyNameValue.setText(
                                 selectedCertificate?.insuranceCompany?.name ?: ""
@@ -751,15 +780,17 @@ class ProfileFragment : Fragment(), ValidationConfigure {
                             )
                         }
                         if (selectedCertificate?.vehicle != null) {
-                            if (selectedCertificate?.vehicle is TrailerDTO){
+                            if (selectedCertificate?.vehicle is TrailerDTO) {
+                                Log.i("Selected certificate", "Is trailer")
                                 binding.etProfileInsuranceAgencyVehicleMarkTypeValue.setText("")
-                                binding.tilProfileInsuranceAgencyVehicleMarkTypeLabel.visibility=View.GONE
+                                binding.cbProfileInsuranceAgencyVehicleIsTrailer.isChecked = true
                             }
                             if (selectedCertificate?.vehicle is MotorDTO) {
+                                Log.i("Selected certificate", "Is motor")
                                 binding.etProfileInsuranceAgencyVehicleMarkTypeValue.setText(
                                     (selectedCertificate?.vehicle as MotorDTO).markType
                                 )
-                                binding.tilProfileInsuranceAgencyVehicleMarkTypeLabel.visibility=View.VISIBLE
+                                binding.cbProfileInsuranceAgencyVehicleIsTrailer.isChecked = false
                             }
                             binding.etProfileInsuranceVehicleLicensePlateValue.setText(
                                 selectedCertificate?.vehicle?.licensePlate ?: ""
@@ -823,7 +854,8 @@ class ProfileFragment : Fragment(), ValidationConfigure {
                     fieldInsuranceAgencyCountry,
                     fieldInsuranceVehicleMarkType,
                     fieldInsuranceVehicleLicensePlate,
-                    fieldInsuranceVehicleCountryOfRegistration
+                    fieldInsuranceVehicleCountryOfRegistration,
+                    binding.cbProfileInsuranceVehicleMaterialDamageCovered
                 )
             }
         }
