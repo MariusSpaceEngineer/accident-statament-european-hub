@@ -530,6 +530,14 @@
                             android:textSize="25sp"
                             android:textStyle="bold" />
 
+                        <CheckBox
+                            android:id="@+id/cb_profile_insurance_agency_vehicle_is_trailer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:text="@string/is_trailer" />
+
+
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/til_profile_insurance_agency_vehicle_mark_type_label"
                             android:layout_width="match_parent"
@@ -537,7 +545,6 @@
                             android:layout_marginBottom="16dp"
                             android:enabled="false"
                             android:hint="@string/label_mark_type"
-                            android:visibility="gone"
                             app:boxBackgroundColor="@color/input_field_background"
                             app:boxStrokeColor="@color/primary800">
 
@@ -584,6 +591,13 @@
                                 android:textColor="@color/input_hint" />
 
                         </com.google.android.material.textfield.TextInputLayout>
+
+                        <CheckBox
+                            android:id="@+id/cb_profile_insurance_vehicle_material_damage_covered"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/material_damage_covered_checkbox" />
+
 
                         <Button
                             android:id="@+id/btn_profile_insurance_card_update"
