@@ -20,6 +20,7 @@ public class InsuranceCertificate {
     private String greenCardNumber;
     private LocalDate availabilityDate;
     private LocalDate expirationDate;
+    private Boolean materialDamageCovered;
     @ManyToOne
     @JoinColumn(name = "insurance_agency_id")
     private InsuranceAgency insuranceAgency;

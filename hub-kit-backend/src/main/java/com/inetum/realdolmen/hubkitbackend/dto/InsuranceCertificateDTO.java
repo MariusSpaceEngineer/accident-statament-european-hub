@@ -16,6 +16,7 @@ public class InsuranceCertificateDTO {
     private String greenCardNumber;
     private LocalDate availabilityDate;
     private LocalDate expirationDate;
+    private Boolean materialDamageCovered;
     private InsuranceAgencyDTO insuranceAgency;
     private InsuranceCompanyDTO insuranceCompany;
     @JsonDeserialize(using = VehicleDTODeserializer.class)
