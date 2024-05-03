@@ -486,7 +486,7 @@ class ProfileFragment : Fragment(), ValidationConfigure {
             val markType = fieldInsuranceVehicleMarkType.text.toString()
             vehicle = MotorDTO(vehicleId, licensePlate, countryOfRegistration, markType = markType)
         } else {
-            vehicle = TrailerDTO(vehicleId, licensePlate, countryOfRegistration, hasRegistration = true)
+            vehicle = TrailerDTO(vehicleId, licensePlate, countryOfRegistration, true, null)
         }
 
 

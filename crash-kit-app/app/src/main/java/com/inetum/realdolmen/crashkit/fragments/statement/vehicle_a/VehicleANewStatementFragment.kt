@@ -555,7 +555,6 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
 
                         is TrailerDTO -> {
                             // Update fields specific to TrailerDTO
-                            Log.i("Trailer", selectedVehicle.licensePlate)
                             bindTrailerInformationToUI(selectedVehicle)
                             bindTrailerInsuranceInformationToViewModel(selectedInsurance)
                         }
