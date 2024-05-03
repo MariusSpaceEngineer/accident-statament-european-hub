@@ -551,12 +551,18 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, Validatio
                             // Update fields specific to MotorDTO
                             bindMotorInformationToUI(selectedVehicle)
                             bindMotorInsuranceInformationToViewModel(selectedInsurance)
+                            model.statementData.value?.apply {
+                                vehicleAMaterialDamageCovered = selectedInsurance.materialDamageCovered ?: false
+                            }
                         }
 
                         is TrailerDTO -> {
                             // Update fields specific to TrailerDTO
                             bindTrailerInformationToUI(selectedVehicle)
                             bindTrailerInsuranceInformationToViewModel(selectedInsurance)
+                            model.statementData.value?.apply {
+                                vehicleATrailerMaterialDamageCovered = selectedInsurance.materialDamageCovered ?: false
+                            }
                         }
 
                         null -> dialog.dismiss()

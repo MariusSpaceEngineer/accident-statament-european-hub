@@ -28,6 +28,7 @@ data class InsuranceCertificate(
     val greenCardNumber: String?,
     val availabilityDate: String?,
     val expirationDate: String?,
+    val materialDamageCovered: Boolean?,
     val insuranceAgency: InsuranceAgency?,
     val insuranceCompany: InsuranceCompany?,
     val vehicle: Vehicle?

@@ -534,6 +534,7 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, Validatio
                     response.insuranceCertificate.insuranceAgency?.phoneNumber ?: ""
                 this.vehicleBInsuranceAgencyEmail =
                     response.insuranceCertificate.insuranceAgency?.email ?: ""
+                this.vehicleBMaterialDamageCovered = response.insuranceCertificate.materialDamageCovered ?: false
 
             }
         } else if(vehicle is TrailerDTO){
@@ -558,6 +559,7 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, Validatio
                     response.insuranceCertificate.insuranceAgency?.phoneNumber ?: ""
                 this.vehicleBTrailerInsuranceAgencyEmail =
                     response.insuranceCertificate.insuranceAgency?.email ?: ""
+                this.vehicleBTrailerMaterialDamageCovered = response.insuranceCertificate.materialDamageCovered ?: false
 
             }
         }

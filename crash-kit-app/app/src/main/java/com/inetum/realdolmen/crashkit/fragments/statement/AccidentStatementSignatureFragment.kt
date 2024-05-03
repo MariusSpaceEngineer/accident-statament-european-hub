@@ -364,6 +364,7 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
                 statementData.vehicleAInsuranceCompanyGreenCardNumber,
                 statementData.vehicleAInsuranceCertificateAvailabilityDate?.toIsoString(),
                 statementData.vehicleAInsuranceCertificateExpirationDate?.toIsoString(),
+                statementData.vehicleAMaterialDamageCovered,
                 insuranceAgencyVehicleA,
                 insuranceCompanyVehicleA,
                 motors.find { motorDTO ->
@@ -395,6 +396,7 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
                 statementData.vehicleATrailerInsuranceCompanyGreenCardNumber,
                 statementData.vehicleATrailerInsuranceCertificateAvailabilityDate?.toIsoString(),
                 statementData.vehicleATrailerInsuranceCertificateExpirationDate?.toIsoString(),
+                statementData.vehicleATrailerMaterialDamageCovered,
                 insuranceAgencyVehicleA,
                 insuranceCompanyVehicleA,
                 trailers.find { trailerDTO ->
@@ -429,6 +431,7 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
                 statementData.vehicleBInsuranceCompanyGreenCardNumber,
                 statementData.vehicleBInsuranceCertificateAvailabilityDate?.toIsoString(),
                 statementData.vehicleBInsuranceCertificateExpirationDate?.toIsoString(),
+                statementData.vehicleBMaterialDamageCovered,
                 insuranceAgencyVehicleB,
                 insuranceCompanyVehicleB,
                 motors.find { motorDTO ->
@@ -460,6 +463,7 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
                 statementData.vehicleBTrailerInsuranceCompanyGreenCardNumber,
                 statementData.vehicleBTrailerInsuranceCertificateAvailabilityDate?.toIsoString(),
                 statementData.vehicleBTrailerInsuranceCertificateExpirationDate?.toIsoString(),
+                statementData.vehicleBTrailerMaterialDamageCovered,
                 insuranceAgencyVehicleB,
                 insuranceCompanyVehicleB,
                 trailers.find { trailerDTO ->

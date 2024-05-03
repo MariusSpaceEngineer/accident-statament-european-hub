@@ -489,6 +489,7 @@ class ProfileFragment : Fragment(), ValidationConfigure {
             vehicle = TrailerDTO(vehicleId, licensePlate, countryOfRegistration, true, null)
         }
 
+        //TODO ask for material damage
 
         val insuranceCertificateData = InsuranceCertificate(
             selectedCertificate?.id,
@@ -496,6 +497,7 @@ class ProfileFragment : Fragment(), ValidationConfigure {
             fieldGreenCardNumber.text.toString(),
             fieldInsuranceCertAvailabilityDate.text.toString().toLocalDate()?.toIsoString(),
             fieldInsuranceCertExpirationDate.text.toString().toLocalDate()?.toIsoString(),
+            null,
             insuranceAgency,
             insuranceCompany,
             vehicle
