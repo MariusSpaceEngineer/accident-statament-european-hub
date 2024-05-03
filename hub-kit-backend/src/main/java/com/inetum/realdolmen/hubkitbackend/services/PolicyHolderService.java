@@ -1,6 +1,7 @@
 package com.inetum.realdolmen.hubkitbackend.services;
 
 import com.inetum.realdolmen.hubkitbackend.dto.*;
+import com.inetum.realdolmen.hubkitbackend.exceptions.VehicleMismatchException;
 import com.inetum.realdolmen.hubkitbackend.mappers.*;
 import com.inetum.realdolmen.hubkitbackend.models.*;
 import com.inetum.realdolmen.hubkitbackend.repositories.*;
@@ -169,7 +170,7 @@ public class PolicyHolderService {
         }
     }
 
-    private Vehicle getOrCreateVehicle(InsuranceCertificateDTO insuranceCertificateDTO) {
+    private Vehicle getOrCreateVehicle(InsuranceCertificateDTO insuranceCertificateDTO) throws Exception {
         Optional<Vehicle> existingVehicle = vehicleRepository.findVehicleByLicensePlate(insuranceCertificateDTO.getVehicle().getLicensePlate());
         if (existingVehicle.isPresent()) {
             Vehicle vehicle = existingVehicle.get();
@@ -178,12 +179,16 @@ public class PolicyHolderService {
                     Motor motor = (Motor) vehicle;
                     var updateMotor = motorMapper.updateFromDTO(motorDTO, motor);
                     return vehicleRepository.save(updateMotor);
+                } else {
+                    throw new VehicleMismatchException("Vehicle type mismatch: Found a Motor, but DTO contains a different type");
                 }
             } else if (vehicle instanceof Trailer) {
                 if (insuranceCertificateDTO.getVehicle() instanceof TrailerDTO trailerDTO) {
                     Trailer trailer = (Trailer) vehicle;
-                    var upadateTrailer = trailerMapper.updateFromDTO(trailerDTO, trailer);
-                    return vehicleRepository.save(upadateTrailer);
+                    var updateTrailer = trailerMapper.updateFromDTO(trailerDTO, trailer);
+                    return vehicleRepository.save(updateTrailer);
+                } else {
+                    throw new VehicleMismatchException("Vehicle type mismatch: Found a Trailer, but DTO contains a different type");
                 }
             }
         } else {
@@ -198,7 +203,6 @@ public class PolicyHolderService {
         }
         return null;
     }
-
 
     private void updateInsuranceCertificateOfPolicyHolder(InsuranceCertificateDTO insuranceCertificateDTO, PolicyHolder existingPolicyHolder, InsuranceCompany savedInsuranceCompany, InsuranceAgency savedInsuranceAgency, Vehicle savedVehicle) {
         var insuranceCertificates = existingPolicyHolder.getInsuranceCertificates();
