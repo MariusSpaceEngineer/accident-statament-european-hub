@@ -13,4 +13,5 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class TrailerDTO extends VehicleDTO {
     private Boolean hasRegistration;
+    private String ofVehicle;
 }

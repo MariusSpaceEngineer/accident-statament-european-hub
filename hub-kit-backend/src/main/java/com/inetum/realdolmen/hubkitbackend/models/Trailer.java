@@ -13,5 +13,5 @@ import lombok.experimental.SuperBuilder;
 @DiscriminatorValue("TRAILER")
 public class Trailer extends Vehicle {
     private Boolean hasRegistration;
-
+    private String ofVehicle;
 }
