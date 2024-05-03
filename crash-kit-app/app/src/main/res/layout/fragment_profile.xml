@@ -535,7 +535,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
-                            android:text="@string/is_trailer" />
+                            android:text="@string/is_trailer_checkbox" />
 
 
                         <com.google.android.material.textfield.TextInputLayout

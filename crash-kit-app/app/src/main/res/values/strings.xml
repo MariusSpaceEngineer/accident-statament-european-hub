@@ -61,6 +61,7 @@
     <string name="label_other_cars">Other Cars</string>
     <string name="label_injured">Injured</string>
     <string name="label_pick_date">Pick Date</string>
+    <string name="label_driving_license_category">Driving License Category</string>
 
     <!--    Buttons-->
     <string name="main_register_button">Register</string>
@@ -142,6 +143,7 @@
     <string name="encroaching_lane_reserved_circulation_opposite_direction_checkbox">Encroaching on a lane reserved for circulation in the opposite direction</string>
     <string name="coming_the_right_road_junction_checkbox">Coming from the right (at road junction)</string>
     <string name="not_observed_right_way_sign_red_light_checkbox">Had not observed a right of way sign or a red light</string>
+    <string name="is_trailer_checkbox">Is Trailer</string>
 
     <string name="name">Name</string>
     <string name="company_name">Company Name:</string>
@@ -152,5 +154,5 @@
     <string name="ok">OK</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="driving_license_category">Driving License Category</string>
+
 </resources>
