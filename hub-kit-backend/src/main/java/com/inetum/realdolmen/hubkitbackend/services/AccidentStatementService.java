@@ -75,40 +75,12 @@ public class AccidentStatementService {
 
             saveWitness(accidentStatement);
 
-            //Save motors
-            if (accidentStatement.getMotors() != null) {
-                for (Motor motor : accidentStatement.getMotors()) {
-                    var existingMotor = motorRepository.findByLicensePlate(motor.getLicensePlate());
-                    if (existingMotor.isPresent()) {
-                        var index = accidentStatement.getMotors().indexOf(motor);
-                        accidentStatement.getMotors().set(index, existingMotor.get());
-                    } else {
-                        motorRepository.save(motor);
-                    }
-                }
-            }
-
-            //Save trailers
-            if (accidentStatement.getTrailers() != null) {
-                for (Trailer trailer : accidentStatement.getTrailers()) {
-                    if (trailer.getHasRegistration()) {
-                        var existingTrailer = trailerRepository.findByLicensePlate(trailer.getLicensePlate());
-                        if (existingTrailer.isPresent()) {
-                            var index = accidentStatement.getTrailers().indexOf(trailer);
-                            accidentStatement.getTrailers().set(index, existingTrailer.get());
-                        } else {
-                            trailerRepository.save(trailer);
-                        }
-                    } else {
-                        trailerRepository.save(trailer);
-                    }
-                }
-            }
+            saveUnregisteredTrailers(accidentStatement);
 
             processCertificates(accidentStatement);
 
-            var pdf= createPdf(accidentStatement);
-            mailService.sendStatement("stoicamarius9010@gmail.com", "Marius", pdf);
+            var pdf = createPdf(accidentStatement);
+            //mailService.sendStatement(pdf, accidentStatement.getPolicyHolders().getFirst().getEmail(), accidentStatement.getPolicyHolders().getLast().getEmail());
 
             accidentStatementRepository.save(accidentStatement);
 
@@ -118,6 +90,16 @@ public class AccidentStatementService {
 
             log.error("Error creating Accident Statement:", e);
             throw new AccidentStatementCreationFailed("Error occurred while creating Accident Statement");
+        }
+    }
+
+    private void saveUnregisteredTrailers(AccidentStatement accidentStatement) {
+        if (accidentStatement.getUnregisteredTrailers() != null) {
+            for (Trailer trailer: accidentStatement.getUnregisteredTrailers()){
+                if (!trailer.getHasRegistration()){
+                    trailerRepository.save(trailer);
+                }
+            }
         }
     }
 
