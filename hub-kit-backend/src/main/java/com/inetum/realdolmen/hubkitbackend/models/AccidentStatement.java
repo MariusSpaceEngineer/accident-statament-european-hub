@@ -31,11 +31,9 @@ public class AccidentStatement {
     @ManyToOne
     private Witness witness;
     @ManyToMany
-    private List<Motor> motors;
-    @ManyToMany
     private List<PolicyHolder> policyHolders;
     @ManyToMany
-    private List<Trailer> trailers;
+    private List<Trailer> unregisteredTrailers;
     @ElementCollection
     private List<String> vehicleACircumstances;
     @Lob

@@ -31,8 +31,7 @@ public class AccidentStatementDTO {
     private WitnessDTO witness;
     @NotNull
     private List<PolicyHolderDTO> policyHolders;
-    private List<MotorDTO> motors;
-    private List<TrailerDTO> trailers;
+    private List<TrailerDTO> unregisteredTrailers;
     private List<String> vehicleACircumstances;
     private byte[] vehicleAInitialImpactSketch;
     private String vehicleAVisibleDamageDescription;
