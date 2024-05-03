@@ -287,6 +287,8 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
             null
         }
 
+        //The motors and trailers lists are later added
+        // to their insurance certificate
         val motors = mutableListOf<MotorDTO>()
         if (statementData?.vehicleAMotorAbsent == false) {
             val motorA = MotorDTO(
@@ -314,7 +316,8 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
                 null,
                 statementData.vehicleATrailerLicensePlate,
                 statementData.vehicleATrailerCountryOfRegistration,
-                statementData.vehicleATrailerHasRegistration
+                statementData.vehicleATrailerHasRegistration,
+                null
             )
             trailers.add(trailerA)
         }
@@ -323,9 +326,20 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
                 null,
                 statementData.vehicleBTrailerLicensePlate,
                 statementData.vehicleBTrailerCountryOfRegistration,
-                statementData.vehicleBTrailerHasRegistration
+                statementData.vehicleBTrailerHasRegistration,
+                null
             )
             trailers.add(trailerB)
+        }
+
+        val unregisteredTrailers = mutableListOf<TrailerDTO?>()
+        if (statementData?.vehicleATrailerPresent == true && !statementData.vehicleATrailerHasRegistration) {
+            val trailerA = TrailerDTO(null, null, null, false, "Vehicle A")
+            unregisteredTrailers.add(trailerA)
+        }
+        if (statementData?.vehicleBTrailerPresent == true && !statementData.vehicleBTrailerHasRegistration) {
+            val trailerB = TrailerDTO(null, null, null, false, "Vehicle B")
+            unregisteredTrailers.add(trailerB)
         }
 
         //InsuranceCertificates vehicle A
@@ -362,7 +376,7 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
             vehicleAInsuranceCertificates.add(insuranceCertificateVehicleA)
         }
 
-        if (statementData?.vehicleATrailerPresent == true) {
+        if (statementData?.vehicleATrailerPresent == true && statementData.vehicleATrailerHasRegistration) {
             val insuranceCompanyVehicleA =
                 InsuranceCompany(null, statementData.vehicleATrailerInsuranceCompanyName)
 
@@ -427,7 +441,7 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
             vehicleBInsuranceCertificates.add(insuranceCertificateVehicleB)
         }
 
-        if (statementData?.vehicleBTrailerPresent == true) {
+        if (statementData?.vehicleBTrailerPresent == true && statementData.vehicleBTrailerHasRegistration) {
             val insuranceCompanyVehicleB =
                 InsuranceCompany(null, statementData.vehicleBTrailerInsuranceCompanyName)
 
@@ -516,8 +530,7 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
             drivers,
             witness,
             policyHolders,
-            motors,
-            trailers,
+            unregisteredTrailers,
             model.vehicleACircumstances.value?.map
             { it.text.toString() },
             statementData?.vehicleAPointOfImpactSketch?.toByteArray(),
