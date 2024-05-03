@@ -6,8 +6,7 @@ import com.inetum.realdolmen.hubkitbackend.models.AccidentStatement;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {AccidentImage.class, DriverMapper.class, WitnessMapper.class,
-        MotorMapper.class, PolicyHolderMapper.class, TrailerMapper.class})
+@Mapper(componentModel = "spring", uses = {AccidentImage.class, DriverMapper.class, WitnessMapper.class, PolicyHolderMapper.class, TrailerMapper.class})
 public interface AccidentStatementMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(source = "vehicleAAccidentImages", target = "vehicleAAccidentImages")
@@ -23,6 +22,7 @@ public interface AccidentStatementMapper {
     @Mapping(source = "vehicleBRemark", target = "vehicleBRemark")
     @Mapping(source = "vehicleASignature", target = "vehicleASignature")
     @Mapping(source = "vehicleBSignature", target = "vehicleBSignature")
+    @Mapping(source = "unregisteredTrailers", target = "unregisteredTrailers")
     AccidentStatement fromDTO(AccidentStatementDTO accidentStatementDTO);
 
     AccidentStatementDTO toDTO(AccidentStatement accidentStatement);

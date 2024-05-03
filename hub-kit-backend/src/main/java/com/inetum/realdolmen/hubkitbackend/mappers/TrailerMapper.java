@@ -9,6 +9,8 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface TrailerMapper {
+    @Mapping(source = "hasRegistration", target = "hasRegistration")
+    @Mapping(source = "ofVehicle", target = "ofVehicle")
     Trailer fromDTO(TrailerDTO trailerDTO);
 
     TrailerDTO toDTO(Trailer trailer);
