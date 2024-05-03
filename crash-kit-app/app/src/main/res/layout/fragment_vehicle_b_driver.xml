@@ -219,6 +219,13 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="12dp"
+                    android:text="@string/driving_license_category"/>
+
                 <Spinner
                     android:id="@+id/spin_statement_vehicle_b_driver_category"
                     android:layout_width="match_parent"
