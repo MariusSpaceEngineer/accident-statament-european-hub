@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = {AccidentImage.class, DriverMapper.class, WitnessMapper.class, PolicyHolderMapper.class, TrailerMapper.class})
 public interface AccidentStatementMapper {
     @Mapping(target = "id", ignore = true)
+    @Mapping(source = "date", target = "date")
     @Mapping(source = "vehicleAAccidentImages", target = "vehicleAAccidentImages")
     @Mapping(source = "vehicleBAccidentImages", target = "vehicleBAccidentImages")
     @Mapping(source = "sketchOfAccident", target = "sketchOfAccident")
