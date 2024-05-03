@@ -31,7 +31,8 @@ class VehicleAdapter : JsonDeserializer<Vehicle>, JsonSerializer<Vehicle> {
                 licensePlate,
                 countryOfRegistration,
                 hasRegistration =
-                jsonObject.get("hasRegistration").asBoolean
+                jsonObject.get("hasRegistration").asBoolean,
+                null
             )
 
             jsonObject.has("markType") -> MotorDTO(

@@ -20,12 +20,18 @@ public class VehicleDTODeserializer extends StdDeserializer<VehicleDTO> {
     public VehicleDTO deserialize(JsonParser jp, DeserializationContext ctxt)
             throws IOException {
         JsonNode node = jp.getCodec().readTree(jp);
-        String licensePlate = node.get("licensePlate").asText();
-        String countryOfRegistration = node.get("countryOfRegistration").asText();
 
+        String licensePlate = null;
+        if (node.has("licensePlate")) {
+            licensePlate = node.get("licensePlate").asText();
+        }
+        String countryOfRegistration = null;
+        if (node.has("countryOfRegistration")) {
+            countryOfRegistration = node.get("countryOfRegistration").asText();
+        }
         Integer id = null;
-        if (node.has("id")){
-             id = node.get("id").asInt();
+        if (node.has("id")) {
+            id = node.get("id").asInt();
         }
 
         if (node.has("markType")) {
@@ -38,12 +44,16 @@ public class VehicleDTODeserializer extends StdDeserializer<VehicleDTO> {
                     .build();
         } else if (node.has("hasRegistration")) {
             Boolean hasRegistration = node.get("hasRegistration").asBoolean();
-            return TrailerDTO.builder()
-                    .id(id)
+            TrailerDTO trailerDTO = TrailerDTO.builder().id(id)
                     .licensePlate(licensePlate)
                     .countryOfRegistration(countryOfRegistration)
-                    .hasRegistration(hasRegistration)
-                    .build();
+                    .hasRegistration(hasRegistration).build();
+            if (node.has("ofVehicle")) {
+                String ofVehicle = node.get("ofVehicle").asText();
+                trailerDTO.setOfVehicle(ofVehicle);
+            }
+
+            return trailerDTO;
         }
         throw new IllegalArgumentException("Unsupported VehicleDTO type");
     }
