@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.antlr.v4.runtime.misc.NotNull;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -14,7 +14,7 @@ import java.util.List;
 public class AccidentStatementDTO {
     private Integer id;
     @NotNull
-    private LocalDate date;
+    private LocalDateTime date;
     @NotNull
     private String location;
     @NotNull
