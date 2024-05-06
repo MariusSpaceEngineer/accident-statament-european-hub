@@ -4,6 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.inetum.realdolmen.hubkitbackend.dto.*;
+import com.inetum.realdolmen.hubkitbackend.models.AccidentStatement;
+import com.inetum.realdolmen.hubkitbackend.services.AccidentStatementService;
+import com.inetum.realdolmen.hubkitbackend.utils.MailService;
+import com.mailjet.client.errors.MailjetException;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import jakarta.transaction.Transactional;
@@ -11,16 +15,23 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -34,15 +45,18 @@ public class AccidentStatementIntegrationTest {
 
     private DriverDTO driverA;
     private MotorDTO motorA;
-    private TrailerDTO trailerA;
+    private TrailerDTO registeredTrailerA;
     private PolicyHolderDTO policyHolderVehicleA;
     private List<AccidentImageDTO> accidentImagesVehicleA;
 
     private DriverDTO driverB;
     private MotorDTO motorB;
-    private TrailerDTO trailerB;
+    private TrailerDTO unregisteredTrailerB;
     private PolicyHolderDTO policyHolderVehicleB;
     private List<AccidentImageDTO> accidentImagesVehicleB;
+
+    @MockBean
+    private MailService mailService;
 
 
     @BeforeAll
@@ -54,7 +68,7 @@ public class AccidentStatementIntegrationTest {
     }
 
     @BeforeEach
-    public void setUpRequestSpecifications() {
+    public void setUpRequestSpecifications() throws IOException, MailjetException {
         driverA = DriverDTO.builder()
                 .firstName("John")
                 .lastName("Doe")
@@ -97,21 +111,20 @@ public class AccidentStatementIntegrationTest {
                 .build();
 
         motorB = MotorDTO.builder()
-                .markType("BrandB")
+                .markType("Brand")
                 .licensePlate("2LOI958")
                 .countryOfRegistration("Belgium")
                 .build();
 
-        trailerA = TrailerDTO.builder()
+        registeredTrailerA = TrailerDTO.builder()
                 .hasRegistration(true)
                 .licensePlate("DEF456")
                 .countryOfRegistration("Belgium")
                 .build();
 
-        trailerB = TrailerDTO.builder()
-                .hasRegistration(true)
-                .licensePlate("GHI789")
-                .countryOfRegistration("Belgium")
+        unregisteredTrailerB = TrailerDTO.builder()
+                .hasRegistration(false)
+                .ofVehicle("Vehicle B")
                 .build();
 
         InsuranceAgencyDTO insuranceAgencyPolicyHolderA = InsuranceAgencyDTO.builder()
@@ -126,24 +139,34 @@ public class AccidentStatementIntegrationTest {
                 .name("Insurance Company")
                 .build();
 
-        InsuranceCertificateDTO insuranceCertificatePolicyHolderA = InsuranceCertificateDTO.builder()
-                .policyNumber("Policy123")
-                .greenCardNumber("Green123")
+        InsuranceCertificateDTO insuranceCertificatePolicyHolderAMotor = InsuranceCertificateDTO.builder()
+                .policyNumber("PO54894948")
+                .greenCardNumber("GC498491989")
                 .availabilityDate(LocalDate.parse("2024-01-01"))
                 .expirationDate(LocalDate.parse("2025-01-01"))
                 .insuranceAgency(insuranceAgencyPolicyHolderA)
                 .insuranceCompany(insuranceCompanyPolicyHolderA)
+                .vehicle(motorA)
+                .build();
+
+        InsuranceCertificateDTO insuranceCertificatePolicyHolderATrailer = InsuranceCertificateDTO.builder()
+                .policyNumber("PO2294988")
+                .greenCardNumber("GC594984919")
+                .availabilityDate(LocalDate.parse("2024-01-01"))
+                .expirationDate(LocalDate.parse("2025-01-01"))
+                .insuranceAgency(insuranceAgencyPolicyHolderA)
+                .insuranceCompany(insuranceCompanyPolicyHolderA)
+                .vehicle(registeredTrailerA)
                 .build();
 
         policyHolderVehicleA = PolicyHolderDTO.builder()
-                .id(1)
                 .firstName("Policy")
                 .lastName("Holder")
                 .email("policy.holder@example.com")
                 .address("123 Policy St")
                 .postalCode("12345")
                 .phoneNumber("1234567890")
-                .insuranceCertificates(Collections.singletonList(insuranceCertificatePolicyHolderA))
+                .insuranceCertificates(new ArrayList<>(List.of(insuranceCertificatePolicyHolderAMotor,insuranceCertificatePolicyHolderATrailer)))
                 .build();
 
         InsuranceAgencyDTO insuranceAgencyPolicyHolderB = InsuranceAgencyDTO.builder()
@@ -158,37 +181,41 @@ public class AccidentStatementIntegrationTest {
                 .name("Insurance Company B")
                 .build();
 
-        InsuranceCertificateDTO insuranceCertificatePolicyHolderB = InsuranceCertificateDTO.builder()
-                .policyNumber("Policy456")
-                .greenCardNumber("Green456")
+        InsuranceCertificateDTO insuranceCertificatePolicyHolderBMotor = InsuranceCertificateDTO.builder()
+                .policyNumber("PO198489552")
+                .greenCardNumber("GC9874469")
                 .availabilityDate(LocalDate.parse("2025-02-02"))
                 .expirationDate(LocalDate.parse("2026-02-02"))
                 .insuranceAgency(insuranceAgencyPolicyHolderB)
                 .insuranceCompany(insuranceCompanyPolicyHolderB)
+                .vehicle(motorB)
                 .build();
 
         policyHolderVehicleB = PolicyHolderDTO.builder()
-                .id(2)
                 .firstName("Policy B")
                 .lastName("Holder B")
                 .email("policy.holderB@example.com")
                 .address("456 Policy St")
                 .postalCode("67890")
                 .phoneNumber("0987654321")
-                .insuranceCertificates(Collections.singletonList(insuranceCertificatePolicyHolderB))
+                .insuranceCertificates(new ArrayList<>(List.of(insuranceCertificatePolicyHolderBMotor)))
                 .build();
+
+        // Instruct the mock to do nothing when sendStatement method is called
+        Mockito.doNothing().when(mailService).sendStatement(any(), any());
+
+
         requestSpec = given()
                 .relaxedHTTPSValidation()
                 .contentType("application/json")
                 .contentType(ContentType.JSON);
     }
 
-    //TODO fix test
     @Test
     public void createStatementTest() throws JsonProcessingException {
 
         AccidentStatementDTO accidentStatement = AccidentStatementDTO.builder()
-                .date(LocalDate.parse("2024-03-11"))
+                .date(LocalDate.parse("2024-03-11").atStartOfDay())
                 .location("Brussels")
                 .injured(false)
                 .damageToOtherCars(true)
@@ -197,8 +224,7 @@ public class AccidentStatementIntegrationTest {
                 .sketchOfAccident(new byte[]{(byte) 1})
                 .drivers(List.of(driverA, driverB))
                 .witness(witness)
-                .motors(List.of(motorA, motorB))
-                .trailers(List.of(trailerA, trailerB))
+                .unregisteredTrailers(List.of(unregisteredTrailerB))
                 .policyHolders(List.of(policyHolderVehicleA, policyHolderVehicleB))
                 .vehicleACircumstances(List.of("PARKED/STOPPED"))
                 .vehicleAInitialImpactSketch(new byte[]{(byte) 1})
@@ -236,8 +262,9 @@ public class AccidentStatementIntegrationTest {
 
     @Test
     public void createStatementWithNoMotor() throws JsonProcessingException {
+        policyHolderVehicleA.getInsuranceCertificates().remove(0);
         AccidentStatementDTO accidentStatement = AccidentStatementDTO.builder()
-                .date(LocalDate.parse("2024-03-11"))
+                .date(LocalDate.parse("2024-03-11").atStartOfDay())
                 .location("Brussels")
                 .injured(false)
                 .damageToOtherCars(true)
@@ -246,7 +273,7 @@ public class AccidentStatementIntegrationTest {
                 .sketchOfAccident(new byte[]{(byte) 1})
                 .drivers(List.of(driverA, driverB))
                 .witness(witness)
-                .trailers(List.of(trailerA, trailerB))
+                .unregisteredTrailers(List.of(unregisteredTrailerB))
                 .policyHolders(List.of(policyHolderVehicleA, policyHolderVehicleB))
                 .vehicleACircumstances(List.of("PARKED/STOPPED"))
                 .vehicleAInitialImpactSketch(new byte[]{(byte) 1})
@@ -272,8 +299,10 @@ public class AccidentStatementIntegrationTest {
 
     @Test
     public void createStatementWithNoTrailer() throws JsonProcessingException {
+        policyHolderVehicleA.getInsuranceCertificates().remove(1);
+        policyHolderVehicleB.getInsuranceCertificates().removeFirst();
         AccidentStatementDTO accidentStatement = AccidentStatementDTO.builder()
-                .date(LocalDate.parse("2024-03-11"))
+                .date(LocalDate.parse("2024-03-11").atStartOfDay())
                 .location("Brussels")
                 .injured(false)
                 .damageToOtherCars(true)
@@ -282,7 +311,6 @@ public class AccidentStatementIntegrationTest {
                 .sketchOfAccident(new byte[]{(byte) 1})
                 .drivers(List.of(driverA, driverB))
                 .witness(witness)
-                .motors(List.of(motorA, motorB))
                 .policyHolders(List.of(policyHolderVehicleA, policyHolderVehicleB))
                 .vehicleACircumstances(List.of("PARKED/STOPPED"))
                 .vehicleAInitialImpactSketch(new byte[]{(byte) 1})
@@ -309,7 +337,7 @@ public class AccidentStatementIntegrationTest {
     @Test
     public void createStatementWithNoWitness() throws JsonProcessingException {
         AccidentStatementDTO accidentStatement = AccidentStatementDTO.builder()
-                .date(LocalDate.parse("2024-03-11"))
+                .date(LocalDate.parse("2024-03-11").atStartOfDay())
                 .location("Brussels")
                 .injured(false)
                 .damageToOtherCars(true)
@@ -317,8 +345,7 @@ public class AccidentStatementIntegrationTest {
                 .numberOfCircumstances(2)
                 .sketchOfAccident(new byte[]{(byte) 1})
                 .drivers(List.of(driverA, driverB))
-                .motors(List.of(motorA, motorB))
-                .trailers(List.of(trailerA, trailerB))
+                .unregisteredTrailers(List.of(unregisteredTrailerB))
                 .policyHolders(List.of(policyHolderVehicleA, policyHolderVehicleB))
                 .vehicleACircumstances(List.of("PARKED/STOPPED"))
                 .vehicleAInitialImpactSketch(new byte[]{(byte) 1})
@@ -345,7 +372,7 @@ public class AccidentStatementIntegrationTest {
     @Test
     public void createStatementWithNoAccidentImages() throws JsonProcessingException {
         AccidentStatementDTO accidentStatement = AccidentStatementDTO.builder()
-                .date(LocalDate.parse("2024-03-11"))
+                .date(LocalDate.parse("2024-03-11").atStartOfDay())
                 .location("Brussels")
                 .injured(false)
                 .damageToOtherCars(true)
@@ -353,8 +380,7 @@ public class AccidentStatementIntegrationTest {
                 .numberOfCircumstances(2)
                 .sketchOfAccident(new byte[]{(byte) 1})
                 .drivers(List.of(driverA, driverB))
-                .motors(List.of(motorA, motorB))
-                .trailers(List.of(trailerA, trailerB))
+                .unregisteredTrailers(List.of(unregisteredTrailerB))
                 .policyHolders(List.of(policyHolderVehicleA, policyHolderVehicleB))
                 .vehicleACircumstances(List.of("PARKED/STOPPED"))
                 .vehicleAInitialImpactSketch(new byte[]{(byte) 1})
@@ -379,7 +405,7 @@ public class AccidentStatementIntegrationTest {
     @Test
     public void createStatementWithNoCircumstances() throws JsonProcessingException {
         AccidentStatementDTO accidentStatement = AccidentStatementDTO.builder()
-                .date(LocalDate.parse("2024-03-11"))
+                .date(LocalDate.parse("2024-03-11").atStartOfDay())
                 .location("Brussels")
                 .injured(false)
                 .damageToOtherCars(true)
@@ -387,8 +413,7 @@ public class AccidentStatementIntegrationTest {
                 .numberOfCircumstances(0)
                 .sketchOfAccident(new byte[]{(byte) 1})
                 .drivers(List.of(driverA, driverB))
-                .motors(List.of(motorA, motorB))
-                .trailers(List.of(trailerA, trailerB))
+                .unregisteredTrailers(List.of(unregisteredTrailerB))
                 .policyHolders(List.of(policyHolderVehicleA, policyHolderVehicleB))
                 .vehicleAInitialImpactSketch(new byte[]{(byte) 1})
                 .vehicleAVisibleDamageDescription("Visible Damage A")
@@ -413,15 +438,14 @@ public class AccidentStatementIntegrationTest {
     @Test
     public void createStatementWithNoSketches() throws JsonProcessingException {
         AccidentStatementDTO accidentStatement = AccidentStatementDTO.builder()
-                .date(LocalDate.parse("2024-03-11"))
+                .date(LocalDate.parse("2024-03-11").atStartOfDay())
                 .location("Brussels")
                 .injured(false)
                 .damageToOtherCars(true)
                 .damageToObjects(false)
                 .numberOfCircumstances(0)
                 .drivers(List.of(driverA, driverB))
-                .motors(List.of(motorA, motorB))
-                .trailers(List.of(trailerA, trailerB))
+                .unregisteredTrailers(List.of(unregisteredTrailerB))
                 .policyHolders(List.of(policyHolderVehicleA, policyHolderVehicleB))
                 .vehicleACircumstances(List.of("PARKED/STOPPED"))
                 .vehicleAVisibleDamageDescription("Visible Damage A")
