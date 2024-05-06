@@ -59,6 +59,7 @@ public class MailService {
 
     public void sendStatement(File pdfFile, AccidentStatement accidentStatement) throws MailjetException, IOException {
         String encodedString = convertPDFFileToBase64(pdfFile);
+        String fileName = pdfFile.getName();
 
         // Create a set to store insurance agency emails to avoid duplicates
         Set<String> insuranceEmails = new HashSet<>();
@@ -72,7 +73,7 @@ public class MailService {
             sendEmailWithPDFAttachment(policyHolder.getEmail(), "An accident statement has been created on your name",
                     "Dear " + policyHolder.getFirstName() + " " + policyHolder.getLastName() + ",\n\nPlease find attached the accident statement for your insurance. If you have any issues or this wasn't intended, please inform your insurance agency.\n\nBest,\nThe CrashKit Team",
                     "<p>Dear " + policyHolder.getFirstName() + " " + policyHolder.getLastName() + ",<br/>Please find attached the accident statement for your insurance. If you have any issues or this wasn't intended, please inform your insurance agency.</p><p>Best,<br/>The CrashKit Team</p>",
-                    encodedString);
+                    encodedString, fileName);
 
             // Send email to insurance agencies
             for (InsuranceCertificate insuranceCertificate : policyHolder.getInsuranceCertificates()) {
@@ -80,7 +81,7 @@ public class MailService {
                     sendEmailWithPDFAttachment(insuranceCertificate.getInsuranceAgency().getEmail(), "One of your clients has had an accident",
                             "Dear Agency,\n\nAn accident statement has been made for one of your clients with the name: " + policyHolder.getFirstName() + " " + policyHolder.getLastName() + ". Please find the details in the attached document.\n\nBest,\nThe CrashKit Team",
                             "<p>Dear Agency,<br/>An accident statement has been made for one of your clients with the name: " + policyHolder.getFirstName() + " " + policyHolder.getLastName() + ". Please find the details in the attached document.</p><p>Best,<br/>The CrashKit Team</p>",
-                            encodedString);
+                            encodedString, fileName);
                     insuranceEmails.add(insuranceCertificate.getInsuranceAgency().getEmail());
                 }
             }
@@ -90,7 +91,7 @@ public class MailService {
                 sendEmailWithPDFAttachment(driver.getEmail(), "An accident statement has been created on your name",
                         "Dear " + driver.getFirstName() + " " + driver.getLastName() + ",\n\nHere is a copy of the accident statement to which you were part of but were not the policy holder. If there are any discrepancies, please inform your insurance agency.\n\nBest,\nThe CrashKit Team",
                         "<p>Dear " + driver.getFirstName() + " " + driver.getLastName() + ",<br/>Here is a copy of the accident statement to which you were part of but were not the policy holder. If there are any discrepancies, please inform your insurance agency.</p><p>Best,<br/>The CrashKit Team</p>",
-                        encodedString);
+                        encodedString, fileName);
             }
 
             // Delete the PDF file
@@ -100,7 +101,7 @@ public class MailService {
         }
     }
 
-    private void sendEmailWithPDFAttachment(String recipientEmail, String subject, String textPart, String htmlPart, String encodedString) throws MailjetException, IOException {
+    private void sendEmailWithPDFAttachment(String recipientEmail, String subject, String textPart, String htmlPart, String encodedString, String fileName) throws MailjetException, IOException {
         MailjetRequest request = new MailjetRequest(Emailv31.resource)
                 .property(Emailv31.MESSAGES, new JSONArray()
                         .put(new JSONObject()
@@ -115,7 +116,7 @@ public class MailService {
                                 .put(Emailv31.Message.ATTACHMENTS, new JSONArray()
                                         .put(new JSONObject()
                                                 .put("ContentType", "application/pdf")
-                                                .put("Filename", "Accident Statement") //TODO add the right name
+                                                .put("Filename", fileName)
                                                 .put("Base64Content", encodedString)))));
         MailjetResponse response = mailjetClient.post(request);
         System.out.println(response.getStatus());

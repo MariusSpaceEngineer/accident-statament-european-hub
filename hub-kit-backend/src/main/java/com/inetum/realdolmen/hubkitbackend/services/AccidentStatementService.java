@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,7 +81,7 @@ public class AccidentStatementService {
             processCertificates(accidentStatement);
 
             var pdf = createPdf(accidentStatement);
-            //mailService.sendStatement(pdf, accidentStatement.getPolicyHolders().getFirst().getEmail(), accidentStatement.getPolicyHolders().getLast().getEmail());
+            mailService.sendStatement(pdf, accidentStatement);
 
             accidentStatementRepository.save(accidentStatement);
 
@@ -95,8 +96,8 @@ public class AccidentStatementService {
 
     private void saveUnregisteredTrailers(AccidentStatement accidentStatement) {
         if (accidentStatement.getUnregisteredTrailers() != null) {
-            for (Trailer trailer: accidentStatement.getUnregisteredTrailers()){
-                if (!trailer.getHasRegistration()){
+            for (Trailer trailer : accidentStatement.getUnregisteredTrailers()) {
+                if (!trailer.getHasRegistration()) {
                     trailerRepository.save(trailer);
                 }
             }
@@ -289,11 +290,14 @@ public class AccidentStatementService {
         File pdfFile = null;
         try {
             // Get the user's desktop path
-            String desktopPath = "C:\\Users\\MSICS85\\OneDrive - RealDolmen\\Desktop\\";
+            String resourcesPath = "src/main/resources/";
+
+            // Format the date-time string to exclude ':' character
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm");
+            String formattedDateTime = accidentStatement.getDate().format(formatter);
 
             // Define the output PDF file
-            pdfFile = new File(desktopPath + "AccidentStatement.pdf");
-
+            pdfFile = new File(resourcesPath + formattedDateTime + "_accident_statement.pdf");
             // Initialize PDF writer
             PdfWriter writer = new PdfWriter(pdfFile);
 
@@ -445,6 +449,7 @@ public class AccidentStatementService {
             Text vehicleBPointOfImpact = createBoldText("Vehicle B Point of Impact:");
             document.add(new Paragraph(vehicleBPointOfImpact));
             document.add(image);
+            document.add(new Paragraph("\n"));
         }
         List<AccidentImage> vehicleBAccidentImages = accidentStatement.getVehicleBAccidentImages();
         if (vehicleBAccidentImages != null) {
@@ -457,16 +462,24 @@ public class AccidentStatementService {
                 image.setHorizontalAlignment(HorizontalAlignment.CENTER);
                 document.add(image);
             }
+            document.add(new Paragraph("\n"));
         }
 
-        Text vehicleBCircumstances = createBoldText("Vehicle B Circumstances:");
-        document.add(new Paragraph(vehicleBCircumstances));
-        for (String circumstance : accidentStatement.getVehicleACircumstances()) {
-            document.add(new Paragraph("- " + circumstance));
+        if (!accidentStatement.getVehicleBCircumstances().isEmpty()) {
+            Text vehicleBCircumstances = createBoldText("Vehicle B Circumstances:");
+            document.add(new Paragraph(vehicleBCircumstances));
+            for (String circumstance : accidentStatement.getVehicleACircumstances()) {
+                document.add(new Paragraph("- " + circumstance));
+            }
+            document.add(new Paragraph("\n"));
         }
 
-        document.add(new Paragraph("Visible Damage Vehicle B: " + accidentStatement.getVehicleBVisibleDamageDescription()));
-        document.add(new Paragraph("Remarks Vehicle B: " + accidentStatement.getVehicleBRemark()));
+        if (!accidentStatement.getVehicleBVisibleDamageDescription().isEmpty()) {
+            document.add(new Paragraph("Visible Damage Vehicle B: " + accidentStatement.getVehicleBVisibleDamageDescription()));
+        }
+        if (!accidentStatement.getVehicleBRemark().isEmpty()) {
+            document.add(new Paragraph("Remarks Vehicle B: " + accidentStatement.getVehicleBRemark()));
+        }
         byte[] driverBSignature = accidentStatement.getVehicleBSignature();
         if (driverBSignature != null) {
             ImageData imageData = ImageDataFactory.create(driverBSignature);
@@ -588,6 +601,7 @@ public class AccidentStatementService {
             Text vehicleAPointOfImpact = createBoldText("Vehicle A Point of Impact:");
             document.add(new Paragraph(vehicleAPointOfImpact));
             document.add(image);
+            document.add(new Paragraph("\n"));
         }
 
         List<AccidentImage> vehicleAAccidentImages = accidentStatement.getVehicleAAccidentImages();
@@ -601,16 +615,25 @@ public class AccidentStatementService {
                 image.setHorizontalAlignment(HorizontalAlignment.CENTER);
                 document.add(image);
             }
+            document.add(new Paragraph("\n"));
         }
 
-        Text vehicleACircumstances = createBoldText("Vehicle A Circumstances:");
-        document.add(new Paragraph(vehicleACircumstances));
-        for (String circumstance : accidentStatement.getVehicleACircumstances()) {
-            document.add(new Paragraph("- " + circumstance));
+        if (!accidentStatement.getVehicleACircumstances().isEmpty()) {
+            Text vehicleACircumstances = createBoldText("Vehicle A Circumstances:");
+            document.add(new Paragraph(vehicleACircumstances));
+            for (String circumstance : accidentStatement.getVehicleACircumstances()) {
+                document.add(new Paragraph("- " + circumstance));
+            }
+            document.add(new Paragraph("\n"));
         }
 
-        document.add(new Paragraph("Visible Damage Vehicle A: " + accidentStatement.getVehicleAVisibleDamageDescription()));
-        document.add(new Paragraph("Remarks Vehicle A: " + accidentStatement.getVehicleARemark()));
+        if (!accidentStatement.getVehicleAVisibleDamageDescription().isEmpty()) {
+            document.add(new Paragraph("Visible Damage Vehicle A: " + accidentStatement.getVehicleAVisibleDamageDescription()));
+        }
+        if (!accidentStatement.getVehicleARemark().isEmpty()) {
+            document.add(new Paragraph("Remarks Vehicle A: " + accidentStatement.getVehicleARemark()));
+        }
+
         byte[] driverASignature = accidentStatement.getVehicleASignature();
         if (driverASignature != null) {
             ImageData imageData = ImageDataFactory.create(driverASignature);
@@ -628,7 +651,10 @@ public class AccidentStatementService {
         document.add(new Paragraph(accidentStatementTitle));
         document.add(new Paragraph("\n"));
 
-        document.add(new Paragraph("Date of Accident: " + accidentStatement.getDate()));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String formattedDate = accidentStatement.getDate().format(formatter);
+        document.add(new Paragraph("Date of Accident: " + formattedDate));
+
         document.add(new Paragraph("Location: " + accidentStatement.getLocation()));
         document.add(new Paragraph("Injured: " + (accidentStatement.getInjured() ? "Yes" : "No")));
         document.add(new Paragraph("\n"));
@@ -643,9 +669,13 @@ public class AccidentStatementService {
         Text witnessTitle = createBoldResizedText("Witness", 14);
         document.add(new Paragraph(witnessTitle));
 
-        document.add(new Paragraph("Name: " + accidentStatement.getWitness().getName()));
-        document.add(new Paragraph("Address: " + accidentStatement.getWitness().getAddress()));
-        document.add(new Paragraph("Phone Number: " + accidentStatement.getWitness().getPhoneNumber()));
+        if (accidentStatement.getWitness() != null) {
+            document.add(new Paragraph("Name: " + accidentStatement.getWitness().getName()));
+            document.add(new Paragraph("Address: " + accidentStatement.getWitness().getAddress()));
+            document.add(new Paragraph("Phone Number: " + accidentStatement.getWitness().getPhoneNumber()));
+        } else {
+            document.add(new Paragraph("No witness present"));
+        }
         document.add(new Paragraph("\n"));
 
         byte[] accidentSketch = accidentStatement.getSketchOfAccident();
