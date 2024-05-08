@@ -3,7 +3,7 @@ package com.inetum.realdolmen.hubkitbackend.controllers;
 import com.inetum.realdolmen.hubkitbackend.dto.AccidentStatementDTO;
 import com.inetum.realdolmen.hubkitbackend.dto.LocationCoordinates;
 import com.inetum.realdolmen.hubkitbackend.services.AccidentStatementService;
-import com.inetum.realdolmen.hubkitbackend.utils.Response;
+import com.inetum.realdolmen.hubkitbackend.responses.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

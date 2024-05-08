@@ -1,6 +1,5 @@
 package com.inetum.realdolmen.hubkitbackend.utils;
 
-import com.inetum.realdolmen.hubkitbackend.Roles;
 import com.inetum.realdolmen.hubkitbackend.models.*;
 import com.inetum.realdolmen.hubkitbackend.repositories.*;
 import lombok.RequiredArgsConstructor;
@@ -120,7 +119,7 @@ public class DatabaseSeeder {
                     .address("Koningin Astridplein 27, 2018 Antwerpen")
                     .postalCode("2018")
                     .phoneNumber("0465879425")
-                    .email("johndoe@gmail.com")
+                    .email("stoicamarius9010@gmail.com")
                     .role(Roles.POLICY_HOLDER)
                     .password(new BCryptPasswordEncoder().encode("1234"))
                     .build();

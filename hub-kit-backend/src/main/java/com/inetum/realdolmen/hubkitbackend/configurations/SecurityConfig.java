@@ -1,6 +1,6 @@
 package com.inetum.realdolmen.hubkitbackend.configurations;
 
-import com.inetum.realdolmen.hubkitbackend.JwtAuthFilter;
+import com.inetum.realdolmen.hubkitbackend.utils.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

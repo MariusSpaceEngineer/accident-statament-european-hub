@@ -7,7 +7,6 @@ import com.inetum.realdolmen.hubkitbackend.exceptions.MissingPropertyException;
 import com.inetum.realdolmen.hubkitbackend.mappers.*;
 import com.inetum.realdolmen.hubkitbackend.models.*;
 import com.inetum.realdolmen.hubkitbackend.repositories.*;
-import com.inetum.realdolmen.hubkitbackend.utils.MailService;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.geom.PageSize;
