@@ -1,7 +1,11 @@
 package com.inetum.realdolmen.hubkitbackend.controllers;
 
+import com.inetum.realdolmen.hubkitbackend.requests.LoginRequest;
+import com.inetum.realdolmen.hubkitbackend.requests.PolicyHolderRegisterRequest;
+import com.inetum.realdolmen.hubkitbackend.requests.ResetCredentialsRequest;
+import com.inetum.realdolmen.hubkitbackend.responses.AuthenticationResponse;
+import com.inetum.realdolmen.hubkitbackend.responses.Response;
 import com.inetum.realdolmen.hubkitbackend.services.AuthenticationService;
-import com.inetum.realdolmen.hubkitbackend.utils.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,4 +43,27 @@ public class AuthenticationController {
         }
 
     }
+
+    @PostMapping("/reset")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetCredentialsRequest request){
+        try {
+            service.resetPassword(request.getEmail());
+            return ResponseEntity.ok(Response.builder().successMessage("Password reset email sent successfully").build());
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Response.builder().errorMessage(e.getMessage()).build());
+        }
+    }
+
+    @PostMapping("/reset/password")
+    public ResponseEntity<?> updatePassword(@RequestBody ResetCredentialsRequest request){
+        try {
+            service.updatePassword(request);
+            return ResponseEntity.ok(Response.builder().successMessage("Password reset successful").build());
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Response.builder().errorMessage(e.getMessage()).build());
+        }
+    }
+
 }
