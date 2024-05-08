@@ -9,11 +9,11 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputEditText
 import com.google.gson.Gson
 import com.inetum.realdolmen.crashkit.CrashKitApp
-import com.inetum.realdolmen.crashkit.fragments.LoadingFragment
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.ActivityLoginBinding
 import com.inetum.realdolmen.crashkit.dto.LoginData
 import com.inetum.realdolmen.crashkit.dto.LoginResponse
+import com.inetum.realdolmen.crashkit.fragments.LoadingFragment
 import com.inetum.realdolmen.crashkit.utils.areFieldsValid
 import com.inetum.realdolmen.crashkit.utils.createSimpleDialog
 import kotlinx.coroutines.CoroutineScope
@@ -58,6 +58,12 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
         }
+
+        binding.tvLoginForgotPassword.setOnClickListener {
+            val intent = Intent(this, ForgotCredentialsActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 
     private suspend fun performLogin(
