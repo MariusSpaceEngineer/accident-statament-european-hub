@@ -8,6 +8,7 @@ import com.inetum.realdolmen.crashkit.dto.LoginResponse
 import com.inetum.realdolmen.crashkit.dto.RegisterData
 import com.inetum.realdolmen.crashkit.dto.RegisterResponse
 import com.inetum.realdolmen.crashkit.dto.RequestResponse
+import com.inetum.realdolmen.crashkit.dto.ResetPasswordData
 import com.inetum.realdolmen.crashkit.dto.Vehicle
 import com.inetum.realdolmen.crashkit.services.ApiService
 import kotlinx.coroutines.runBlocking
@@ -147,7 +148,58 @@ class APIServiceTest {
 
         // Assert
         assertEquals(response.code(), 409)
-        //val responseBody = response.body()
+    }
+
+    @Test
+    fun testResetPasswordWithRightSecurityCode() = runBlocking {
+        // Arrange
+        val resetPasswordData = ResetPasswordData(
+            "examle@email.com",
+            "12345",
+            "265574"
+        )
+        val expectedResponse = RequestResponse("Password reset successful")
+        val expectedResponseBody = Gson().toJson(expectedResponse)
+
+        mockWebServer.enqueue(
+            MockResponse()
+                .setResponseCode(200)
+                .setBody(expectedResponseBody)
+        )
+
+        // Act
+        val response = apiService.updatePassword(resetPasswordData)
+
+        val responseBody = response.body()
+
+        // Assert
+        assertEquals(response.code(), 200)
+        assertEquals(expectedResponse.successMessage, responseBody?.successMessage)
+    }
+
+    @Test
+    fun testResetPasswordWithWrongSecurityCode() = runBlocking {
+        // Arrange
+        val resetPasswordData = ResetPasswordData(
+            "examle@email.com",
+            "12345",
+            "265"
+        )
+        val expectedResponse = RequestResponse("Password reset successful")
+        val expectedResponseBody = Gson().toJson(expectedResponse)
+
+        mockWebServer.enqueue(
+            MockResponse()
+                .setResponseCode(400)
+                .setBody(expectedResponseBody)
+        )
+
+        // Act
+        val response = apiService.updatePassword(resetPasswordData)
+
+
+        // Assert
+        assertEquals(response.code(), 400)
     }
 
     @Test
