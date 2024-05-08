@@ -1,6 +1,6 @@
 package com.inetum.realdolmen.hubkitbackend.models;
 
-import com.inetum.realdolmen.hubkitbackend.Roles;
+import com.inetum.realdolmen.hubkitbackend.utils.Roles;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -29,6 +29,7 @@ public class User implements UserDetails {
     private String password;
     @Enumerated(EnumType.STRING)
     private Roles role;
+    private String resetCode;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
