@@ -11,6 +11,7 @@ import com.inetum.realdolmen.crashkit.dto.PolicyHolderResponse
 import com.inetum.realdolmen.crashkit.dto.RegisterData
 import com.inetum.realdolmen.crashkit.dto.RegisterResponse
 import com.inetum.realdolmen.crashkit.dto.RequestResponse
+import com.inetum.realdolmen.crashkit.dto.ResetPasswordData
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -24,6 +25,12 @@ interface ApiService {
 
     @POST("auth/login")
     suspend fun login(@Body loginData: LoginData): Response<LoginResponse>
+
+    @POST("auth/reset")
+    suspend fun resetPassword(@Body resetPasswordData: ResetPasswordData): Response<RequestResponse>
+
+    @POST("auth/reset/password")
+    suspend fun updatePassword(@Body newPasswordData: ResetPasswordData): Response<RequestResponse>
 
     @GET("user/profile")
     suspend fun getPolicyHolderProfileInformation(): Response<PolicyHolderResponse>
@@ -39,4 +46,5 @@ interface ApiService {
 
     @POST("statement/accident/location")
     suspend fun getLocationAddress(@Body locationCoordinatesData: LocationCoordinatesData): Response<RequestResponse>
+
 }
