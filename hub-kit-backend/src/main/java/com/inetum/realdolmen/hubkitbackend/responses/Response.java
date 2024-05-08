@@ -1,4 +1,4 @@
-package com.inetum.realdolmen.hubkitbackend.utils;
+package com.inetum.realdolmen.hubkitbackend.responses;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -9,10 +9,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class AuthenticationResponse {
 
+public class Response {
     @JsonInclude(Include.NON_NULL)
-    private String token;
+    private String successMessage;
     @JsonInclude(Include.NON_NULL)
     private String errorMessage;
 }

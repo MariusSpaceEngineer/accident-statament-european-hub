@@ -1,4 +1,4 @@
-package com.inetum.realdolmen.hubkitbackend.utils;
+package com.inetum.realdolmen.hubkitbackend.requests;
 
 import lombok.*;
 

@@ -1,4 +1,4 @@
-package com.inetum.realdolmen.hubkitbackend.utils;
+package com.inetum.realdolmen.hubkitbackend.services;
 
 import com.inetum.realdolmen.hubkitbackend.models.AccidentStatement;
 import com.inetum.realdolmen.hubkitbackend.models.Driver;
@@ -123,9 +123,35 @@ public class MailService {
         System.out.println(response.getData());
     }
 
+    public void sendResetCodeEmail(String recipientEmail, String code) throws MailjetException {
+        String subject = "Password Reset Code";
+        String textPart = "Your password reset code is: " + code;
+        String htmlPart = "<p>Your password reset code is: <strong>" + code + "</strong></p>";
+
+        MailjetRequest request = new MailjetRequest(Emailv31.resource)
+                .property(Emailv31.MESSAGES, new JSONArray()
+                        .put(new JSONObject()
+                                .put(Emailv31.Message.FROM, new JSONObject()
+                                        .put("Email", senderEmail)
+                                        .put("Name", senderName))
+                                .put(Emailv31.Message.TO, new JSONArray()
+                                        .put(new JSONObject().put("Email", recipientEmail)))
+                                .put(Emailv31.Message.SUBJECT, subject)
+                                .put(Emailv31.Message.TEXTPART, textPart)
+                                .put(Emailv31.Message.HTMLPART, htmlPart)));
+        MailjetResponse response = mailjetClient.post(request);
+        System.out.println(response.getStatus());
+        System.out.println(response.getData());
+    }
+
 
     private static String convertPDFFileToBase64(File pdfFile) throws IOException {
         byte[] fileContent = Files.readAllBytes(pdfFile.toPath());
         return Base64.getEncoder().encodeToString(fileContent);
     }
+
+
+
+
+
 }

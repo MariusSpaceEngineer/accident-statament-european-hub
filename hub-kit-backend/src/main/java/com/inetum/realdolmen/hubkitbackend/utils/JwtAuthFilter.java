@@ -1,4 +1,4 @@
-package com.inetum.realdolmen.hubkitbackend;
+package com.inetum.realdolmen.hubkitbackend.utils;
 
 import com.inetum.realdolmen.hubkitbackend.services.JwtService;
 import jakarta.servlet.FilterChain;

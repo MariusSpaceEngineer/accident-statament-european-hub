@@ -1,9 +1,12 @@
-package com.inetum.realdolmen.hubkitbackend.dto;
+package com.inetum.realdolmen.hubkitbackend.utils;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.inetum.realdolmen.hubkitbackend.dto.MotorDTO;
+import com.inetum.realdolmen.hubkitbackend.dto.TrailerDTO;
+import com.inetum.realdolmen.hubkitbackend.dto.VehicleDTO;
 
 import java.io.IOException;
 
