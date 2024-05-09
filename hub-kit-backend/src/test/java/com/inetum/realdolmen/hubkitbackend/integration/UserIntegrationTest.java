@@ -6,12 +6,12 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.inetum.realdolmen.hubkitbackend.dto.*;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
@@ -21,7 +21,7 @@ import static io.restassured.RestAssured.given;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@Transactional
+@ActiveProfiles("test")
 class UserIntegrationTest {
     private static ObjectMapper objectMapper;
 
@@ -80,7 +80,7 @@ class UserIntegrationTest {
                 .name("Insurance Company")
                 .build();
 
-        MotorDTO motorDTO= MotorDTO.builder()
+        MotorDTO motorDTO = MotorDTO.builder()
                 .id(1)
                 .licensePlate("K4489ML")
                 .countryOfRegistration("Belgium")
