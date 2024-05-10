@@ -20,6 +20,11 @@
         <item name="textAllCaps">false</item>
         <item name="android:textColor">@color/title</item>
     </style>
+    <style name="DisagreeRoundedButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/rounded_disagree_button</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textColor">@color/title</item>
+    </style>
     <style name="PrimaryTopRoundedButton" parent="Widget.AppCompat.Button">
         <item name="android:background">@drawable/top_rounded_primary_button</item>
         <item name="textAllCaps">false</item>
