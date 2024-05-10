@@ -5,7 +5,7 @@ target/
 !**/src/test/**/target/
 /src/main/resources/application.properties
 /src/main/resources/keystore/**
-/src/test/resources/**
+/src/test/resources/application.properties
 
 
 
