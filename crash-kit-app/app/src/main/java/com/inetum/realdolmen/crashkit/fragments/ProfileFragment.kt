@@ -1,5 +1,6 @@
 package com.inetum.realdolmen.crashkit.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.transition.ChangeTransform
 import android.transition.TransitionManager
@@ -22,6 +23,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.inetum.realdolmen.crashkit.CrashKitApp
 import com.inetum.realdolmen.crashkit.R
+import com.inetum.realdolmen.crashkit.activities.MainActivity
 import com.inetum.realdolmen.crashkit.databinding.FragmentProfileBinding
 import com.inetum.realdolmen.crashkit.dto.InsuranceAgency
 import com.inetum.realdolmen.crashkit.dto.InsuranceCertificate
@@ -55,6 +57,7 @@ class ProfileFragment : Fragment(), ValidationConfigure {
     private val binding get() = _binding!!
 
     private val apiService = CrashKitApp.apiService
+    private val securedPreferences= CrashKitApp.securedPreferences
 
     private val changeSupport = PropertyChangeSupport(this)
 
@@ -158,6 +161,14 @@ class ProfileFragment : Fragment(), ValidationConfigure {
 
         setupPersonalInformationCardFields()
         setupPersonalInformationCardButtonListeners()
+
+        binding.btnProfileLogout.setOnClickListener {
+            securedPreferences.deleteJwtToken()
+
+            val intent = Intent(requireContext(), MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+        }
 
         setupInsuranceInformationCardFields()
         setupInsuranceCardButtonListeners()
