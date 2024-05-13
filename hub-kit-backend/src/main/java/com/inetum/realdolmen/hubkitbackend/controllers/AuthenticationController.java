@@ -1,9 +1,6 @@
 package com.inetum.realdolmen.hubkitbackend.controllers;
 
-import com.inetum.realdolmen.hubkitbackend.exceptions.AuthenticationFailedException;
-import com.inetum.realdolmen.hubkitbackend.exceptions.InvalidCredentialsException;
-import com.inetum.realdolmen.hubkitbackend.exceptions.UserDisabledException;
-import com.inetum.realdolmen.hubkitbackend.exceptions.UserLockedException;
+import com.inetum.realdolmen.hubkitbackend.exceptions.*;
 import com.inetum.realdolmen.hubkitbackend.requests.LoginRequest;
 import com.inetum.realdolmen.hubkitbackend.requests.PolicyHolderRegisterRequest;
 import com.inetum.realdolmen.hubkitbackend.requests.ResetCredentialsRequest;
@@ -29,10 +26,11 @@ public class AuthenticationController {
         try {
             var jwtToken = service.register(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(AuthenticationResponse.builder().token(jwtToken).build());
-
-        } catch (Exception e) {
+        } catch (UserAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(AuthenticationResponse.builder().errorMessage(e.getMessage()).build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AuthenticationResponse.builder().errorMessage(e.getMessage()).build());
         }
     }
 

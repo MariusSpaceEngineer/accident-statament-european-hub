@@ -31,26 +31,35 @@ public class AuthenticationService {
     private final MailService mailService;
 
     public String register(PolicyHolderRegisterRequest request) throws Exception {
+        try{
+            if (repository.existsByEmail(request.getEmail())) {
+                throw new UserAlreadyExistsException("An user already exists with the given email, please try another one.");
+            } else {
+                var policyHolder = PolicyHolder.builder()
+                        .email(request.getEmail())
+                        .password(passwordEncoder.encode(request.getPassword()))
+                        .role(Roles.POLICY_HOLDER)
+                        .firstName(request.getFirstName())
+                        .lastName(request.getLastName())
+                        .phoneNumber(request.getPhoneNumber())
+                        .address(request.getAddress())
+                        .postalCode(request.getPostalCode())
+                        .build();
 
-        if (repository.existsByEmail(request.getEmail())) {
-            throw new UserAlreadyExistsException("User already exists");
-        } else {
+                repository.save(policyHolder);
 
-            var policyHolder = PolicyHolder.builder()
-                    .email(request.getEmail())
-                    .password(passwordEncoder.encode(request.getPassword()))
-                    .role(Roles.POLICY_HOLDER)
-                    .firstName(request.getFirstName())
-                    .lastName(request.getLastName())
-                    .address(request.getAddress())
-                    .postalCode(request.getPostalCode())
-                    .build();
+                mailService.sendWelcomeMail(policyHolder.getEmail(), policyHolder.getFirstName());
 
-            repository.save(policyHolder);
-
-            mailService.sendWelcomeMail(policyHolder.getEmail(), policyHolder.getFirstName());
-
-            return jwtService.generateToken(policyHolder);
+                return jwtService.generateToken(policyHolder);
+            }
+        }
+        catch (UserAlreadyExistsException e) {
+            log.error("User already exists:", e);
+            throw e;
+        }
+        catch (Exception e){
+            log.error("Unexpected error during registration", e);
+            throw new Exception("Internal server error");
         }
     }
 
