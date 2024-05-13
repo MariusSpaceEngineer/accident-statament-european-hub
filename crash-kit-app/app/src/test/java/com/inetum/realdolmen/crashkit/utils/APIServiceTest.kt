@@ -23,7 +23,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class APIServiceTest {
-
     private lateinit var mockWebServer: MockWebServer
     private lateinit var apiService: ApiService
 
@@ -73,6 +72,26 @@ class APIServiceTest {
     }
 
     @Test
+    fun testLoginWithInvalidCredentials() = runBlocking {
+        // Arrange
+        val loginData = LoginData("invalid@email.com", "invalid_password")
+        val expectedResponse = LoginResponse(token = null, errorMessage = "Invalid email or password")
+        val expectedResponseBody = Gson().toJson(expectedResponse)
+
+        mockWebServer.enqueue(
+            MockResponse()
+                .setResponseCode(401)
+                .setBody(expectedResponseBody)
+        )
+
+        // Act
+        val response = apiService.login(loginData)
+
+        // Assert
+        assertEquals(response.code(), 401)
+    }
+
+    @Test
     fun testRegister() = runBlocking {
         // Arrange
         val registerData = RegisterData(
@@ -99,30 +118,6 @@ class APIServiceTest {
         assertEquals(response.code(), 200)
         assertEquals(expectedResponse.token, responseBody?.token)
     }
-
-    @Test
-    fun testLoginWithInvalidCredentials() = runBlocking {
-        // Arrange
-        val loginData = LoginData("invalid@email.com", "invalid_password")
-        val expectedResponse = LoginResponse(token = null, errorMessage = "Invalid email or password")
-        val expectedResponseBody = Gson().toJson(expectedResponse)
-
-        mockWebServer.enqueue(
-            MockResponse()
-                .setResponseCode(400) // Bad Request
-                .setBody(expectedResponseBody)
-        )
-
-        // Act
-        val response = apiService.login(loginData)
-
-        // Assert
-        assertEquals(response.code(), 400)
-//        val responseBody = response.body()
-//        assertEquals(expectedResponse.token, responseBody?.token)
-//        assertEquals(expectedResponse.errorMessage, responseBody?.errorMessage)
-    }
-
 
 
     @Test
