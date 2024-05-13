@@ -9,6 +9,7 @@ import com.inetum.realdolmen.hubkitbackend.requests.LoginRequest;
 import com.inetum.realdolmen.hubkitbackend.requests.PolicyHolderRegisterRequest;
 import com.inetum.realdolmen.hubkitbackend.requests.ResetCredentialsRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,6 +21,7 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationService {
 
     private final UserRepository repository;
@@ -67,8 +69,10 @@ public class AuthenticationService {
             throw new UserLockedException("User account is locked");
         } catch (AuthenticationException e) {
             throw new AuthenticationFailedException("Authentication failed");
+        } catch (Exception e){
+            log.error("Unexpected error during authentication", e);
+            throw new Exception("Internal server error");
         }
-
     }
 
     public void resetPassword(String email) throws Exception {
