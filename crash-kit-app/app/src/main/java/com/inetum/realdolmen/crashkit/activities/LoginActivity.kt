@@ -17,11 +17,11 @@ import com.inetum.realdolmen.crashkit.dto.LoginData
 import com.inetum.realdolmen.crashkit.dto.LoginResponse
 import com.inetum.realdolmen.crashkit.fragments.LoadingFragment
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
+import com.inetum.realdolmen.crashkit.utils.IValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.LogTags.TAG_FIELD_VALIDATION
 import com.inetum.realdolmen.crashkit.utils.LogTags.TAG_LOGIN_STATUS
 import com.inetum.realdolmen.crashkit.utils.LogTags.TAG_NETWORK_REQUEST
 import com.inetum.realdolmen.crashkit.utils.LogTags.TAG_PARSING_ERROR
-import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.createSimpleDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-class LoginActivity : AppCompatActivity(), ValidationConfigure {
+class LoginActivity : AppCompatActivity(), IValidationConfigure {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var loadingFragment: LoadingFragment
     private lateinit var formHelper: FormHelper
@@ -117,7 +117,7 @@ class LoginActivity : AppCompatActivity(), ValidationConfigure {
                 performLogin(binding.etLoginEmail, binding.etLoginPassword)
             }
         } else {
-            Log.d(TAG_FIELD_VALIDATION, "Fields are not invalid.")
+            Log.d(TAG_FIELD_VALIDATION, "Fields are not valid.")
         }
     }
 
