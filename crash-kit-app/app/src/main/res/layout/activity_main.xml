@@ -49,7 +49,6 @@
         android:shadowDx="1.5"
         android:shadowDy="1.3"
         android:shadowRadius="20"
-        android:text="@string/main_description"
         android:textColor="@color/title"
         android:textSize="40sp"
         android:textStyle="bold"
