@@ -72,9 +72,10 @@ dependencies {
     testImplementation ("junit:junit:4.13.2")
     testImplementation ("io.mockk:mockk-android:1.13.10") // Mocking library for Kotlin
     testImplementation ("androidx.arch.core:core-testing:2.2.0") // For LiveData testing
-    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1") // For testing coroutines
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4") // For testing coroutines
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2") // For API Testing
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0") //For API testing
+    testImplementation ("org.robolectric:robolectric:4.12.1") //For writing tests that focus on specific parts of activities/fragments
 
     //For instrumented tests
     androidTestImplementation ("androidx.test:runner:1.5.2")
