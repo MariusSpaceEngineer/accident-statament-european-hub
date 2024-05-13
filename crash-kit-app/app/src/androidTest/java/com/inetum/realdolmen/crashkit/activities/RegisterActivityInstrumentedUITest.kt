@@ -2,6 +2,7 @@ package com.inetum.realdolmen.crashkit.activities
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isClickable
@@ -36,7 +37,20 @@ class RegisterActivityInstrumentedUITest {
                 isDisplayed()
             )
         )
-        onView(withId(R.id.btn_register_submit)).check(
+        onView(withId(R.id.btn_register_submit))
+            .perform(scrollTo())
+            .check(matches(isDisplayed()))
+        onView(withId(R.id.et_register_phone_number)).check(
+            matches(
+                isDisplayed()
+            )
+        )
+        onView(withId(R.id.et_register_address)).check(
+            matches(
+                isDisplayed()
+            )
+        )
+        onView(withId(R.id.et_register_postal_code)).check(
             matches(
                 isDisplayed()
             )
@@ -47,12 +61,23 @@ class RegisterActivityInstrumentedUITest {
             )
         )
 
-
         // Add text to the EditText fields
-        onView(withId(R.id.et_register_first_name)).perform(typeText("John"), closeSoftKeyboard());
+        onView(withId(R.id.et_register_first_name)).perform(scrollTo(), typeText("John"), closeSoftKeyboard());
         onView(withId(R.id.et_register_last_name)).perform(typeText("Doe"), closeSoftKeyboard());
         onView(withId(R.id.et_register_email)).perform(
             typeText("john.doe@example.com"),
+            closeSoftKeyboard()
+        );
+        onView(withId(R.id.et_register_phone_number)).perform(
+            typeText("0123456789"),
+            closeSoftKeyboard()
+        );
+        onView(withId(R.id.et_register_address)).perform(
+            typeText("Example street 68"),
+            closeSoftKeyboard()
+        );
+        onView(withId(R.id.et_register_postal_code)).perform(
+            typeText("2658"),
             closeSoftKeyboard()
         );
         onView(withId(R.id.et_register_password)).perform(
@@ -60,6 +85,7 @@ class RegisterActivityInstrumentedUITest {
             closeSoftKeyboard()
         );
         onView(withId(R.id.et_register_confirm_password)).perform(
+            scrollTo(),
             typeText("password123"),
             closeSoftKeyboard()
         );
@@ -68,6 +94,9 @@ class RegisterActivityInstrumentedUITest {
         onView(withId(R.id.et_register_first_name)).check(matches(withText("John")));
         onView(withId(R.id.et_register_last_name)).check(matches(withText("Doe")));
         onView(withId(R.id.et_register_email)).check(matches(withText("john.doe@example.com")));
+        onView(withId(R.id.et_register_phone_number)).check(matches(withText("0123456789")));
+        onView(withId(R.id.et_register_address)).check(matches(withText("Example street 68")));
+        onView(withId(R.id.et_register_postal_code)).check(matches(withText("2658")));
         onView(withId(R.id.et_register_password)).check(matches(withText("password123")));
         onView(withId(R.id.et_register_confirm_password)).check(matches(withText("password123")));
 
