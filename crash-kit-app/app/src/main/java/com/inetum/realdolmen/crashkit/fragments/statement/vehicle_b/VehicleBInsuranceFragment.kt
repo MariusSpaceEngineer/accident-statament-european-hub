@@ -17,7 +17,7 @@ import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleBInsuranceBindi
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
-import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
+import com.inetum.realdolmen.crashkit.utils.IValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.to24Format
 import com.inetum.realdolmen.crashkit.utils.toLocalDate
 import java.beans.PropertyChangeListener
@@ -26,7 +26,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 
-class VehicleBInsuranceFragment : Fragment(), StatementDataHandler, ValidationConfigure {
+class VehicleBInsuranceFragment : Fragment(), StatementDataHandler, IValidationConfigure {
     private lateinit var model: NewStatementViewModel
     private lateinit var navController: NavController
 

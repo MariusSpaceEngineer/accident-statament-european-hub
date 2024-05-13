@@ -9,7 +9,7 @@ package com.inetum.realdolmen.crashkit.utils
  * - validationRules: A list of rules for validation. Each rule is a Triple containing a TextView, a validation function, and an error message.
  * - formHelper: An instance of FormHelper.
  */
-interface ValidationConfigure {
+interface IValidationConfigure {
     fun setupValidation()
 }
 

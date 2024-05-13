@@ -29,11 +29,11 @@ import com.inetum.realdolmen.crashkit.dto.TrailerDTO
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
-import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
+import com.inetum.realdolmen.crashkit.utils.IValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.toLocalDate
 import com.journeyapps.barcodescanner.CaptureActivity
 
-class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigure {
+class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, IValidationConfigure {
     private lateinit var model: NewStatementViewModel
     private lateinit var navController: NavController
     private lateinit var formHelper: FormHelper

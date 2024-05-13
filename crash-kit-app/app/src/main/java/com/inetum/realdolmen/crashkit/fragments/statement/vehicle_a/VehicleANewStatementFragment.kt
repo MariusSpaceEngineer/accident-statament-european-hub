@@ -23,7 +23,7 @@ import com.inetum.realdolmen.crashkit.dto.Vehicle
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
-import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
+import com.inetum.realdolmen.crashkit.utils.IValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.createSimpleDialog
 import com.inetum.realdolmen.crashkit.utils.showToast
 import com.inetum.realdolmen.crashkit.utils.toLocalDate
@@ -34,7 +34,7 @@ import kotlinx.coroutines.withContext
 import retrofit2.Response
 import java.net.SocketTimeoutException
 
-class VehicleANewStatementFragment : Fragment(), StatementDataHandler, ValidationConfigure {
+class VehicleANewStatementFragment : Fragment(), StatementDataHandler, IValidationConfigure {
     private lateinit var model: NewStatementViewModel
     private lateinit var navController: NavController
     private lateinit var formHelper: FormHelper
