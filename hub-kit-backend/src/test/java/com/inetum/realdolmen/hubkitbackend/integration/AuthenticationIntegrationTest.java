@@ -69,7 +69,7 @@ class AuthenticationIntegrationTest {
                 .when()
                 .post(baseURI + "/login")
                 .then()
-                .statusCode(400)
+                .statusCode(401)
                 .body("token", nullValue())
                 .body("errorMessage", notNullValue());
     }
