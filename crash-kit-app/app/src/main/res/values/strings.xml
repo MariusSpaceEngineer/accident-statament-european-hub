@@ -149,10 +149,14 @@
     <string name="company_name">Company Name:</string>
     <string name="agency_name">Agency Name:</string>
 
-<!--    Dialogs-->
+    <!--    Dialogs-->
     <string name="accident_sketch_change_address_dialog">Enter Address</string>
     <string name="ok">OK</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+
+    <!--    Toasts-->
+    <string name="logged_in_toast">Logged In</string>
+    <string name="forgot_password">Forgot Password?</string>
 
 </resources>
