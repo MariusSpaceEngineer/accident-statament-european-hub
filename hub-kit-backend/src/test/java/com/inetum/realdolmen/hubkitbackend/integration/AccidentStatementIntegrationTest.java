@@ -32,7 +32,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("test")
+@Transactional
 public class AccidentStatementIntegrationTest {
     private static ObjectMapper objectMapper;
 
@@ -93,7 +93,7 @@ public class AccidentStatementIntegrationTest {
                 .build();
 
         accidentImagesVehicleA = Collections.singletonList(AccidentImageDTO.builder().data(new byte[123]).build());
-        accidentImagesVehicleB = Collections.singletonList(AccidentImageDTO.builder().data(new byte[123]).build());
+        accidentImagesVehicleB = Collections.singletonList(AccidentImageDTO.builder().data(new byte[124]).build());
 
         witness = WitnessDTO.builder()
                 .name("Witness Name")

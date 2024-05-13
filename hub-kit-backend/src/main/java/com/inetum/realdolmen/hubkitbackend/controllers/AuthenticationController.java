@@ -1,5 +1,9 @@
 package com.inetum.realdolmen.hubkitbackend.controllers;
 
+import com.inetum.realdolmen.hubkitbackend.exceptions.AuthenticationFailedException;
+import com.inetum.realdolmen.hubkitbackend.exceptions.InvalidCredentialsException;
+import com.inetum.realdolmen.hubkitbackend.exceptions.UserDisabledException;
+import com.inetum.realdolmen.hubkitbackend.exceptions.UserLockedException;
 import com.inetum.realdolmen.hubkitbackend.requests.LoginRequest;
 import com.inetum.realdolmen.hubkitbackend.requests.PolicyHolderRegisterRequest;
 import com.inetum.realdolmen.hubkitbackend.requests.ResetCredentialsRequest;
@@ -37,15 +41,16 @@ public class AuthenticationController {
         try {
             var jwtToken = service.login(request);
             return ResponseEntity.ok(AuthenticationResponse.builder().token(jwtToken).build());
-
+        } catch (InvalidCredentialsException | UserDisabledException | UserLockedException |
+                 AuthenticationFailedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(AuthenticationResponse.builder().errorMessage(e.getMessage()).build());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(AuthenticationResponse.builder().errorMessage(e.getMessage()).build());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AuthenticationResponse.builder().errorMessage(e.getMessage()).build());
         }
-
     }
 
     @PostMapping("/reset")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetCredentialsRequest request){
+    public ResponseEntity<?> resetPassword(@RequestBody ResetCredentialsRequest request) {
         try {
             service.resetPassword(request.getEmail());
             return ResponseEntity.ok(Response.builder().successMessage("Password reset email sent successfully").build());
@@ -56,7 +61,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/reset/password")
-    public ResponseEntity<?> updatePassword(@RequestBody ResetCredentialsRequest request){
+    public ResponseEntity<?> updatePassword(@RequestBody ResetCredentialsRequest request) {
         try {
             service.updatePassword(request);
             return ResponseEntity.ok(Response.builder().successMessage("Password reset successful").build());
