@@ -1,10 +1,10 @@
 package com.inetum.realdolmen.crashkit.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.inetum.realdolmen.crashkit.R
 
 class LoadingFragment : Fragment() {
@@ -19,10 +19,14 @@ class LoadingFragment : Fragment() {
     }
 
     fun showLoadingFragment() {
+        view?.isClickable= true
+        view?.isFocusable= true
         view?.visibility = View.VISIBLE
     }
 
     fun hideLoadingFragment() {
+        view?.isClickable= false
+        view?.isFocusable= false
         view?.visibility = View.GONE
     }
 }
