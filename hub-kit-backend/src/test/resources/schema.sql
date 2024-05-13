@@ -47,9 +47,9 @@ CREATE TABLE ACCIDENT_IMAGES
 
 CREATE TABLE DRIVERS
 (
+    ID                           INT DEFAULT NEXTVAL('DRIVERS_SEQ') NOT NULL PRIMARY KEY,
     BIRTHDAY                     DATE                               NULL,
     DRIVINGLICENSEEXPIRATIONDATE DATE                               NULL,
-    ID                           INT DEFAULT NEXTVAL('DRIVERS_SEQ') NOT NULL PRIMARY KEY,
     ADDRESS                      VARCHAR(255)                       NULL,
     CATEGORY                     VARCHAR(255)                       NULL,
     COUNTRY                      VARCHAR(255)                       NULL,
@@ -97,8 +97,8 @@ CREATE TABLE POLICY_HOLDERS
 
 CREATE TABLE VEHICLES
 (
-    HASREGISTRATION       BIT                                 NULL,
     ID                    INT DEFAULT NEXTVAL('VEHICLES_SEQ') NOT NULL PRIMARY KEY,
+    HASREGISTRATION       BIT                                 NULL,
     VEHICLE_TYPE          VARCHAR(31)                         NOT NULL,
     COUNTRYOFREGISTRATION VARCHAR(255)                        NULL,
     LICENSEPLATE          VARCHAR(255)                        NULL,
