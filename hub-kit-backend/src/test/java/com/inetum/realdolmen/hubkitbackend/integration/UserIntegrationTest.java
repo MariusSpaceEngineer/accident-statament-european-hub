@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.inetum.realdolmen.hubkitbackend.dto.*;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,7 @@ import static io.restassured.RestAssured.given;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
+@Transactional
 class UserIntegrationTest {
     private static ObjectMapper objectMapper;
 
