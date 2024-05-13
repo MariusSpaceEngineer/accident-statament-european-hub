@@ -3,9 +3,8 @@ package com.inetum.realdolmen.hubkitbackend.integration;
 import com.inetum.realdolmen.hubkitbackend.models.User;
 import com.inetum.realdolmen.hubkitbackend.repositories.UserRepository;
 import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,6 +20,8 @@ import static org.hamcrest.Matchers.*;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
+@Transactional
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuthenticationIntegrationTest {
 
     @Autowired
@@ -41,6 +42,7 @@ class AuthenticationIntegrationTest {
     }
 
     @Test
+    @Order(1)
     public void userLoginIsRight() {
         Optional<User> userOptional = userRepository.findByEmail("johndoe@gmail.com");
 
@@ -60,6 +62,7 @@ class AuthenticationIntegrationTest {
     }
 
     @Test
+    @Order(2)
     public void userLoginIsNotRight() {
         requestSpec
                 .body("{\"email\": \"wrongEmail@gmail.com\", \"password\": 12345}")
@@ -72,6 +75,7 @@ class AuthenticationIntegrationTest {
     }
 
     @Test
+    @Order(3)
     public void createUserThatDoesntExists() {
         String jsonBody = "{\"email\": \"user2@gmail.com\", \"password\": \"1234\", \"firstName\": \"Jack\", " +
                 "\"lastName\": \"Sparrow\", \"address\": \"Koningin Astridplein 28, 2018 Antwerpen\", " +
@@ -89,6 +93,7 @@ class AuthenticationIntegrationTest {
     }
 
     @Test
+    @Order(4)
     public void createUserThatExists() {
         Optional<User> userOptional = userRepository.findByEmail("johndoe@gmail.com");
 
@@ -109,34 +114,7 @@ class AuthenticationIntegrationTest {
     }
 
     @Test
-    public void resetPasswordWithValidEmail() {
-        String email = "johndoe@gmail.com"; // replace with a valid email in your test database
-
-        requestSpec
-                .body("{\"email\": \"" + email + "\"}")
-                .when()
-                .post(baseURI + "/reset")
-                .then()
-                .statusCode(200)
-                .body("successMessage", equalTo("Password reset email sent successfully"))
-                .body("errorMessage", nullValue());
-    }
-
-    @Test
-    public void resetPasswordWithInvalidEmail() {
-        String email = "invalidEmail@gmail.com"; // replace with an invalid email
-
-        requestSpec
-                .body("{\"email\": \"" + email + "\"}")
-                .when()
-                .post(baseURI + "/reset")
-                .then()
-                .statusCode(400)
-                .body("successMessage", nullValue())
-                .body("errorMessage", notNullValue());
-    }
-
-    @Test
+    @Order(5)
     public void updatePasswordWithValidCredentials() {
         String email = "johndoe@gmail.com"; // replace with a valid email in your test database
         String newPassword = "newPassword";
@@ -153,6 +131,38 @@ class AuthenticationIntegrationTest {
     }
 
     @Test
+    @Order(6)
+    public void resetPasswordWithValidEmail() {
+        String email = "johndoe@gmail.com"; // replace with a valid email in your test database
+
+        requestSpec
+                .body("{\"email\": \"" + email + "\"}")
+                .when()
+                .post(baseURI + "/reset")
+                .then()
+                .statusCode(200)
+                .body("successMessage", equalTo("Password reset email sent successfully"))
+                .body("errorMessage", nullValue());
+    }
+
+
+    @Test
+    @Order(7)
+    public void resetPasswordWithInvalidEmail() {
+        String email = "invalidEmail@gmail.com"; // replace with an invalid email
+
+        requestSpec
+                .body("{\"email\": \"" + email + "\"}")
+                .when()
+                .post(baseURI + "/reset")
+                .then()
+                .statusCode(400)
+                .body("successMessage", nullValue())
+                .body("errorMessage", notNullValue());
+    }
+
+    @Test
+    @Order(8)
     public void updatePasswordWithInvalidCredentials() {
         String email = "invalidEmail@gmail.com"; // replace with an invalid email
         String newPassword = "newPassword";
