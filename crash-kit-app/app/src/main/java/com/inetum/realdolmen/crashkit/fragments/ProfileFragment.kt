@@ -35,7 +35,7 @@ import com.inetum.realdolmen.crashkit.dto.PolicyHolderResponse
 import com.inetum.realdolmen.crashkit.dto.TrailerDTO
 import com.inetum.realdolmen.crashkit.dto.Vehicle
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
-import com.inetum.realdolmen.crashkit.utils.ValidationConfigure
+import com.inetum.realdolmen.crashkit.utils.IValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.createSimpleDialog
 import com.inetum.realdolmen.crashkit.utils.to24Format
 import com.inetum.realdolmen.crashkit.utils.toIsoString
@@ -51,7 +51,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 
-class ProfileFragment : Fragment(), ValidationConfigure {
+class ProfileFragment : Fragment(), IValidationConfigure {
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
