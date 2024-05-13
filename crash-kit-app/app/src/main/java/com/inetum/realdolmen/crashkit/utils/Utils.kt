@@ -15,6 +15,13 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
+object LogTags {
+    const val TAG_FIELD_VALIDATION = "FieldValidation"
+    const val TAG_NETWORK_REQUEST = "NetworkRequest"
+    const val TAG_LOGIN_STATUS= "LoginStatus"
+    const val TAG_PARSING_ERROR = "ParsingError"
+}
+
 fun Context.createSimpleDialog(title: String, message: String) {
     MaterialAlertDialogBuilder(this)
         .setTitle(title)
