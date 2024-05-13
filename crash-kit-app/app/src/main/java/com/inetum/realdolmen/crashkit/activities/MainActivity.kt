@@ -14,6 +14,7 @@ import com.inetum.realdolmen.crashkit.CrashKitApp
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.ActivityMainBinding
 import com.inetum.realdolmen.crashkit.fragments.LoadingFragment
+import com.inetum.realdolmen.crashkit.utils.LogTags.TAG_LOGIN_STATUS
 import com.inetum.realdolmen.crashkit.utils.SecuredPreferences
 
 class MainActivity : AppCompatActivity() {
@@ -27,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        securedPreferences= CrashKitApp.securedPreferences
+        securedPreferences = CrashKitApp.securedPreferences
 
         // If the JWT token is null, expired, or invalid, show the MainActivity
         checkLoginStatus()
@@ -50,32 +51,32 @@ class MainActivity : AppCompatActivity() {
     //Checks to see if the JWT token of the user is still valid if he has one
     @VisibleForTesting
     internal fun checkLoginStatus() {
-        Log.d("LoginStatus", "Checking login status...")
+        Log.d(TAG_LOGIN_STATUS, "Checking login status...")
         if (securedPreferences.isLoginRemembered()) {
-            Log.d("LoginStatus", "User has remembered login.")
+            Log.d(TAG_LOGIN_STATUS, "User has remembered login.")
             val jwtToken = securedPreferences.getJwtToken()
             if (jwtToken != null) {
-                Log.d("LoginStatus", "JWT token exists.")
+                Log.d(TAG_LOGIN_STATUS, "JWT token exists.")
                 val decodedToken = JWT(jwtToken)
                 isTokenExpired(decodedToken)
             } else {
-                Log.d("LoginStatus", "No JWT token found. Remove JWT token.")
+                Log.d(TAG_LOGIN_STATUS, "No JWT token found. Remove JWT token.")
                 securedPreferences.deleteJwtToken()
             }
         } else {
-            Log.d("LoginStatus", "User has not remembered login. Remove any unwanted JWT token.")
+            Log.d(TAG_LOGIN_STATUS, "User has not remembered login. Remove any unwanted JWT token.")
             securedPreferences.deleteJwtToken()
         }
     }
 
     private fun isTokenExpired(decodedToken: JWT) {
         if (!decodedToken.isExpired(10)) {
-            Log.d("LoginStatus", "JWT token is valid. Navigating to HomeActivity.")
+            Log.d(TAG_LOGIN_STATUS, "JWT token is valid. Navigating to HomeActivity.")
             startActivity(Intent(this, HomeActivity::class.java))
             finish()
             return
         } else {
-            Log.d("LoginStatus", "JWT token is invalid. Remove JWT token.")
+            Log.d(TAG_LOGIN_STATUS, "JWT token is invalid. Remove JWT token.")
             securedPreferences.deleteJwtToken()
         }
     }
