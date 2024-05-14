@@ -6,6 +6,7 @@ import com.inetum.realdolmen.hubkitbackend.mappers.*;
 import com.inetum.realdolmen.hubkitbackend.models.*;
 import com.inetum.realdolmen.hubkitbackend.repositories.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PolicyHolderService {
     private final UserRepository userRepository;
     private final InsuranceCertificateRepository insuranceCertificateRepository;
@@ -51,50 +53,54 @@ public class PolicyHolderService {
 
         if (user.isPresent()) {
             PolicyHolder policyHolder = (PolicyHolder) user.get();
-
             personalInformationMapper.updateFromDTO(policyHolderDTO, policyHolder);
 
             userRepository.save(policyHolder);
-
             return Optional.of(personalInformationMapper.toDTO(policyHolder));
         } else {
-            return Optional.empty(); // User not found
+            // User not found
+            return Optional.empty();
         }
     }
 
 
     public Optional<List<InsuranceCertificateDTO>> updateInsuranceCertificateInformation(String token, InsuranceCertificateDTO insuranceCertificateDTO) throws Exception {
 
-        Optional<User> user = getUser(token);
+        try {
+            Optional<User> user = getUser(token);
 
-        if (user.isPresent()) {
-            PolicyHolder existingPolicyHolder = (PolicyHolder) user.get();
+            if (user.isPresent()) {
+                PolicyHolder existingPolicyHolder = (PolicyHolder) user.get();
 
-            InsuranceCompany savedInsuranceCompany = getOrCreateInsuranceCompany(insuranceCertificateDTO);
-            InsuranceAgency savedInsuranceAgency = getOrCreateInsuranceAgency(insuranceCertificateDTO);
-            Vehicle savedVehicle = getOrCreateVehicle(insuranceCertificateDTO);
+                InsuranceCompany savedInsuranceCompany = getOrCreateInsuranceCompany(insuranceCertificateDTO);
+                InsuranceAgency savedInsuranceAgency = getOrCreateInsuranceAgency(insuranceCertificateDTO);
+                Vehicle savedVehicle = getOrCreateVehicle(insuranceCertificateDTO);
 
-            //If the policyHolder has no insurance certificate
-            if (existingPolicyHolder.getInsuranceCertificates().isEmpty()) {
-                addInsuranceCertificateToPolicyHolder(insuranceCertificateDTO, existingPolicyHolder, savedInsuranceCompany, savedInsuranceAgency, savedVehicle);
+                //If the policyHolder has no insurance certificate
+                if (existingPolicyHolder.getInsuranceCertificates().isEmpty()) {
+                    addInsuranceCertificateToPolicyHolder(insuranceCertificateDTO, existingPolicyHolder, savedInsuranceCompany, savedInsuranceAgency, savedVehicle);
+                } else {
+                    updateInsuranceCertificateOfPolicyHolder(insuranceCertificateDTO, existingPolicyHolder, savedInsuranceCompany, savedInsuranceAgency, savedVehicle);
+                }
+
+                insuranceCertificateRepository.saveAll(existingPolicyHolder.getInsuranceCertificates());
+                userRepository.save(existingPolicyHolder);
+
+                List<InsuranceCertificateDTO> result = new ArrayList<>();
+                addVehicleDTOsToInsuranceCertificatesDTOs(existingPolicyHolder, result);
+
+                return Optional.of(result);
             } else {
-                updateInsuranceCertificateOfPolicyHolder(insuranceCertificateDTO, existingPolicyHolder, savedInsuranceCompany, savedInsuranceAgency, savedVehicle);
+                // User not found
+                return Optional.empty();
             }
-
-            insuranceCertificateRepository.saveAll(existingPolicyHolder.getInsuranceCertificates());
-            userRepository.save(existingPolicyHolder);
-
-            List<InsuranceCertificateDTO> result = new ArrayList<>();
-
-            addVehicleDTOsToInsuranceCertificatesDTOs(existingPolicyHolder, result);
-
-            return Optional.of(result);
-
-        } else {
-            // User not found
-            return Optional.empty();
+        } catch (VehicleMismatchException e) {
+            log.error("Unable to change the type of an existing vehicle:", e);
+            throw new VehicleMismatchException("You can't change the vehicle type.");
+        } catch (Exception e) {
+            log.error("Unexpected error during updating user's insurance certificate:", e);
+            throw new Exception("Internal server error");
         }
-
     }
 
     private void addVehicleDTOsToInsuranceCertificatesDTOs(PolicyHolder existingPolicyHolder, List<InsuranceCertificateDTO> result) {
@@ -126,7 +132,7 @@ public class PolicyHolderService {
      * Similarly, if the vehicle is an instance of Trailer, it maps the Trailer to a TrailerDTO and sets it as the vehicle.
      *
      * @param policyHolder The policyholder from which the insurance certificates are obtained.
-     * @param dto The policyholder DTO to which the vehicle DTOs are added.
+     * @param dto          The policyholder DTO to which the vehicle DTOs are added.
      */
     private void addVehiclesDTOsToPolicyHolderDTO(PolicyHolder policyHolder, PolicyHolderDTO dto) {
         List<InsuranceCertificate> insuranceCertificates = policyHolder.getInsuranceCertificates();
