@@ -16,6 +16,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
@@ -35,6 +37,9 @@ public class AuthenticationService {
             if (repository.existsByEmail(request.getEmail())) {
                 throw new UserAlreadyExistsException("An user already exists with the given email, please try another one.");
             } else {
+                if (validatePassword(request.getPassword()) != null){
+                    throw new IllegalArgumentException("Password does not meet the required criteria.");
+                }
                 var policyHolder = PolicyHolder.builder()
                         .email(request.getEmail())
                         .password(passwordEncoder.encode(request.getPassword()))
@@ -55,6 +60,10 @@ public class AuthenticationService {
         }
         catch (UserAlreadyExistsException e) {
             log.error("User already exists:", e);
+            throw e;
+        }
+        catch (IllegalArgumentException e) {
+            log.error("Unexpected error during validation:", e);
             throw e;
         }
         catch (Exception e){
@@ -121,5 +130,31 @@ public class AuthenticationService {
             }
         }
     }
+
+    private String validatePassword(String password) {
+        List<String> passwordErrors = new ArrayList<>();
+        if (password.length() < 6) {
+            passwordErrors.add("Password is too short");
+        }
+        if (!password.matches(".*[A-Z].*")) {
+            passwordErrors.add("Password must contain at least one uppercase letter");
+        }
+        if (!password.matches(".*[a-z].*")) {
+            passwordErrors.add("Password must contain at least one lowercase letter");
+        }
+        if (!password.matches(".*\\d.*")) {
+            passwordErrors.add("Password must contain at least one digit");
+        }
+        if (!password.matches(".*[@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*")) {
+            passwordErrors.add("Password must contain at least one special character");
+        }
+        if (password.contains(" ")) {
+            passwordErrors.add("Password must not contain whitespace");
+        }
+        // If no errors, return null
+        return passwordErrors.isEmpty() ? null : String.join("\n", passwordErrors);
+    }
+
+
 
 }
