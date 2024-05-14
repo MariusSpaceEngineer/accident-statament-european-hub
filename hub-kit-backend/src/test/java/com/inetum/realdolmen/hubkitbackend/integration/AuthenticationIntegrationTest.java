@@ -39,6 +39,7 @@ class AuthenticationIntegrationTest {
         requestSpec = given()
                 .relaxedHTTPSValidation()
                 .contentType("application/json");
+
     }
 
     @Test
@@ -76,8 +77,30 @@ class AuthenticationIntegrationTest {
 
     @Test
     @Order(3)
+    public void userLoginHasWrongEmail() {
+        requestSpec
+                .body("{\"email\": \"wrongEmail@gmail...com\", \"password\": 12345}")
+                .when()
+                .post(baseURI + "/login")
+                .then()
+                .statusCode(403);
+    }
+
+    @Test
+    @Order(4)
+    public void userLoginHasMissingProperty() {
+        requestSpec
+                .body("{\"email\": \"\", \"password\": 12345}")
+                .when()
+                .post(baseURI + "/login")
+                .then()
+                .statusCode(403);
+    }
+
+    @Test
+    @Order(5)
     public void createUserThatDoesntExists() {
-        String jsonBody = "{\"email\": \"user2@gmail.com\", \"password\": \"1234\", \"firstName\": \"Jack\", " +
+        String jsonBody = "{\"email\": \"user2@gmail.com\", \"password\": \"ExamplePass123_\", \"firstName\": \"Jack\", " +
                 "\"lastName\": \"Sparrow\", \"address\": \"Koningin Astridplein 28, 2018 Antwerpen\", " +
                 "\"postalCode\": \"2678\", \"phoneNumber\": \"0465879485\"}";
 
@@ -93,7 +116,70 @@ class AuthenticationIntegrationTest {
     }
 
     @Test
-    @Order(4)
+    @Order(6)
+    public void createUserWithWrongPassword() {
+        String jsonBody = "{\"email\": \"user3@gmail.com\", \"password\": \"1234\", \"firstName\": \"Jack\", " +
+                "\"lastName\": \"Sparrow\", \"address\": \"Koningin Astridplein 28, 2018 Antwerpen\", " +
+                "\"postalCode\": \"2678\", \"phoneNumber\": \"0465879485\"}";
+
+        requestSpec
+                .body(jsonBody)
+                .when()
+                .post(baseURI + "/register")
+                .then()
+                .statusCode(400)
+                .body("token", nullValue())
+                .body("errorMessage", notNullValue());
+
+    }
+
+    @Test
+    @Order(7)
+    public void createUserWithWrongEmail() {
+        String jsonBody = "{\"email\": \"user3@gmail...com\", \"password\": \"1234\", \"firstName\": \"Jack\", " +
+                "\"lastName\": \"Sparrow\", \"address\": \"Koningin Astridplein 28, 2018 Antwerpen\", " +
+                "\"postalCode\": \"2678\", \"phoneNumber\": \"0465879485\"}";
+
+        requestSpec
+                .body(jsonBody)
+                .when()
+                .post(baseURI + "/register")
+                .then()
+                .statusCode(403);
+    }
+
+    @Test
+    @Order(8)
+    public void createUserWithMissingProperties() {
+        String jsonBody = "{\"password\": \"1234\", \"firstName\": \"Jack\", " +
+                "\"lastName\": \"Sparrow\", \"address\": \"Koningin Astridplein 28, 2018 Antwerpen\", " +
+                "\"postalCode\": \"2678\", \"phoneNumber\": \"0465879485\"}";
+
+        requestSpec
+                .body(jsonBody)
+                .when()
+                .post(baseURI + "/register")
+                .then()
+                .statusCode(403);
+    }
+
+    @Test
+    @Order(9)
+    public void createUserWithEmptyProperties() {
+        String jsonBody = "{\"email\": \"\", \"password\": \"1234\", \"firstName\": \"Jack\", " +
+                "\"lastName\": \"Sparrow\", \"address\": \"Koningin Astridplein 28, 2018 Antwerpen\", " +
+                "\"postalCode\": \"2678\", \"phoneNumber\": \"0465879485\"}";
+
+        requestSpec
+                .body(jsonBody)
+                .when()
+                .post(baseURI + "/register")
+                .then()
+                .statusCode(403);
+    }
+
+    @Test
+    @Order(10)
     public void createUserThatExists() {
         Optional<User> userOptional = userRepository.findByEmail("johndoe@gmail.com");
 
@@ -114,7 +200,7 @@ class AuthenticationIntegrationTest {
     }
 
     @Test
-    @Order(5)
+    @Order(11)
     public void updatePasswordWithValidCredentials() {
         String email = "johndoe@gmail.com"; // replace with a valid email in your test database
         String newPassword = "newPassword";
@@ -131,7 +217,7 @@ class AuthenticationIntegrationTest {
     }
 
     @Test
-    @Order(6)
+    @Order(12)
     public void resetPasswordWithValidEmail() {
         String email = "johndoe@gmail.com"; // replace with a valid email in your test database
 
@@ -147,7 +233,7 @@ class AuthenticationIntegrationTest {
 
 
     @Test
-    @Order(7)
+    @Order(13)
     public void resetPasswordWithInvalidEmail() {
         String email = "invalidEmail@gmail.com"; // replace with an invalid email
 
@@ -162,7 +248,7 @@ class AuthenticationIntegrationTest {
     }
 
     @Test
-    @Order(8)
+    @Order(14)
     public void updatePasswordWithInvalidCredentials() {
         String email = "invalidEmail@gmail.com"; // replace with an invalid email
         String newPassword = "newPassword";
@@ -177,6 +263,4 @@ class AuthenticationIntegrationTest {
                 .body("successMessage", nullValue())
                 .body("errorMessage", notNullValue());
     }
-
-
 }
