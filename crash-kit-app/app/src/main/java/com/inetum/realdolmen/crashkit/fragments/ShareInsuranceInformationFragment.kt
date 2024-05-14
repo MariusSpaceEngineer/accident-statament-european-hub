@@ -22,6 +22,8 @@ import com.inetum.realdolmen.crashkit.dto.MotorDTO
 import com.inetum.realdolmen.crashkit.dto.PolicyHolderResponse
 import com.inetum.realdolmen.crashkit.dto.PolicyHolderVehicleBResponse
 import com.inetum.realdolmen.crashkit.dto.TrailerDTO
+import com.inetum.realdolmen.crashkit.utils.LogTags.TAG_NETWORK_REQUEST
+import com.inetum.realdolmen.crashkit.utils.LogTags.TAG_QR_CODE
 import com.inetum.realdolmen.crashkit.utils.createSimpleDialog
 import com.inetum.realdolmen.crashkit.utils.showToast
 import kotlinx.coroutines.CoroutineScope
@@ -29,6 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
+import java.util.EnumMap
 
 class ShareInsuranceInformationFragment : Fragment() {
     private var _binding: FragmentShareInsuranceInformationBinding? = null
@@ -42,12 +45,10 @@ class ShareInsuranceInformationFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = FragmentShareInsuranceInformationBinding.inflate(inflater, container, false)
-        val view = binding.root
-
-        return view
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -60,40 +61,71 @@ class ShareInsuranceInformationFragment : Fragment() {
 
     private fun fetchPolicyHolderInformation() {
         CoroutineScope(Dispatchers.IO).launch {
-            val response = apiService.getPolicyHolderProfileInformation()
-            withContext(Dispatchers.Main) {
-                handlePolicyHolderProfileResponse(response)
+            try {
+                val response = apiService.getPolicyHolderProfileInformation()
+                withContext(Dispatchers.Main) {
+                    handlePolicyHolderProfileResponse(response)
+                }
+            } catch (e: Exception) {
+                handleNetworkError(e)
             }
         }
     }
 
+    private suspend fun handleNetworkError(e: Exception) {
+        Log.e(TAG_NETWORK_REQUEST, "Exception occurred: ", e)
+        withContext(Dispatchers.Main) {
+            val message = when (e) {
+                is java.net.SocketTimeoutException -> getString(R.string.error_network)
+                else -> getString(R.string.unknown_error)
+            }
+            requireContext().createSimpleDialog(getString(R.string.error), message)
+        }
+    }
+
     private fun handlePolicyHolderProfileResponse(response: Response<PolicyHolderResponse>) {
-        Log.i("Request", "Request code: ${response.code()}")
+        Log.d(TAG_NETWORK_REQUEST, "Request code: ${response.code()}")
         if (response.isSuccessful) {
-            val personalInformationResponse = response.body()
-            if (personalInformationResponse != null) {
-                showInsuranceDialog(personalInformationResponse.insuranceCertificates) { selectedCertificate ->
-                    // This block of code will be executed after the user has made a selection in the dialog
-                    val json =
-                        convertResponseToJSON(personalInformationResponse, selectedCertificate)
+            handleSuccessfulResponse(response)
+        } else {
+            handleErrorResponse()
+        }
+    }
 
-                    Log.i("qr-code data", json.toString())
+    private fun handleErrorResponse() {
+        requireContext().createSimpleDialog(
+            getString(R.string.error),
+            getString(R.string.error_network)
+        )
+    }
 
-                    val bitmap = generateQRCode(json, qrCodeWidth, qrCodeHeight)
-
-                    binding.ivShareInsuranceQrCode.visibility = View.VISIBLE
-                    binding.ivShareInsuranceQrCode.setImageBitmap(bitmap)
-                    binding.tvShareInsuranceQrCodeDescription.visibility = View.VISIBLE
-
-                    requireContext().showToast("Import successful")
+    private fun handleSuccessfulResponse(response: Response<PolicyHolderResponse>) {
+        val personalInformationResponse = response.body()
+        if (personalInformationResponse != null) {
+            showInsuranceDialog(personalInformationResponse.insuranceCertificates) { selectedCertificate ->
+                // This block of code will be executed after the user has made a selection in the dialog
+                val json = convertResponseToJSON(personalInformationResponse, selectedCertificate)
+                if (json != null) {
+                    Log.d(TAG_QR_CODE, "QR-code content: $json")
+                    val bitmap = generateQRCode(json)
+                    setQRCode(bitmap)
+                    requireContext().showToast(requireContext().getString(R.string.import_successful))
+                } else {
+                    // Show an error dialog
+                    Log.e(TAG_QR_CODE, "Failed to generate QR code.")
+                    requireContext().createSimpleDialog(
+                        getString(R.string.error),
+                        getString(R.string.qr_code_generation_failed)
+                    )
                 }
-            } else {
-                requireContext().createSimpleDialog(
-                    getString(R.string.error),
-                    getString(R.string.error_network)
-                )
             }
         }
+    }
+
+    private fun setQRCode(bitmap: Bitmap) {
+        binding.ivShareInsuranceQrCode.visibility = View.VISIBLE
+        binding.ivShareInsuranceQrCode.setImageBitmap(bitmap)
+        binding.tvShareInsuranceQrCodeDescription.visibility = View.VISIBLE
     }
 
     private fun convertResponseToJSON(
@@ -115,23 +147,22 @@ class ShareInsuranceInformationFragment : Fragment() {
 
     private fun generateQRCode(
         json: String?,
-        width: Int,
-        height: Int
     ): Bitmap {
         val qrCodeWriter = QRCodeWriter()
         var bitMatrix: BitMatrix? = null
         try {
-            val hints: MutableMap<EncodeHintType, Any?> = HashMap()
+            val hints: MutableMap<EncodeHintType, Any?> =
+                EnumMap(com.google.zxing.EncodeHintType::class.java)
             hints[EncodeHintType.CHARACTER_SET] = "UTF-8"
             bitMatrix =
-                qrCodeWriter.encode(json, BarcodeFormat.QR_CODE, width, height, hints)
+                qrCodeWriter.encode(json, BarcodeFormat.QR_CODE, qrCodeWidth, qrCodeHeight, hints)
         } catch (e: WriterException) {
             e.printStackTrace()
         }
 
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
-        for (x in 0 until width) {
-            for (y in 0 until height) {
+        val bitmap = Bitmap.createBitmap(qrCodeWidth, qrCodeHeight, Bitmap.Config.RGB_565)
+        for (x in 0 until qrCodeWidth) {
+            for (y in 0 until qrCodeHeight) {
                 bitmap.setPixel(
                     x,
                     y,
@@ -147,40 +178,55 @@ class ShareInsuranceInformationFragment : Fragment() {
         onCertificateSelected: (InsuranceCertificate?) -> Unit
     ) {
         if (!insuranceCertificates.isNullOrEmpty()) {
-            var selectedCertificate: InsuranceCertificate?
-
             val insuranceCertificateStrings = insuranceCertificates.map { certificate ->
-                val vehicle = certificate.vehicle
-                val vehicleType = when (vehicle) {
-                    is MotorDTO -> "Motor"
-                    is TrailerDTO -> "Trailer"
-                    else -> "Unknown"
-                }
-                val markType = if (vehicle is MotorDTO) vehicle.markType else "N/A"
-
-                "Vehicle Type: $vehicleType\n" + "Company name: ${certificate.insuranceCompany?.name}\n" +
-                        "Agency name: ${certificate.insuranceAgency?.name}\n" +
-                        "Policy Number: ${certificate.policyNumber}\n" +
-                        "Mark Type: $markType\n" +
-                        "License Plate: ${vehicle?.licensePlate}\n" +
-                        "Country of Registration: ${vehicle?.countryOfRegistration}\n"
+                convertCertificateToStringDescription(certificate)
             }.toMutableList()
 
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Select an Insurance Certificate")
-                .setSingleChoiceItems(
-                    insuranceCertificateStrings.toTypedArray(),
-                    -1) { dialog, which ->
-                    selectedCertificate = insuranceCertificates[which]
-
-                    // Call the callback with the selected certificate
-                    onCertificateSelected(selectedCertificate)
-                    dialog.dismiss()
-
-                }
-                .show()
+            showDialogWithCertificates(
+                insuranceCertificateStrings,
+                insuranceCertificates,
+                onCertificateSelected
+            )
         } else {
             onCertificateSelected(null)
         }
     }
+
+    private fun convertCertificateToStringDescription(certificate: InsuranceCertificate): String {
+        val vehicle = certificate.vehicle
+        val vehicleType = when (vehicle) {
+            is MotorDTO -> "Motor"
+            is TrailerDTO -> "Trailer"
+            else -> "Unknown"
+        }
+        val markType = if (vehicle is MotorDTO) vehicle.markType else "N/A"
+
+        return "Vehicle Type: $vehicleType\n" + "Company name: ${certificate.insuranceCompany?.name}\n" +
+                "Agency name: ${certificate.insuranceAgency?.name}\n" +
+                "Policy Number: ${certificate.policyNumber}\n" +
+                "Mark Type: $markType\n" +
+                "License Plate: ${vehicle?.licensePlate}\n" +
+                "Country of Registration: ${vehicle?.countryOfRegistration}\n"
+    }
+
+    private fun showDialogWithCertificates(
+        insuranceCertificateStrings: MutableList<String>,
+        insuranceCertificates: List<InsuranceCertificate>,
+        onCertificateSelected: (InsuranceCertificate?) -> Unit
+    ) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Select an Insurance Certificate")
+            .setSingleChoiceItems(
+                insuranceCertificateStrings.toTypedArray(),
+                -1
+            ) { dialog, which ->
+                val selectedCertificate = insuranceCertificates[which]
+
+                // Call the callback with the selected certificate
+                onCertificateSelected(selectedCertificate)
+                dialog.dismiss()
+            }
+            .show()
+    }
+
 }

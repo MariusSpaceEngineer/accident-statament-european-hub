@@ -9,7 +9,6 @@ import com.inetum.realdolmen.crashkit.R
 
 class LoadingFragment : Fragment() {
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
