@@ -41,10 +41,10 @@ public class PolicyHolderService {
 
             return Optional.of(dto);
         } else {
-            return Optional.empty(); // User not found
+            // User not found
+            return Optional.empty();
         }
     }
-
 
     public Optional<PolicyHolderPersonalInformationDTO> updatePolicyHolderPersonalInformation(String token, PolicyHolderPersonalInformationDTO policyHolderDTO) throws Exception {
         Optional<User> user = getUser(token);
@@ -118,6 +118,16 @@ public class PolicyHolderService {
         return userRepository.findByEmail(email);
     }
 
+    /**
+     * This method is used to add vehicle data transfer objects (DTOs) to a policyholder DTO.
+     * It iterates over the insurance certificates of the policyholder, and for each certificate,
+     * it checks the type of the associated vehicle. If the vehicle is an instance of Motor,
+     * it maps the Motor to a MotorDTO and sets it as the vehicle for the corresponding insurance certificate in the DTO.
+     * Similarly, if the vehicle is an instance of Trailer, it maps the Trailer to a TrailerDTO and sets it as the vehicle.
+     *
+     * @param policyHolder The policyholder from which the insurance certificates are obtained.
+     * @param dto The policyholder DTO to which the vehicle DTOs are added.
+     */
     private void addVehiclesDTOsToPolicyHolderDTO(PolicyHolder policyHolder, PolicyHolderDTO dto) {
         List<InsuranceCertificate> insuranceCertificates = policyHolder.getInsuranceCertificates();
         for (int i = 0; i < insuranceCertificates.size(); i++) {
