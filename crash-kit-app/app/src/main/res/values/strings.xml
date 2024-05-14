@@ -124,6 +124,9 @@
     <string name="location_permission_denied">Location permission denied.</string>
     <string name="error">Error</string>
     <string name="qr_code_generation_failed">Failed to generate QR code. Please try again.</string>
+    <string name="policy_holder_profile_not_found">Unable to fetch profile information. Please try again later.</string>
+    <string name="update_policy_holder_personal_information_failed">Unable to update personal information. Please try again later.</string>
+    <string name="update_policy_holder_insurance_information_failed">Unable to update insurance information. Please try again later.</string>
 
     <!--    Checkboxes-->
     <string name="login_remember_checkbox">Remember Me</string>
