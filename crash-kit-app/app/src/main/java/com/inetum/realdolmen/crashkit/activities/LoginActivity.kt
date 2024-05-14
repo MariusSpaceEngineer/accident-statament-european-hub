@@ -188,7 +188,12 @@ class LoginActivity : AppCompatActivity(), IValidationConfigure {
             this@LoginActivity.getString(R.string.logged_in_toast),
             Toast.LENGTH_LONG
         ).show()
-        startActivity(Intent(this, HomeActivity::class.java))
+
+        val intent = Intent(this, HomeActivity::class.java)
+        //Clear back stack so the user will not be able to navigate back to the login
+        //activity after a successful login
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
     }
 
     private fun handleErrorResponse(response: Response<LoginResponse>) {
