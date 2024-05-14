@@ -101,6 +101,7 @@
                 android:layout_marginBottom="16dp"
                 android:hint="@string/label_password"
                 app:boxBackgroundColor="@color/input_field_background"
+                app:endIconMode="password_toggle"
                 app:boxStrokeColor="@color/primary800"
 
                 >
