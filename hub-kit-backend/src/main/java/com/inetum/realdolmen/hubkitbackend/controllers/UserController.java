@@ -4,8 +4,10 @@ package com.inetum.realdolmen.hubkitbackend.controllers;
 import com.inetum.realdolmen.hubkitbackend.dto.InsuranceCertificateDTO;
 import com.inetum.realdolmen.hubkitbackend.dto.PolicyHolderDTO;
 import com.inetum.realdolmen.hubkitbackend.dto.PolicyHolderPersonalInformationDTO;
+import com.inetum.realdolmen.hubkitbackend.exceptions.VehicleMismatchException;
 import com.inetum.realdolmen.hubkitbackend.services.PolicyHolderService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,7 +28,6 @@ public class UserController {
     @GetMapping("/profile")
     public ResponseEntity<PolicyHolderDTO> getPolicyHolderProfile(HttpServletRequest request) {
         String token = extractToken(request);
-
         if (token != null) {
             try {
                 Optional<PolicyHolderDTO> userProfile = service.fetchPolicyHolderProfile(token);
@@ -43,12 +44,11 @@ public class UserController {
     }
 
     @PutMapping("/profile/personal")
-    public ResponseEntity<PolicyHolderPersonalInformationDTO> updatePolicyHolderPersonalInformation(HttpServletRequest request, @RequestBody PolicyHolderPersonalInformationDTO policyHolderDTO) {
+    public ResponseEntity<PolicyHolderPersonalInformationDTO> updatePolicyHolderPersonalInformation(HttpServletRequest request, @Valid @RequestBody PolicyHolderPersonalInformationDTO policyHolderDTO) {
         String token = extractToken(request);
         if (token != null) {
             try {
                 Optional<PolicyHolderPersonalInformationDTO> policyHolderPersonalInformationDTO = service.updatePolicyHolderPersonalInformation(token, policyHolderDTO);
-
                 return policyHolderPersonalInformationDTO.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
             } catch (Exception e) {
                 log.error("Error while updating policy holder personal information:", e);
@@ -62,17 +62,17 @@ public class UserController {
 
 
     @PutMapping("/profile/insurance")
-    public ResponseEntity<List<InsuranceCertificateDTO>> updatePolicyHolderInsuranceInformation(HttpServletRequest request, @RequestBody InsuranceCertificateDTO insuranceCertificateDTO) {
+    public ResponseEntity<?> updatePolicyHolderInsuranceInformation(HttpServletRequest request, @RequestBody InsuranceCertificateDTO insuranceCertificateDTO) {
         String token = extractToken(request);
 
         if (token != null) {
             try {
                 Optional<List<InsuranceCertificateDTO>> insuranceCertificate = service.updateInsuranceCertificateInformation(token, insuranceCertificateDTO);
-
                 return insuranceCertificate.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+            } catch (VehicleMismatchException e) {
+                return ResponseEntity.badRequest().body(e.getMessage());
             } catch (Exception e) {
-                log.error("Error while updating policy holder insurance information:", e);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
             }
         } else {
             // Invalid token
