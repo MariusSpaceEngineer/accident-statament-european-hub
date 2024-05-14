@@ -7,6 +7,7 @@ import com.inetum.realdolmen.hubkitbackend.requests.ResetCredentialsRequest;
 import com.inetum.realdolmen.hubkitbackend.responses.AuthenticationResponse;
 import com.inetum.realdolmen.hubkitbackend.responses.Response;
 import com.inetum.realdolmen.hubkitbackend.services.AuthenticationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,20 +23,24 @@ public class AuthenticationController {
     private final AuthenticationService service;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody PolicyHolderRegisterRequest request) {
+    public ResponseEntity<?> register(@Valid @RequestBody PolicyHolderRegisterRequest request) {
         try {
             var jwtToken = service.register(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(AuthenticationResponse.builder().token(jwtToken).build());
         } catch (UserAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(AuthenticationResponse.builder().errorMessage(e.getMessage()).build());
-        } catch (Exception e) {
+
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.badRequest().body(AuthenticationResponse.builder().errorMessage(e.getMessage()).build());
+        }
+        catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AuthenticationResponse.builder().errorMessage(e.getMessage()).build());
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         try {
             var jwtToken = service.login(request);
             return ResponseEntity.ok(AuthenticationResponse.builder().token(jwtToken).build());
