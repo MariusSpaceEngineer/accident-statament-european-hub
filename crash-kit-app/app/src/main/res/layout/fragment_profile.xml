@@ -23,7 +23,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:text="Logout"
+                android:text="@string/logout_button"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -223,8 +223,9 @@
 
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <Button
+                        <androidx.appcompat.widget.AppCompatButton
                             android:id="@+id/btn_profile_personal_card_update"
+                            style="@style/PrimaryRoundedButton"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:padding="15dp"
@@ -306,6 +307,7 @@
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="24dp"
                         android:orientation="vertical"
+                        android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -421,13 +423,13 @@
 
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <Button
+                        <androidx.appcompat.widget.AppCompatButton
                             android:id="@+id/btn_profile_date_time_picker_insurance_certificate_dates"
+                            style="@style/PrimaryBottomRoundedButton"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="0dp"
                             android:layout_marginBottom="16dp"
-                            android:background="@drawable/bottom_rounded_primary_button"
                             android:text="@string/label_pick_date"
                             android:textSize="16sp" />
 
@@ -546,6 +548,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
+                            android:enabled="false"
                             android:text="@string/is_trailer_checkbox" />
 
 
@@ -607,11 +610,13 @@
                             android:id="@+id/cb_profile_insurance_vehicle_material_damage_covered"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:enabled="false"
                             android:text="@string/material_damage_covered_checkbox" />
 
 
-                        <Button
+                        <androidx.appcompat.widget.AppCompatButton
                             android:id="@+id/btn_profile_insurance_card_update"
+                            style="@style/PrimaryRoundedButton"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:padding="15dp"
