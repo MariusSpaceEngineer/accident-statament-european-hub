@@ -19,22 +19,11 @@ class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
+        setContentView(binding.root)
 
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-        navController = findNavController(R.id.fragmentContainerView)
-        navController.setGraph(R.navigation.bottom_navigation_bar)
-        bottomNavigationView.setupWithNavController(navController)
+        setupNavController()
 
-        savedInstanceState?.let {
-            navController.restoreState(it.getBundle("nav_state"))
-        }
-
-        if (securedPreferences.isGuest()) {
-            val menu = binding.bottomNavigationView.menu
-            menu.removeItem(R.id.profileFragment)
-        }
+        removeProfileFragmentIfUserIsGuest()
 
         setupNavigation(navController, binding)
     }
@@ -45,6 +34,20 @@ class HomeActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
     }
 
+    private fun removeProfileFragmentIfUserIsGuest() {
+        if (securedPreferences.isGuest()) {
+            val menu = binding.bottomNavigationView.menu
+            menu.removeItem(R.id.profileFragment)
+        }
+    }
+
+    private fun setupNavController() {
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        navController = findNavController(R.id.fragmentContainerView)
+        navController.setGraph(R.navigation.bottom_navigation_bar)
+        bottomNavigationView.setupWithNavController(navController)
+    }
+
     private fun setupNavigation(navController: NavController, binding: ActivityHomeBinding) {
         binding.bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
@@ -52,17 +55,14 @@ class HomeActivity : AppCompatActivity() {
                     navController.navigate(R.id.homeFragment)
                     true
                 }
-
                 R.id.newStatementFragment -> {
                     navController.navigate(R.id.newStatementFragment)
                     true
                 }
-
                 R.id.profileFragment -> {
                     navController.navigate(R.id.profileFragment)
                     true
                 }
-
                 else -> false
             }
         }
