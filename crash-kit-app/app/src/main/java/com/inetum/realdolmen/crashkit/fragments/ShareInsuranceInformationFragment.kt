@@ -215,7 +215,7 @@ class ShareInsuranceInformationFragment : Fragment() {
         onCertificateSelected: (InsuranceCertificate?) -> Unit
     ) {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Select an Insurance Certificate")
+            .setTitle(requireContext().getString(R.string.insurance_certificate_select_dialog))
             .setSingleChoiceItems(
                 insuranceCertificateStrings.toTypedArray(),
                 -1
