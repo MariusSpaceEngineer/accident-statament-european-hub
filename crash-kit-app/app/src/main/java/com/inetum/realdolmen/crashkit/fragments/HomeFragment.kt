@@ -20,12 +20,10 @@ class HomeFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val view = binding.root
-
-        return view
+        return binding.root
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -36,7 +34,6 @@ class HomeFragment : Fragment() {
         super.onSaveInstanceState(outState)
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = findNavController()
@@ -45,6 +42,10 @@ class HomeFragment : Fragment() {
             binding.cvHomeQr.visibility = View.GONE
         }
 
+        setupClickListeners()
+    }
+
+    private fun setupClickListeners() {
         binding.cvHomeStatement.setOnClickListener {
             findNavController().navigate(R.id.newStatementFragment)
         }
