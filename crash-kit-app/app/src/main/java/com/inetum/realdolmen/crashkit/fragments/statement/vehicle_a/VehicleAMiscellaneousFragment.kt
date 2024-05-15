@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -52,13 +53,6 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
                     view?.findViewById<ViewPager2>(R.id.vp_statement_vehicle_a_accident_photos)
                 viewPager?.visibility = View.VISIBLE
                 viewPager?.adapter = ImageAdapter(accidentImages, this.requireContext())
-
-                Toast.makeText(
-                    requireContext(),
-                    "Image captured successfully!",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
             }
         } else {
             Toast.makeText(
@@ -73,7 +67,6 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            // Permission granted, start image capture
             startImageCapture()
         } else {
             Toast.makeText(requireContext(), "Camera permission denied", Toast.LENGTH_SHORT)
@@ -89,10 +82,12 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
     )
     private var pointOfImpactSketchBitmap: Bitmap? = null
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Lock the screen orientation to portrait
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         model = ViewModelProvider(requireActivity())[NewStatementViewModel::class.java]
-
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -106,7 +101,7 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding =
             FragmentVehicleAMiscellaneousBinding.inflate(inflater, container, false)
@@ -117,7 +112,6 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
         return view
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = findNavController()
@@ -125,72 +119,11 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
         // Get a reference to your PointOfImpactSketch and ScrollView
         val scrollView = view.findViewById<ScrollView>(R.id.sv_statement_vehicle_a_miscellaneous)
 
-        // Set an onTouchListener on the PointOfImpactSketch view
-        pointOfImpactSketchView.setOnTouchListener { _, _ ->
-            // When user touches the PointOfImpactSketch view, we consume the touch event and disable the scroll on the parent ScrollView
-            scrollView.requestDisallowInterceptTouchEvent(true)
-            false
-        }
+        setupOnTouchListener(scrollView)
 
         updateUIFromViewModel(model)
 
-        binding.btnStatementAccidentPrevious.setOnClickListener {
-            pointOfImpactSketchBitmap = if (pointOfImpactSketchView.shapes.isNotEmpty()) {
-                pointOfImpactSketchView.createBitmapFromView()
-            } else {
-                null
-            }
-            updateViewModelFromUI(model)
-
-            navController.popBackStack()
-        }
-
-        binding.btnStatementAccidentNext.setOnClickListener {
-            pointOfImpactSketchBitmap = if (pointOfImpactSketchView.shapes.isNotEmpty()) {
-                pointOfImpactSketchView.createBitmapFromView()
-            } else {
-                null
-            }
-            updateViewModelFromUI(model)
-
-            navController.navigate(R.id.vehicleBNewStatementFragment)
-        }
-
-        binding.btnStatementAccidentPicture.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.CAMERA
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                // Permission granted, start image capture
-                if (accidentImages.size < 3) {
-                    startImageCapture()
-                } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Maximum number of images reached",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            } else {
-                // Request camera permission
-                requestCameraPermission()
-            }
-        }
-    }
-
-    override fun updateUIFromViewModel(model: NewStatementViewModel) {
-        model.statementData.observe(viewLifecycleOwner) { statementData ->
-            binding.etStatementVehicleADriverRemarks.setText(statementData.vehicleARemarks)
-            binding.etStatementVehicleADamageDescription.setText(statementData.vehicleADamageDescription)
-            if (!statementData.vehicleAAccidentPhotos.isNullOrEmpty()) {
-                accidentImages = statementData.vehicleAAccidentPhotos!!
-                val viewPager =
-                    view?.findViewById<ViewPager2>(R.id.vp_statement_vehicle_a_accident_photos)
-                viewPager?.visibility = View.VISIBLE
-                viewPager?.adapter = ImageAdapter(accidentImages, this.requireContext())
-            }
-        }
+        setupOnClickListeners()
     }
 
     override fun updateViewModelFromUI(model: NewStatementViewModel) {
@@ -208,6 +141,88 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
 
     }
 
+    override fun updateUIFromViewModel(model: NewStatementViewModel) {
+        model.statementData.observe(viewLifecycleOwner) { statementData ->
+            binding.etStatementVehicleADriverRemarks.setText(statementData.vehicleARemarks)
+            binding.etStatementVehicleADamageDescription.setText(statementData.vehicleADamageDescription)
+            if (!statementData.vehicleAAccidentPhotos.isNullOrEmpty()) {
+                accidentImages = statementData.vehicleAAccidentPhotos!!
+                val viewPager =
+                    view?.findViewById<ViewPager2>(R.id.vp_statement_vehicle_a_accident_photos)
+                viewPager?.visibility = View.VISIBLE
+                viewPager?.adapter = ImageAdapter(accidentImages, this.requireContext())
+            }
+        }
+    }
+
+    private fun setupOnClickListeners() {
+        binding.btnStatementAccidentPrevious.setOnClickListener {
+            handleNavigationButtonClick()
+            navController.popBackStack()
+        }
+
+        binding.btnStatementAccidentNext.setOnClickListener {
+            handleNavigationButtonClick()
+            navController.navigate(R.id.vehicleBNewStatementFragment)
+        }
+
+        binding.btnStatementAccidentPicture.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.CAMERA
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                // Permission granted, start image capture
+                if (accidentImages.size < 3) {
+                    startImageCapture()
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.maximum_photos_reached),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } else {
+                // Request camera permission
+                requestCameraPermission()
+            }
+        }
+    }
+
+    private fun handleNavigationButtonClick() {
+        createSketchBitmap()
+        updateViewModelFromUI(model)
+    }
+
+    private fun createSketchBitmap() {
+        pointOfImpactSketchBitmap = if (pointOfImpactSketchView.shapes.isNotEmpty()) {
+            pointOfImpactSketchView.createBitmapFromView()
+        } else {
+            null
+        }
+    }
+
+    /**
+     * Sets up a touch listener for the PointOfImpactSketch view.
+     *
+     * This method is used to prevent the parent ScrollView from intercepting touch events
+     * when the user interacts with the PointOfImpactSketch view. This is achieved by
+     * calling the `requestDisallowInterceptTouchEvent` method on the ScrollView and passing
+     * `true` to it, which disables the scroll functionality of the ScrollView during the
+     * touch event on the PointOfImpactSketch view.
+     *
+     * @param scrollView The ScrollView whose scroll functionality is to be disabled during
+     * the touch event on the PointOfImpactSketch view.
+     */
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setupOnTouchListener(scrollView: ScrollView) {
+        pointOfImpactSketchView.setOnTouchListener { _, _ ->
+            // When user touches the PointOfImpactSketch view, the touch event is consumed and disable the scroll on the parent ScrollView
+            scrollView.requestDisallowInterceptTouchEvent(true)
+            false
+        }
+    }
+
     private fun requestCameraPermission() {
         // Request camera permission
         requestPermissionLauncher.launch(Manifest.permission.CAMERA)
@@ -222,8 +237,6 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
         pointOfImpactSketchView = view.findViewById(R.id.poi_vehicle_a_sketch)
         pointOfImpactSketchView.viewModel = model
 
-
-
         if (!model.pointOfImpactVehicleASketchShapes.value.isNullOrEmpty()) {
             model.pointOfImpactVehicleASketchShapes.observe(viewLifecycleOwner) { shapes ->
                 // Only add new shapes
@@ -237,7 +250,5 @@ class VehicleAMiscellaneousFragment : Fragment(), StatementDataHandler {
         } else {
             pointOfImpactSketchView.addShapes(shapes)
         }
-
     }
-
 }
