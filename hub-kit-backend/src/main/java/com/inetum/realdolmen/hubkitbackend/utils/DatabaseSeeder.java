@@ -121,7 +121,7 @@ public class DatabaseSeeder {
                     .phoneNumber("0465879425")
                     .email("stoicamarius9010@gmail.com")
                     .role(Roles.POLICY_HOLDER)
-                    .password(new BCryptPasswordEncoder().encode("1234"))
+                    .password(new BCryptPasswordEncoder().encode("Example_123"))
                     .build();
 
             var policyHolder2 = PolicyHolder.builder()
@@ -132,7 +132,7 @@ public class DatabaseSeeder {
                     .phoneNumber("0465879425")
                     .email("johnbravo@gmail.com")
                     .role(Roles.POLICY_HOLDER)
-                    .password(new BCryptPasswordEncoder().encode("1234"))
+                    .password(new BCryptPasswordEncoder().encode("Example_123"))
                     .build();
 
             var insuranceCertificates = new ArrayList<InsuranceCertificate>(insuranceCertificateRepository.findAll());

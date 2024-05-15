@@ -2,12 +2,15 @@ package com.inetum.realdolmen.hubkitbackend.integration;
 
 import com.inetum.realdolmen.hubkitbackend.models.User;
 import com.inetum.realdolmen.hubkitbackend.repositories.UserRepository;
+import com.inetum.realdolmen.hubkitbackend.services.MailService;
+import com.mailjet.client.errors.MailjetException;
 import io.restassured.specification.RequestSpecification;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -27,6 +30,10 @@ class AuthenticationIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
+    //TODO stop the email service from sending email in create user test
+    @MockBean
+    private MailService mailService;
+
     @BeforeAll
     public static void setUpClass() {
         baseURI = "https://localhost:8080/api/v1/auth";
@@ -39,7 +46,6 @@ class AuthenticationIntegrationTest {
         requestSpec = given()
                 .relaxedHTTPSValidation()
                 .contentType("application/json");
-
     }
 
     @Test
@@ -51,7 +57,7 @@ class AuthenticationIntegrationTest {
             User user = userOptional.get();
 
             requestSpec
-                    .body("{\"email\": \"" + user.getEmail() + "\", \"password\": 1234}")
+                    .body("{\"email\": \"" + user.getEmail() + "\", \"password\": \"" + user.getPassword() + "\"}")
                     .when()
                     .post(baseURI + "/login")
                     .then()
@@ -66,7 +72,7 @@ class AuthenticationIntegrationTest {
     @Order(2)
     public void userLoginIsNotRight() {
         requestSpec
-                .body("{\"email\": \"wrongEmail@gmail.com\", \"password\": 12345}")
+                .body("{\"email\": \"wrongEmail@gmail.com\", \"password\": \"Example_123\"}")
                 .when()
                 .post(baseURI + "/login")
                 .then()
@@ -79,7 +85,7 @@ class AuthenticationIntegrationTest {
     @Order(3)
     public void userLoginHasWrongEmail() {
         requestSpec
-                .body("{\"email\": \"wrongEmail@gmail...com\", \"password\": 12345}")
+                .body("{\"email\": \"wrongEmail@gmail...com\", \"password\": Example_123}")
                 .when()
                 .post(baseURI + "/login")
                 .then()
@@ -90,7 +96,7 @@ class AuthenticationIntegrationTest {
     @Order(4)
     public void userLoginHasMissingProperty() {
         requestSpec
-                .body("{\"email\": \"\", \"password\": 12345}")
+                .body("{\"email\": \"\", \"password\": Example_123}")
                 .when()
                 .post(baseURI + "/login")
                 .then()
@@ -99,7 +105,7 @@ class AuthenticationIntegrationTest {
 
     @Test
     @Order(5)
-    public void createUserThatDoesntExists() {
+    public void createUserThatDoesntExists() throws MailjetException {
         String jsonBody = "{\"email\": \"user2@gmail.com\", \"password\": \"ExamplePass123_\", \"firstName\": \"Jack\", " +
                 "\"lastName\": \"Sparrow\", \"address\": \"Koningin Astridplein 28, 2018 Antwerpen\", " +
                 "\"postalCode\": \"2678\", \"phoneNumber\": \"0465879485\"}";
@@ -112,7 +118,6 @@ class AuthenticationIntegrationTest {
                 .statusCode(201)
                 .body("token", notNullValue())
                 .body("errorMessage", nullValue());
-
     }
 
     @Test
