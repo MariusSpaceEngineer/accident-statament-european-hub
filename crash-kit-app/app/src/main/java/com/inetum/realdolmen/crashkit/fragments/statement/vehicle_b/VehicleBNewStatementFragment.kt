@@ -1,7 +1,9 @@
 package com.inetum.realdolmen.crashkit.fragments.statement.vehicle_b
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -27,9 +29,10 @@ import com.inetum.realdolmen.crashkit.dto.MotorDTO
 import com.inetum.realdolmen.crashkit.dto.PolicyHolderVehicleBResponse
 import com.inetum.realdolmen.crashkit.dto.TrailerDTO
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
+import com.inetum.realdolmen.crashkit.utils.IValidationConfigure
+import com.inetum.realdolmen.crashkit.utils.LogTags.TAG_QR_CODE
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
-import com.inetum.realdolmen.crashkit.utils.IValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.toLocalDate
 import com.journeyapps.barcodescanner.CaptureActivity
 
@@ -72,39 +75,40 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, IValidati
             if (scanResult.contents == null) {
                 Toast.makeText(requireContext(), "Cancelled", Toast.LENGTH_LONG).show()
             } else {
-                Log.i("QR-code", scanResult.contents)
+                Log.d(TAG_QR_CODE, scanResult.contents)
                 val json = scanResult.contents
                 try {
                     val policyHolderResponse =
                         gson.fromJson(json, PolicyHolderVehicleBResponse::class.java)
 
-                    Log.i("QR-code", policyHolderResponse.toString())
+                    Log.d(TAG_QR_CODE, "QR-code content: $policyHolderResponse")
 
                     bindPolicyHolderInformationToUI(binding, policyHolderResponse)
                     importInsuranceInformation(model, policyHolderResponse)
                 } catch (e: JsonSyntaxException) {
-                    Log.e("VehicleBNewStatementFragment", "Failed to parse JSON", e)
+                    Log.e(TAG_QR_CODE, "Failed to parse JSON", e)
+                    Toast.makeText(requireContext(), "Parsing failed, try again", Toast.LENGTH_LONG).show()
                 }
             }
         }
     }
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        // Lock the screen orientation to portrait
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         model = ViewModelProvider(requireActivity())[NewStatementViewModel::class.java]
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding =
             FragmentVehicleBNewStatementBinding.inflate(inflater, container, false)
-        val view = binding.root
-
-        return view
+        return binding.root
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -270,26 +274,18 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, IValidati
 
     private fun setupCheckboxListeners() {
         binding.cbStatementTrailerBHasRegistration.setOnCheckedChangeListener { _, isChecked ->
-            Log.i("trailer checkbox", isChecked.toString())
             if (isChecked) {
-                binding.llStatementTrailerBFields.visibility = View.VISIBLE
                 addTrailerFields()
                 addTrailerFieldsForValidation()
             } else {
-                binding.llStatementTrailerBFields.visibility = View.GONE
-                binding.etStatementTrailerBCountryOfRegistration.text = null
-                binding.etStatementTrailerBLicensePlate.text = null
                 removeTrailerFields()
             }
         }
 
         binding.cbStatementVehicleBMotorAbsent.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                binding.llStatementMotorBFields.visibility = View.GONE
                 removeMotorFields()
-
             } else {
-                binding.llStatementMotorBFields.visibility = View.VISIBLE
                 addMotorFields()
                 addMotorFieldsForValidation()
             }
@@ -297,6 +293,7 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, IValidati
     }
 
     private fun addTrailerFields() {
+        binding.llStatementTrailerBFields.visibility = View.VISIBLE
         (fields as MutableList).apply {
             add(binding.etStatementTrailerBLicensePlate)
             add(binding.etStatementTrailerBCountryOfRegistration)
@@ -330,6 +327,8 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, IValidati
     }
 
     private fun removeTrailerFields() {
+        clearTrailerFields()
+
         (validationRules as MutableList<Triple<EditText, (String?) -> Boolean, String>>).removeAll { rule ->
             rule.first == binding.etStatementTrailerBLicensePlate || rule.first == binding.etStatementTrailerBCountryOfRegistration
         }
@@ -344,7 +343,15 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, IValidati
         }
     }
 
+    private fun clearTrailerFields() {
+        binding.llStatementTrailerBFields.visibility = View.GONE
+        binding.etStatementTrailerBCountryOfRegistration.text = null
+        binding.etStatementTrailerBLicensePlate.text = null
+    }
+
     private fun removeMotorFields() {
+        binding.llStatementMotorBFields.visibility = View.GONE
+
         (validationRules as MutableList<Triple<EditText, (String?) -> Boolean, String>>).removeAll { rule ->
             rule.first == binding.etStatementVehicleBMotorMarkType || rule.first == binding.etStatementVehicleBMotorLicensePlate
                     || rule.first == binding.etStatementVehicleBMotorCountryOfRegistration
@@ -363,6 +370,7 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, IValidati
     }
 
     private fun addMotorFields() {
+        binding.llStatementMotorBFields.visibility = View.VISIBLE
         (fields as MutableList).apply {
             add(binding.etStatementVehicleBMotorMarkType)
             add(binding.etStatementVehicleBMotorLicensePlate)
@@ -404,20 +412,29 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, IValidati
     }
 
     private fun setupButtonClickListeners() {
+        setupPreviousButton()
+        setupAddTrailerButton()
+        setupNextButton()
+        setupImportInsuranceButton()
+    }
+
+    private fun setupPreviousButton() {
         binding.btnStatementAccidentPrevious.setOnClickListener {
             updateViewModelFromUI(model)
-
             navController.popBackStack()
         }
+    }
 
+    private fun setupAddTrailerButton() {
         binding.btnStatementVehicleBAddTrailer.setOnClickListener {
             hasTrailer = updateTrailerButtonState(hasTrailer)
         }
+    }
 
+    private fun setupNextButton() {
         binding.btnStatementAccidentNext.setOnClickListener {
             formHelper.clearErrors()
             binding.tvStatementNoMotorNoTrailerError.visibility = View.GONE
-
             formHelper.validateFields(validationRules)
 
             if (fields.none { it.error != null } && isVehicleAssigned()) {
@@ -436,7 +453,9 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, IValidati
                 binding.tvStatementNoMotorNoTrailerError.visibility = View.VISIBLE
             }
         }
+    }
 
+    private fun setupImportInsuranceButton() {
         binding.btnStatementVehicleBImportInsuranceInformation.setOnClickListener {
             if (ContextCompat.checkSelfPermission(
                     requireContext(),
@@ -493,7 +512,6 @@ class VehicleBNewStatementFragment : Fragment(), StatementDataHandler, IValidati
         binding.etStatementPolicyHolderBEmail.error = null
 
         val vehicle = response.insuranceCertificate?.vehicle
-        Log.i("vehicle", vehicle.toString())
 
         if (vehicle is MotorDTO) {
             binding.etStatementVehicleBMotorMarkType.setText(vehicle.markType)
