@@ -60,6 +60,11 @@ class ProfileFragmentInstrumentedUITest {
         // Launch the fragment in a test container
         launchFragmentInContainer<ProfileFragment>(themeResId = R.style.Theme_CrashKit)
 
+        //Check if the logout button is displayed and clickable
+        onView(withId(R.id.btn_profile_logout))
+            .check(matches(isDisplayed()))
+            .check(matches(isClickable()))
+
         // Check if the cards are displayed
         onView(withId(R.id.tv_profile_title))
             .check(matches(isDisplayed()))
@@ -238,10 +243,20 @@ class ProfileFragmentInstrumentedUITest {
             .check(matches(isDisplayed()))
         onView(withId(R.id.et_profile_insurance_agency_phone_number_value))
             .check(matches(isDisplayed()))
-
         onView(withId(R.id.ib_profile_insurance_card_button))
             .perform(scrollTo())
             .check(matches(isClickable()))
+        onView(withId(R.id.cb_profile_insurance_vehicle_material_damage_covered))
+            .perform(scrollTo())
+            .check(matches(isDisplayed()))
+        onView(withId(R.id.cb_profile_insurance_agency_vehicle_is_trailer))
+            .check(matches(isDisplayed()))
+        onView(withId(R.id.et_profile_insurance_agency_vehicle_mark_type_value))
+            .check(matches(isDisplayed()))
+        onView(withId(R.id.et_profile_insurance_vehicle_license_plate_value))
+            .check(matches(isDisplayed()))
+        onView(withId(R.id.et_profile_insurance_vehicle_country_of_registration_value))
+            .check(matches(isDisplayed()))
 
         //Check if the fields are not editable
         onView(withId(R.id.et_profile_insurance_company_name_value))
@@ -255,7 +270,6 @@ class ProfileFragmentInstrumentedUITest {
         onView(withId(R.id.et_profile_insurance_company_insurance_expiration_date_value))
             .check(matches(not(isEnabled())))
         onView(withId(R.id.et_profile_insurance_agency_country_value))
-            .perform(scrollTo())
             .check(matches(not(isEnabled())))
         onView(withId(R.id.et_profile_insurance_agency_name_value))
             .check(matches(not(isEnabled())))
@@ -264,6 +278,16 @@ class ProfileFragmentInstrumentedUITest {
         onView(withId(R.id.et_profile_insurance_agency_phone_number_value))
             .check(matches(not(isEnabled())))
         onView(withId(R.id.et_profile_insurance_agency_address_value))
+            .check(matches(not(isEnabled())))
+        onView(withId(R.id.cb_profile_insurance_agency_vehicle_is_trailer))
+            .check(matches(not(isEnabled())))
+        onView(withId(R.id.et_profile_insurance_agency_vehicle_mark_type_value))
+            .check(matches(not(isEnabled())))
+        onView(withId(R.id.et_profile_insurance_vehicle_license_plate_value))
+            .check(matches(not(isEnabled())))
+        onView(withId(R.id.et_profile_insurance_vehicle_country_of_registration_value))
+            .check(matches(not(isEnabled())))
+        onView(withId(R.id.cb_profile_insurance_vehicle_material_damage_covered))
             .check(matches(not(isEnabled())))
 
         //Click the insurance card edit button in order to make the insurance card fields editable
@@ -284,7 +308,7 @@ class ProfileFragmentInstrumentedUITest {
             )
         )
 
-        // Add tests to check if the user can add text to every field in the insurance card
+        //Check if the user can add text to every field in the insurance card
         onView(withId(R.id.et_profile_insurance_company_name_value)).perform(
             scrollTo(),
             typeText("Company Name"),
@@ -298,6 +322,8 @@ class ProfileFragmentInstrumentedUITest {
             typeText("GC4894946"),
             ViewActions.closeSoftKeyboard()
         )
+        onView(withId(R.id.btn_profile_date_time_picker_insurance_certificate_dates))
+            .check(matches(isClickable()))
         onView(withId(R.id.et_profile_insurance_agency_country_value))
             .perform(
                 scrollTo(),
@@ -309,42 +335,47 @@ class ProfileFragmentInstrumentedUITest {
                 typeText("Agency Name"),
                 ViewActions.closeSoftKeyboard()
             )
-
-        //TODO: find out why those fields crash the emulator
-//        onView(withId(R.id.et_profile_insurance_agency_email_value))
-//            .perform(
-//                ViewActions.typeText("agency@example.com"),
-//                ViewActions.closeSoftKeyboard()
-//            )
-//        onView(withId(R.id.et_profile_insurance_agency_phone_number_value))
-//            .perform(
-//                ViewActions.typeText("0123456789"),
-//                ViewActions.closeSoftKeyboard()
-//            )
-//        onView(withId(R.id.et_profile_insurance_agency_address_value))
-//            .perform(
-//                ViewActions.typeText("Example str."),
-//                ViewActions.closeSoftKeyboard()
-//            )
-
-        // Check the entered text
-        onView(withId(R.id.et_profile_insurance_company_name_value)).perform(scrollTo())
-            .check(matches(withText("Company Name")))
-        onView(withId(R.id.et_profile_insurance_company_policy_number_value)).check(
-            matches(
-                withText(
-                    "PN454949"
-                )
+        onView(withId(R.id.et_profile_insurance_agency_email_value))
+            .perform(
+                typeText("agency@example.com"),
+                ViewActions.closeSoftKeyboard()
             )
-        )
-        onView(withId(R.id.et_profile_insurance_company_green_card_number_value)).check(
-            matches(
-                withText("GC4894946")
+        onView(withId(R.id.et_profile_insurance_agency_phone_number_value))
+            .perform(
+                typeText("0123456789"),
+                ViewActions.closeSoftKeyboard()
             )
-        )
-        onView(withId(R.id.et_profile_insurance_agency_country_value)).perform(scrollTo())
-            .check(matches(withText("Country")))
-        onView(withId(R.id.et_profile_insurance_agency_name_value)).check(matches(withText("Agency Name")))
+        onView(withId(R.id.et_profile_insurance_agency_address_value))
+            .perform(
+                typeText("Example str."),
+                ViewActions.closeSoftKeyboard()
+            )
+        onView(withId(R.id.cb_profile_insurance_vehicle_material_damage_covered))
+            .perform(
+                scrollTo(),
+                click(),
+            )
+        onView(withId(R.id.et_profile_insurance_agency_vehicle_mark_type_value))
+            .perform(
+                typeText("Mark, type"),
+                ViewActions.closeSoftKeyboard()
+            )
+        onView(withId(R.id.cb_profile_insurance_agency_vehicle_is_trailer))
+            .perform(
+                click(),
+            )
+        onView(withId(R.id.et_profile_insurance_agency_vehicle_mark_type_value))
+            .check(matches(not(isDisplayed())))
+        onView(withId(R.id.et_profile_insurance_vehicle_license_plate_value))
+            .perform(
+                typeText("LP189198"),
+                ViewActions.closeSoftKeyboard()
+            )
+        onView(withId(R.id.et_profile_insurance_vehicle_country_of_registration_value))
+            .perform(
+                typeText("country"),
+                ViewActions.closeSoftKeyboard()
+            )
 
         //Click the personal card edit button in order to make the personal card fields uneditable again
         onView(withId(R.id.tv_profile_insurance_card_edit))
@@ -375,7 +406,6 @@ class ProfileFragmentInstrumentedUITest {
         onView(withId(R.id.et_profile_insurance_company_insurance_expiration_date_value))
             .check(matches(not(isEnabled())))
         onView(withId(R.id.et_profile_insurance_agency_country_value))
-            .perform(scrollTo())
             .check(matches(not(isEnabled())))
         onView(withId(R.id.et_profile_insurance_agency_name_value))
             .check(matches(not(isEnabled())))
@@ -416,7 +446,14 @@ class ProfileFragmentInstrumentedUITest {
             .check(matches(not(isDisplayed())))
         onView(withId(R.id.et_profile_insurance_agency_phone_number_value))
             .check(matches(not(isDisplayed())))
-
+        onView(withId(R.id.cb_profile_insurance_agency_vehicle_is_trailer))
+            .check(matches(not(isDisplayed())))
+        onView(withId(R.id.et_profile_insurance_vehicle_license_plate_value))
+            .check(matches(not(isDisplayed())))
+        onView(withId(R.id.et_profile_insurance_vehicle_country_of_registration_value))
+            .check(matches(not(isDisplayed())))
+        onView(withId(R.id.cb_profile_insurance_vehicle_material_damage_covered))
+            .check(matches(not(isDisplayed())))
     }
 
 }
