@@ -1,6 +1,7 @@
 package com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a
 
 import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -26,11 +27,12 @@ class VehicleACircumstancesFragment : Fragment(), StatementDataHandler {
     private var _binding: FragmentVehicleACircumstancesBinding? = null
     private val binding get() = _binding!!
 
-
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Lock the screen orientation to portrait
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         model = ViewModelProvider(requireActivity())[NewStatementViewModel::class.java]
-
     }
 
     override fun onCreateView(
@@ -39,7 +41,6 @@ class VehicleACircumstancesFragment : Fragment(), StatementDataHandler {
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentVehicleACircumstancesBinding.inflate(inflater, container, false)
-
         return binding.root
     }
 
@@ -60,20 +61,7 @@ class VehicleACircumstancesFragment : Fragment(), StatementDataHandler {
 
         updateUIFromViewModel(model)
 
-        binding.btnStatementAccidentPrevious.setOnClickListener {
-            checkedCheckboxes = getCheckedCheckboxes(checkboxes)
-
-            updateViewModelFromUI(model)
-
-            navController.popBackStack()
-        }
-
-        binding.btnStatementAccidentNext.setOnClickListener {
-            checkedCheckboxes = getCheckedCheckboxes(checkboxes)
-            updateViewModelFromUI(model)
-
-            navController.navigate(R.id.vehicleAMiscellaneousFragment)
-        }
+        setupNavigationButtons()
     }
 
     override fun updateUIFromViewModel(model: NewStatementViewModel) {
@@ -90,11 +78,38 @@ class VehicleACircumstancesFragment : Fragment(), StatementDataHandler {
         model.vehicleACircumstances.value = checkedCheckboxes
     }
 
+    private fun setupNavigationButtons() {
+        binding.btnStatementAccidentPrevious.setOnClickListener {
+            checkedCheckboxes = getCheckedCheckboxes(checkboxes)
+
+            updateViewModelFromUI(model)
+
+            navController.popBackStack()
+        }
+
+        binding.btnStatementAccidentNext.setOnClickListener {
+            checkedCheckboxes = getCheckedCheckboxes(checkboxes)
+            updateViewModelFromUI(model)
+
+            navController.navigate(R.id.vehicleAMiscellaneousFragment)
+        }
+    }
+
     private fun setupCheckboxes() {
         setupCheckboxesList()
         setupCheckboxListeners()
     }
 
+    /**
+     * This method sets up listeners for all checkboxes in the `checkboxes` list.
+     *
+     * The method does the following:
+     * 1. Retrieves a string from the application's context with the key `R.string.label_amount_of_crosses`.
+     * 2. Iterates over each checkbox in the `checkboxes` list.
+     * 3. For each checkbox, it sets an `OnCheckedChangeListener`.
+     * 4. Inside the listener, it counts the number of checkboxes that are currently checked.
+     * 5. It then updates the text of `tvStatementCircumstancesVehicleATotalCrosses` TextView in the `binding` object with the count of checked checkboxes.
+     */
     @SuppressLint("SetTextI18n")
     private fun setupCheckboxListeners() {
         val string = requireContext().getString(R.string.label_amount_of_crosses)
