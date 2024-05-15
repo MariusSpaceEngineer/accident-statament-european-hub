@@ -25,7 +25,7 @@
         android:name="com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleANewStatementFragment"
         android:label="VehicleANewStatementFragment" />
     <fragment
-        android:id="@+id/vehicleAInsuranceFragment"
+        android:id="@+id/vehicleAMotorInsuranceFragment"
         android:name="com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleAMotorInsuranceFragment"
         android:label="VehicleAInsuranceFragment" />
     <fragment

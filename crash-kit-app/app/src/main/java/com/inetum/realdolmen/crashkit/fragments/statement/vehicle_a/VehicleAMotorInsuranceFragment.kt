@@ -114,7 +114,7 @@ class VehicleAMotorInsuranceFragment : Fragment(), StatementDataHandler, IValida
             binding.etStatementVehicleAInsuranceAgencyPhoneNumber.setText(statementData.vehicleAInsuranceAgencyPhoneNumber)
             binding.etStatementVehicleAInsuranceAgencyEmail.setText(statementData.vehicleAInsuranceAgencyEmail)
             binding.cbStatementDamagedCovered.isChecked =
-                statementData.vehicleAMaterialDamageCovered
+                statementData.vehicleAMotorMaterialDamageCovered
         }
     }
 
@@ -142,7 +142,7 @@ class VehicleAMotorInsuranceFragment : Fragment(), StatementDataHandler, IValida
                 binding.etStatementVehicleAInsuranceAgencyPhoneNumber.text.toString()
             this.vehicleAInsuranceAgencyEmail =
                 binding.etStatementVehicleAInsuranceAgencyEmail.text.toString()
-            this.vehicleAMaterialDamageCovered = binding.cbStatementDamagedCovered.isChecked
+            this.vehicleAMotorMaterialDamageCovered = binding.cbStatementDamagedCovered.isChecked
         }
     }
 

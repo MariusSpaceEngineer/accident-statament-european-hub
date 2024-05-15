@@ -71,7 +71,7 @@ data class StatementData(
     var vehicleAInsuranceAgencyCountry: String = "",
     var vehicleAInsuranceAgencyPhoneNumber: String = "",
     var vehicleAInsuranceAgencyEmail: String = "",
-    var vehicleAMaterialDamageCovered: Boolean = false,
+    var vehicleAMotorMaterialDamageCovered: Boolean = false,
     var vehicleATrailerInsuranceCompanyName: String = "",
     var vehicleATrailerInsuranceCompanyPolicyNumber: String = "",
     var vehicleATrailerInsuranceCompanyGreenCardNumber: String = "",

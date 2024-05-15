@@ -1,5 +1,7 @@
 package com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a
 
+import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -21,9 +23,10 @@ import com.inetum.realdolmen.crashkit.dto.PolicyHolderResponse
 import com.inetum.realdolmen.crashkit.dto.TrailerDTO
 import com.inetum.realdolmen.crashkit.dto.Vehicle
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
+import com.inetum.realdolmen.crashkit.utils.IValidationConfigure
+import com.inetum.realdolmen.crashkit.utils.LogTags.TAG_NETWORK_REQUEST
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
-import com.inetum.realdolmen.crashkit.utils.IValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.createSimpleDialog
 import com.inetum.realdolmen.crashkit.utils.showToast
 import com.inetum.realdolmen.crashkit.utils.toLocalDate
@@ -55,17 +58,18 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, IValidati
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         model = ViewModelProvider(requireActivity())[NewStatementViewModel::class.java]
     }
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentVehicleANewStatementBinding.inflate(inflater, container, false)
-
+        // Lock the screen orientation to portrait
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         return binding.root
     }
 
@@ -109,7 +113,6 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, IValidati
             binding.cbStatementVehicleAMotorAbsent.isChecked = statementData.vehicleAMotorAbsent
             //Trailer
             hasTrailer = updateTrailerButtonState(statementData.vehicleATrailerPresent)
-            Log.i("Trailer present", statementData.vehicleATrailerPresent.toString())
             if (statementData.vehicleATrailerLicensePlate.isNotEmpty() && statementData.vehicleATrailerCountryOfRegistration.isNotEmpty()) {
                 binding.cbStatementTrailerHasRegistration.isChecked = true
                 binding.etStatementTrailerALicensePlate.setText(statementData.vehicleATrailerLicensePlate)
@@ -160,7 +163,6 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, IValidati
             binding.etStatementVehicleAMotorLicensePlate,
             binding.etStatementVehicleAMotorCountryOfRegistration
         )
-
 
         this.validationRules = mutableListOf<Triple<EditText, (String?) -> Boolean, String>>(
             Triple(
@@ -248,24 +250,18 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, IValidati
     private fun setupCheckboxListeners() {
         binding.cbStatementTrailerHasRegistration.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                binding.llStatementTrailerAFields.visibility = View.VISIBLE
                 addTrailerFields()
                 addTrailerFieldsForValidation()
             } else {
-                binding.llStatementTrailerAFields.visibility = View.GONE
-                binding.etStatementTrailerACountryOfRegistration.text = null
-                binding.etStatementTrailerALicensePlate.text = null
                 removeTrailerFields()
             }
         }
 
         binding.cbStatementVehicleAMotorAbsent.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                binding.llStatementMotorAFields.visibility = View.GONE
                 removeMotorFields()
 
             } else {
-                binding.llStatementMotorAFields.visibility = View.VISIBLE
                 addMotorFields()
                 addMotorFieldsForValidation()
             }
@@ -276,47 +272,49 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, IValidati
         binding.btnStatementVehicleAImportInsuranceInformation.setOnClickListener {
             getPolicyHolderInsurances()
         }
-
         binding.btnStatementVehicleAImportMotorInsuranceInformation.setOnClickListener {
             importVehicleInformation(insuranceCertificates, MotorDTO::class.java)
         }
-
         binding.btnStatementVehicleAAddTrailer.setOnClickListener {
             hasTrailer = updateTrailerButtonState(hasTrailer)
         }
+        binding.btnStatementVehicleAImportTrailerInsuranceInformation.setOnClickListener { handleTrailerInsuranceClick() }
+        binding.btnStatementAccidentPrevious.setOnClickListener { handlePreviousClick() }
+        binding.btnStatementAccidentNext.setOnClickListener { handleNextClick() }
+    }
 
-        binding.btnStatementVehicleAImportTrailerInsuranceInformation.setOnClickListener {
-            importVehicleInformation(insuranceCertificates, TrailerDTO::class.java)
-            removeTrailerFieldsErrors()
-        }
+    private fun handleTrailerInsuranceClick() {
+        importVehicleInformation(insuranceCertificates, TrailerDTO::class.java)
+        removeTrailerFieldsErrors()
+    }
 
-        binding.btnStatementAccidentPrevious.setOnClickListener {
+    private fun handlePreviousClick() {
+        updateViewModelFromUI(model)
+        navController.popBackStack()
+    }
+
+    private fun handleNextClick() {
+        formHelper.clearErrors()
+        binding.tvStatementNoMotorNoTrailerError.visibility = View.GONE
+        formHelper.validateFields(validationRules)
+
+        if (fields.none { it.error != null } && isVehicleAssigned()) {
             updateViewModelFromUI(model)
-
-            navController.popBackStack()
+            navigateToNextFragment()
+        } else if (!isVehicleAssigned()) {
+            binding.tvStatementNoMotorNoTrailerError.visibility = View.VISIBLE
         }
+    }
 
-        binding.btnStatementAccidentNext.setOnClickListener {
-            formHelper.clearErrors()
-            binding.tvStatementNoMotorNoTrailerError.visibility = View.GONE
-
-            formHelper.validateFields(validationRules)
-
-            if (fields.none { it.error != null } && isVehicleAssigned()) {
-                updateViewModelFromUI(model)
-                if (binding.cbStatementVehicleAMotorAbsent.isChecked) {
-                    if (binding.cbStatementTrailerHasRegistration.isChecked) {
-                        navController.navigate(R.id.vehicleATrailerInsuranceFragment)
-                    } else {
-                        navController.navigate(R.id.vehicleADriverFragment)
-                    }
-                } else {
-                    navController.navigate(R.id.vehicleAInsuranceFragment)
-                }
-
-            } else if (!isVehicleAssigned()) {
-                binding.tvStatementNoMotorNoTrailerError.visibility = View.VISIBLE
+    private fun navigateToNextFragment() {
+        if (binding.cbStatementVehicleAMotorAbsent.isChecked) {
+            if (binding.cbStatementTrailerHasRegistration.isChecked) {
+                navController.navigate(R.id.vehicleATrailerInsuranceFragment)
+            } else {
+                navController.navigate(R.id.vehicleADriverFragment)
             }
+        } else {
+            navController.navigate(R.id.vehicleAMotorInsuranceFragment)
         }
     }
 
@@ -328,21 +326,25 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, IValidati
                     handlePolicyHolderProfileResponse(response)
                 }
             } catch (e: Exception) {
-                Log.e("NetworkRequest", "Exception occurred: ", e)
-                withContext(Dispatchers.Main) {
-                    val message = when (e) {
-                        is SocketTimeoutException -> requireContext().getString(
-                            R.string.error_network
-                        )
-
-                        else -> requireContext().getString(R.string.unknown_error)
-                    }
-                    requireContext().createSimpleDialog(
-                        getString(R.string.error),
-                        message
-                    )
-                }
+                handleErrorResponse(e)
             }
+        }
+    }
+
+    private suspend fun handleErrorResponse(e: Exception) {
+        Log.e(TAG_NETWORK_REQUEST, "Exception occurred: ", e)
+        withContext(Dispatchers.Main) {
+            val message = when (e) {
+                is SocketTimeoutException -> requireContext().getString(
+                    R.string.error_network
+                )
+
+                else -> requireContext().getString(R.string.unknown_error)
+            }
+            requireContext().createSimpleDialog(
+                getString(R.string.error),
+                message
+            )
         }
     }
 
@@ -352,27 +354,32 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, IValidati
     }
 
     private fun handlePolicyHolderProfileResponse(response: Response<PolicyHolderResponse>) {
-        Log.i("Request", "Request code: ${response.code()}")
+        Log.d(TAG_NETWORK_REQUEST, "Request code: ${response.code()}")
         if (response.isSuccessful) {
-            val personalInformationResponse = response.body()
-            if (personalInformationResponse != null) {
-                requireContext().showToast("Import Successful")
-                insuranceCertificates = personalInformationResponse.insuranceCertificates
-                Log.i("insurance certificates", insuranceCertificates.toString())
-                bindPolicyHolderInformationToUI(binding, personalInformationResponse)
-            }
+            handleSuccessfulPolicyHolderProfileResponse(response)
         } else {
+            handleFailedPolicyHolderProfileResponse()
+        }
+    }
 
-            val errorMessage = "Error while fetching insurance information"
-            requireContext().createSimpleDialog(getString(R.string.error), errorMessage)
+    private fun handleFailedPolicyHolderProfileResponse() {
+        requireContext().createSimpleDialog(
+            getString(R.string.error),
+            getString(R.string.policy_holder_profile_fetch_failed)
+        )
+    }
+
+    private fun handleSuccessfulPolicyHolderProfileResponse(response: Response<PolicyHolderResponse>) {
+        val personalInformationResponse = response.body()
+        if (personalInformationResponse != null) {
+            requireContext().showToast(getString(R.string.import_successful))
+            insuranceCertificates = personalInformationResponse.insuranceCertificates
+            bindPolicyHolderInformationToUI(binding, personalInformationResponse)
         }
     }
 
     private fun updateTrailerButtonState(hasTrailer: Boolean): Boolean {
         val value: Boolean = !hasTrailer
-
-        Log.i("Has trailer", hasTrailer.toString())
-
         //If user has no trailer
         if (value) {
             binding.btnStatementVehicleAAddTrailer.text =
@@ -393,11 +400,18 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, IValidati
     }
 
     private fun removeTrailerFields() {
+        clearTrailerFields()
         (validationRules as MutableList<Triple<EditText, (String?) -> Boolean, String>>).removeAll { rule ->
             rule.first == binding.etStatementTrailerALicensePlate || rule.first == binding.etStatementTrailerACountryOfRegistration
         }
 
         removeTrailerFieldsErrors()
+    }
+
+    private fun clearTrailerFields() {
+        binding.llStatementTrailerAFields.visibility = View.GONE
+        binding.etStatementTrailerACountryOfRegistration.text = null
+        binding.etStatementTrailerALicensePlate.text = null
     }
 
     private fun removeTrailerFieldsErrors() {
@@ -412,6 +426,7 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, IValidati
     }
 
     private fun addTrailerFields() {
+        binding.llStatementTrailerAFields.visibility = View.VISIBLE
         (fields as MutableList).apply {
             add(binding.etStatementTrailerALicensePlate)
             add(binding.etStatementTrailerACountryOfRegistration)
@@ -445,6 +460,7 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, IValidati
     }
 
     private fun addMotorFields() {
+        binding.llStatementMotorAFields.visibility = View.VISIBLE
         (fields as MutableList).apply {
             add(binding.etStatementVehicleAMotorMarkType)
             add(binding.etStatementVehicleAMotorLicensePlate)
@@ -486,6 +502,8 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, IValidati
     }
 
     private fun removeMotorFields() {
+        binding.llStatementMotorAFields.visibility = View.GONE
+
         (validationRules as MutableList<Triple<EditText, (String?) -> Boolean, String>>).removeAll { rule ->
             rule.first == binding.etStatementVehicleAMotorMarkType || rule.first == binding.etStatementVehicleAMotorLicensePlate
                     || rule.first == binding.etStatementVehicleAMotorCountryOfRegistration
@@ -516,63 +534,74 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, IValidati
         binding.etStatementPolicyHolderEmail.setText(response.email)
     }
 
+    /**
+     * This function imports vehicle information based on the provided insurance certificates and vehicle type.
+     *
+     * @param insuranceCertificates A list of insurance certificates. Each certificate contains information about a vehicle.
+     * @param vehicleType The class of the vehicle type to be imported (e.g., MotorDTO::class.java, TrailerDTO::class.java).
+     *
+     * If the list of insurance certificates is not null, the function filters the vehicles based on the provided vehicle type,
+     * converts the filtered vehicles to string descriptions, and then shows a dialog for the user to select an insurance certificate.
+     *
+     * If the list of insurance certificates is null, the function shows a toast message indicating that no vehicles were found.
+     */
     private fun importVehicleInformation(
         insuranceCertificates: List<InsuranceCertificate>?,
         vehicleType: Class<out Vehicle>
     ) {
-        Log.i("importVehicleInformation", "Called with vehicleType: ${vehicleType.simpleName}")
         if (insuranceCertificates != null) {
-            val vehicles = insuranceCertificates.filter { vehicleType.isInstance(it.vehicle) }
-            val insuranceCertificateStrings =
-                vehicles.map {
-                    val vehicleInfo =
-                        "License Plate: ${it.vehicle?.licensePlate}\nCountry of Registration: ${it.vehicle?.countryOfRegistration}"
-                    if (it.vehicle is MotorDTO) {
-                        "$vehicleInfo\nMark Type: ${it.vehicle.markType}"
-                    } else {
-                        vehicleInfo
-                    }
-                }.toTypedArray()
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Select an Insurance Certificate")
-                .setSingleChoiceItems(
-                    insuranceCertificateStrings,
-                    -1
-                ) { dialog, which ->
-                    val selectedInsurance = vehicles[which]
-                    val selectedVehicle = selectedInsurance.vehicle
-
-
-                    Log.i("Selected", selectedVehicle.toString())
-
-                    // Check the type of the selected vehicle
-                    when (selectedVehicle) {
-                        is MotorDTO -> {
-                            // Update fields specific to MotorDTO
-                            bindMotorInformationToUI(selectedVehicle)
-                            bindMotorInsuranceInformationToViewModel(selectedInsurance)
-                            model.statementData.value?.apply {
-                                vehicleAMaterialDamageCovered = selectedInsurance.materialDamageCovered ?: false
-                            }
-                        }
-
-                        is TrailerDTO -> {
-                            // Update fields specific to TrailerDTO
-                            bindTrailerInformationToUI(selectedVehicle)
-                            bindTrailerInsuranceInformationToViewModel(selectedInsurance)
-                            model.statementData.value?.apply {
-                                vehicleATrailerMaterialDamageCovered = selectedInsurance.materialDamageCovered ?: false
-                            }
-                        }
-
-                        null -> dialog.dismiss()
-                    }
-
-
-                    dialog.dismiss()
-                }.show()
+            val vehicles = filterVehicles(insuranceCertificates, vehicleType)
+            val insuranceCertificateStrings = convertVehiclesToStringDescription(vehicles)
+            showInsuranceCertificateDialog(vehicles, insuranceCertificateStrings)
         } else {
-            requireContext().showToast("No vehicles found")
+            requireContext().showToast(getString(R.string.no_vehicles_found))
+        }
+    }
+
+    private fun filterVehicles(
+        insuranceCertificates: List<InsuranceCertificate>,
+        vehicleType: Class<out Vehicle>
+    ): List<InsuranceCertificate> {
+        return insuranceCertificates.filter { vehicleType.isInstance(it.vehicle) }
+    }
+
+    private fun convertVehiclesToStringDescription(vehicles: List<InsuranceCertificate>): Array<String> {
+        return vehicles.map {
+            val vehicleInfo =
+                "License Plate: ${it.vehicle?.licensePlate}\nCountry of Registration: ${it.vehicle?.countryOfRegistration}"
+            if (it.vehicle is MotorDTO) {
+                "$vehicleInfo\nMark Type: ${it.vehicle.markType}"
+            } else {
+                vehicleInfo
+            }
+        }.toTypedArray()
+    }
+
+    private fun showInsuranceCertificateDialog(
+        vehicles: List<InsuranceCertificate>,
+        insuranceCertificateStrings: Array<String>
+    ) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(requireContext().getString(R.string.insurance_certificate_select_dialog))
+            .setSingleChoiceItems(insuranceCertificateStrings, -1) { dialog, which ->
+                handleInsuranceSelection(vehicles[which])
+                dialog.dismiss()
+            }.show()
+    }
+
+    private fun handleInsuranceSelection(selectedInsurance: InsuranceCertificate) {
+        when (val selectedVehicle = selectedInsurance.vehicle) {
+            is MotorDTO -> {
+                bindMotorInformationToUI(selectedVehicle)
+                bindMotorInsuranceInformationToViewModel(selectedInsurance)
+            }
+
+            is TrailerDTO -> {
+                bindTrailerInformationToUI(selectedVehicle)
+                bindTrailerInsuranceInformationToViewModel(selectedInsurance)
+            }
+
+            null -> return
         }
     }
 
@@ -598,6 +627,9 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, IValidati
                 selectedInsurance.insuranceAgency?.phoneNumber.toString()
             this.vehicleATrailerInsuranceAgencyEmail =
                 selectedInsurance.insuranceAgency?.email.toString()
+            this.vehicleATrailerMaterialDamageCovered =
+                selectedInsurance.materialDamageCovered ?: false
+
         }
     }
 
@@ -623,10 +655,13 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, IValidati
                 selectedInsurance.insuranceAgency?.phoneNumber.toString()
             this.vehicleAInsuranceAgencyEmail =
                 selectedInsurance.insuranceAgency?.email.toString()
+            this.vehicleAMotorMaterialDamageCovered =
+                selectedInsurance.materialDamageCovered ?: false
         }
     }
 
     private fun bindTrailerInformationToUI(selectedVehicle: TrailerDTO) {
+        removeTrailerFieldsErrors()
         binding.cbStatementTrailerHasRegistration.isChecked =
             selectedVehicle.hasRegistration
         binding.etStatementTrailerALicensePlate.setText(selectedVehicle.licensePlate)
@@ -634,11 +669,19 @@ class VehicleANewStatementFragment : Fragment(), StatementDataHandler, IValidati
     }
 
     private fun bindMotorInformationToUI(selectedVehicle: MotorDTO) {
+        removeMotorFieldsErrors()
         binding.etStatementVehicleAMotorMarkType.setText(selectedVehicle.markType)
         binding.etStatementVehicleAMotorLicensePlate.setText(selectedVehicle.licensePlate)
         binding.etStatementVehicleAMotorCountryOfRegistration.setText(
             selectedVehicle.countryOfRegistration
         )
     }
+
+    private fun removeMotorFieldsErrors() {
+        binding.etStatementVehicleAMotorMarkType.error = null
+        binding.etStatementVehicleAMotorLicensePlate.error = null
+        binding.etStatementVehicleAMotorCountryOfRegistration.error = null
+    }
+
 }
 

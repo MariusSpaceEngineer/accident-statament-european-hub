@@ -93,7 +93,7 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
         }
 
         binding.tvStatementVehicleAMotorInsurancePageEdit.setOnClickListener {
-            navController.navigate(R.id.vehicleAInsuranceFragment)
+            navController.navigate(R.id.vehicleAMotorInsuranceFragment)
         }
 
         binding.tvStatementVehicleATrailerInsurancePageEdit.setOnClickListener {
@@ -445,7 +445,7 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             setBoldAndNormalText(
                 binding.tvStatementVehicleACardMotorInsuranceDamageCovered,
                 binding.tvStatementVehicleACardMotorInsuranceDamageCovered.text.toString(),
-                if (statementData.vehicleAMaterialDamageCovered) requireContext().getString(R.string.yes) else requireContext().getString(
+                if (statementData.vehicleAMotorMaterialDamageCovered) requireContext().getString(R.string.yes) else requireContext().getString(
                     R.string.no
                 )
             )

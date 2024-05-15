@@ -364,7 +364,7 @@ class AccidentStatementSignatureFragment : Fragment(), StatementDataHandler {
                 statementData.vehicleAInsuranceCompanyGreenCardNumber,
                 statementData.vehicleAInsuranceCertificateAvailabilityDate?.toIsoString(),
                 statementData.vehicleAInsuranceCertificateExpirationDate?.toIsoString(),
-                statementData.vehicleAMaterialDamageCovered,
+                statementData.vehicleAMotorMaterialDamageCovered,
                 insuranceAgencyVehicleA,
                 insuranceCompanyVehicleA,
                 motors.find { motorDTO ->
