@@ -22,6 +22,7 @@ object LogTags {
     const val TAG_PARSING_ERROR = "ParsingError"
     const val TAG_QR_CODE = "QRCode"
     const val TAG_CERTIFICATE= "Certificate"
+    const val TAG_LOCATION= "Location"
 }
 
 fun Context.createSimpleDialog(title: String, message: String) {
