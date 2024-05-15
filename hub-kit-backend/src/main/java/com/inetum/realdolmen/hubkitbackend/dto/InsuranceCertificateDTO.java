@@ -2,9 +2,11 @@ package com.inetum.realdolmen.hubkitbackend.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.inetum.realdolmen.hubkitbackend.utils.VehicleDTODeserializer;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
 
@@ -13,10 +15,17 @@ import java.time.LocalDate;
 @Builder
 public class InsuranceCertificateDTO {
     private Integer id;
+    @NotNull
+    @NotEmpty
     private String policyNumber;
+    @NotNull
+    @NotEmpty
     private String greenCardNumber;
+    @NotNull
     private LocalDate availabilityDate;
+    @NotNull
     private LocalDate expirationDate;
+    @NotNull
     private Boolean materialDamageCovered;
     private InsuranceAgencyDTO insuranceAgency;
     private InsuranceCompanyDTO insuranceCompany;

@@ -1,5 +1,6 @@
 package com.inetum.realdolmen.hubkitbackend.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,6 +20,7 @@ public class PolicyHolderPersonalInformationDTO {
     private String lastName;
     @NonNull
     @NotEmpty
+    @Email
     private String email;
     @NonNull
     @NotEmpty
