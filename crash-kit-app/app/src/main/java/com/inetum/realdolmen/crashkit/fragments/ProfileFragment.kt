@@ -645,7 +645,7 @@ class ProfileFragment : Fragment(), IValidationConfigure {
         response: Response<List<InsuranceCertificate>>,
         fields: List<View>
     ) {
-        Log.i("Request", "Request code: ${response.code()}")
+        Log.d(TAG_NETWORK_REQUEST, "Request code: ${response.code()}")
         if (response.isSuccessful) {
             handleSuccessfulInsuranceInformationResponse(response, fields)
         } else {
@@ -687,7 +687,7 @@ class ProfileFragment : Fragment(), IValidationConfigure {
         response: Response<PolicyHolderPersonalInformationResponse>,
         fields: List<TextView>
     ) {
-        Log.i("Request", "Request code: ${response.code()}")
+        Log.d(TAG_NETWORK_REQUEST, "Request code: ${response.code()}")
         if (response.isSuccessful) {
             handleSuccessfulPersonalInformationResponse(response, fields)
         } else {
@@ -881,12 +881,12 @@ class ProfileFragment : Fragment(), IValidationConfigure {
         }
         if (selectedCertificate?.vehicle != null) {
             if (selectedCertificate?.vehicle is TrailerDTO) {
-                Log.i(TAG_CERTIFICATE, "The selected certificate is a trailer.")
+                Log.d(TAG_CERTIFICATE, "The selected certificate is a trailer.")
                 binding.etProfileInsuranceAgencyVehicleMarkTypeValue.setText("")
                 binding.cbProfileInsuranceAgencyVehicleIsTrailer.isChecked = true
             }
             if (selectedCertificate?.vehicle is MotorDTO) {
-                Log.i(TAG_CERTIFICATE, "The selected certificate is a motor.")
+                Log.d(TAG_CERTIFICATE, "The selected certificate is a motor.")
                 binding.etProfileInsuranceAgencyVehicleMarkTypeValue.setText(
                     (selectedCertificate?.vehicle as MotorDTO).markType
                 )
