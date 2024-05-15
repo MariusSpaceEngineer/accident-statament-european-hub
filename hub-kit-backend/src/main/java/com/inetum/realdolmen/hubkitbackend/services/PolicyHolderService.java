@@ -102,7 +102,15 @@ public class PolicyHolderService {
             throw new Exception("Internal server error");
         }
     }
-
+    /**
+     * This method adds VehicleDTOs to a list of InsuranceCertificateDTOs for a given PolicyHolder.
+     * It iterates over the InsuranceCertificates of the PolicyHolder, converts each InsuranceCertificate to a DTO,
+     * and sets the appropriate VehicleDTO (MotorDTO or TrailerDTO) based on the type of Vehicle associated with the InsuranceCertificate.
+     * The resulting InsuranceCertificateDTO is then added to the provided result list.
+     *
+     * @param existingPolicyHolder The PolicyHolder whose InsuranceCertificates are to be processed.
+     * @param result The list of InsuranceCertificateDTOs to which the new InsuranceCertificateDTOs will be added.
+     */
     private void addVehicleDTOsToInsuranceCertificatesDTOs(PolicyHolder existingPolicyHolder, List<InsuranceCertificateDTO> result) {
         for (InsuranceCertificate insurance : existingPolicyHolder.getInsuranceCertificates()) {
             var insuranceDTO = insuranceCertificateMapper.toDTO(insurance);
@@ -147,7 +155,16 @@ public class PolicyHolderService {
             }
         }
     }
-
+    /**
+     * This method retrieves an existing InsuranceCompany from the database or creates a new one if it doesn't exist.
+     * It first checks if the InsuranceCompanyDTO has an ID. If it does, it tries to find the InsuranceCompany in the database by ID.
+     * If the ID is not present or the InsuranceCompany is not found by ID, it then checks if the InsuranceCompanyDTO has a name. If it does, it tries to find the InsuranceCompany in the database by name.
+     * If the InsuranceCompany is found, it updates the InsuranceCompany with the data from the InsuranceCompanyDTO and saves it to the database.
+     * If the InsuranceCompany is not found, it creates a new InsuranceCompany from the InsuranceCompanyDTO and saves it to the database.
+     *
+     * @param insuranceCertificateDTO The InsuranceCertificateDTO that contains the InsuranceCompanyDTO.
+     * @return The existing or newly created InsuranceCompany.
+     */
     private InsuranceCompany getOrCreateInsuranceCompany(InsuranceCertificateDTO insuranceCertificateDTO) {
         InsuranceCompanyDTO insuranceCompanyDTO = insuranceCertificateDTO.getInsuranceCompany();
         Optional<InsuranceCompany> existingInsuranceCompany = Optional.empty();
@@ -166,7 +183,16 @@ public class PolicyHolderService {
             return insuranceCompanyRepository.save(newInsuranceCompany);
         }
     }
-
+    /**
+     * This method retrieves an existing InsuranceAgency from the database or creates a new one if it doesn't exist.
+     * It first checks if the InsuranceAgencyDTO has an ID. If it does, it tries to find the InsuranceAgency in the database by ID.
+     * If the ID is not present or the InsuranceAgency is not found by ID, it then checks if the InsuranceAgencyDTO has a name, address, and country. If it does, it tries to find the InsuranceAgency in the database by these attributes.
+     * If the InsuranceAgency is found, it updates the InsuranceAgency with the data from the InsuranceAgencyDTO and saves it to the database.
+     * If the InsuranceAgency is not found, it creates a new InsuranceAgency from the InsuranceAgencyDTO and saves it to the database.
+     *
+     * @param insuranceCertificateDTO The InsuranceCertificateDTO that contains the InsuranceAgencyDTO.
+     * @return The existing or newly created InsuranceAgency.
+     */
     private InsuranceAgency getOrCreateInsuranceAgency(InsuranceCertificateDTO insuranceCertificateDTO) {
         InsuranceAgencyDTO insuranceAgencyDTO = insuranceCertificateDTO.getInsuranceAgency();
         Optional<InsuranceAgency> existingInsuranceAgency = Optional.empty();
@@ -185,7 +211,18 @@ public class PolicyHolderService {
             return insuranceAgencyRepository.save(newInsuranceAgency);
         }
     }
-
+    /**
+     * This method retrieves an existing Vehicle from the database or creates a new one if it doesn't exist.
+     * It first checks if a Vehicle with the same license plate as the one in the InsuranceCertificateDTO exists in the database.
+     * If the Vehicle exists, it checks if the type of the Vehicle (Motor or Trailer) matches the type of the VehicleDTO in the InsuranceCertificateDTO.
+     * If the types match, it updates the Vehicle with the data from the VehicleDTO and saves it to the database.
+     * If the types don't match, it throws a VehicleMismatchException.
+     * If the Vehicle doesn't exist, it creates a new Vehicle from the VehicleDTO and saves it to the database.
+     *
+     * @param insuranceCertificateDTO The InsuranceCertificateDTO that contains the VehicleDTO.
+     * @return The existing or newly created Vehicle, or null if the VehicleDTO is not of type MotorDTO or TrailerDTO.
+     * @throws VehicleMismatchException If the type of the existing Vehicle doesn't match the type of the VehicleDTO.
+     */
     private Vehicle getOrCreateVehicle(InsuranceCertificateDTO insuranceCertificateDTO) throws Exception {
         Optional<Vehicle> existingVehicle = vehicleRepository.findVehicleByLicensePlate(insuranceCertificateDTO.getVehicle().getLicensePlate());
         if (existingVehicle.isPresent()) {
