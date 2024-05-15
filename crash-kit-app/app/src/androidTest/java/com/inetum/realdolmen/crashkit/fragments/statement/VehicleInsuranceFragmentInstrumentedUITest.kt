@@ -4,6 +4,7 @@ import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
@@ -16,7 +17,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.inetum.realdolmen.crashkit.R
-import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleAInsuranceFragment
+import com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleAMotorInsuranceFragment
 import io.mockk.clearMocks
 import io.mockk.mockk
 import org.hamcrest.Matchers.not
@@ -24,7 +25,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-
 
 @RunWith(AndroidJUnit4::class)
 class VehicleInsuranceFragmentInstrumentedUITest {
@@ -50,8 +50,8 @@ class VehicleInsuranceFragmentInstrumentedUITest {
         device.executeShellCommand("settings put global transition_animation_scale 0")
         device.executeShellCommand("settings put global animator_duration_scale 0")
 
-        launchFragmentInContainer<VehicleAInsuranceFragment>(themeResId = R.style.Theme_CrashKit) {
-            VehicleAInsuranceFragment().also { fragment ->
+        launchFragmentInContainer<VehicleAMotorInsuranceFragment>(themeResId = R.style.Theme_CrashKit) {
+            VehicleAMotorInsuranceFragment().also { fragment ->
                 // In addition to returning a new instance of our Fragment,
                 // get a callback whenever the fragment’s view is created
                 // or destroyed so that we can set the mock NavController
@@ -102,9 +102,14 @@ class VehicleInsuranceFragmentInstrumentedUITest {
         onView(withId(R.id.et_statement_vehicle_a_insurance_company_certificate_expiration_date)).check(
             matches(not(isEnabled()))
         )
-
-        onView(withId(R.id.et_statement_vehicle_a_insurance_agency_email))
+        onView(withId(R.id.cb_statement_damaged_covered))
             .perform(scrollTo())
+            .check(
+                matches(
+                    isDisplayed()
+                )
+            )
+        onView(withId(R.id.et_statement_vehicle_a_insurance_agency_email))
             .check(
                 matches(
                     isDisplayed()
@@ -142,8 +147,11 @@ class VehicleInsuranceFragmentInstrumentedUITest {
             .perform(scrollTo(), typeText("Test Insurance Company Name"), closeSoftKeyboard())
         onView(withId(R.id.et_statement_vehicle_a_insurance_company_policy_number))
             .perform(typeText("Test Policy Number"), closeSoftKeyboard())
+        onView(withId(R.id.cb_statement_damaged_covered))
+            .perform(scrollTo())
+            .perform(click())
         onView(withId(R.id.et_statement_vehicle_a_insurance_agency_email))
-            .perform(scrollTo(), typeText("Test Agency Email"), closeSoftKeyboard())
+            .perform(typeText("Test Agency Email"), closeSoftKeyboard())
         onView(withId(R.id.et_statement_vehicle_a_insurance_agency_name))
             .perform(typeText("Test Agency Name"), closeSoftKeyboard())
         onView(withId(R.id.et_statement_vehicle_a_insurance_agency_address))
