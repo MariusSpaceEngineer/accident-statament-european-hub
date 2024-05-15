@@ -269,15 +269,27 @@ public class AccidentStatementService {
             }
         }
     }
-
+    /**
+     * This method is used to get the address of a location given its coordinates.
+     * It uses the JOpenCage API for reverse geocoding.
+     *
+     * @param locationCoordinates The coordinates of the location.
+     * @return The address of the location as a String.
+     * @throws FetchLocationAddressFailedException if an error occurs when fetching the location.
+     */
     public String getLocationAddress(LocationCoordinates locationCoordinates) throws Exception {
         try {
+            // Create a reverse geocoding request with the given latitude and longitude
             JOpenCageReverseRequest request = new JOpenCageReverseRequest(locationCoordinates.getLatitude(), locationCoordinates.getLongitude());
-            request.setNoAnnotations(true); // exclude additional info such as calling code, timezone, and currency
-            request.setMinConfidence(3); // restrict to results with a confidence rating of at least 3 (out of 10)
+            // Exclude additional info such as calling code, timezone, and currency
+            request.setNoAnnotations(true);
+            // Restrict to results with a confidence rating of at least 3 (out of 10)
+            request.setMinConfidence(3);
 
+            // Send the request and get the response
             var response = jOpenCageGeocoder.reverse(request);
 
+            // Return the formatted address of the first result
             return response.getResults().getFirst().getFormatted();
         } catch (Exception e) {
             log.error("Error while reverse geocoding location", e);
