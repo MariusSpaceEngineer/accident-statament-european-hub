@@ -4,6 +4,7 @@ import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
@@ -76,6 +77,8 @@ class VehicleDriverFragmentInstrumentedUITest {
     @Test
     fun testVehicleDriverUIElements() {
         // Check to see if the fields are displayed on the screen
+        onView(withId(R.id.cb_statement_vehicle_a_driver_is_policy_holder))
+            .check(matches(isDisplayed()))
         onView(withId(R.id.et_statement_vehicle_a_driver_name))
             .check(matches(isDisplayed()))
         onView(withId(R.id.et_statement_vehicle_a_driver_first_name))
@@ -131,6 +134,8 @@ class VehicleDriverFragmentInstrumentedUITest {
         )
 
         // Perform UI interactions
+        onView(withId(R.id.cb_statement_vehicle_a_driver_is_policy_holder))
+            .perform(scrollTo(), click())
         onView(withId(R.id.et_statement_vehicle_a_driver_name))
             .perform(scrollTo(), typeText("Test Driver Name"), closeSoftKeyboard())
         onView(withId(R.id.et_statement_vehicle_a_driver_first_name))
