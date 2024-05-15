@@ -87,6 +87,7 @@ public class DatabaseSeeder {
                     .expirationDate(LocalDate.of(2025, 2, 28))
                     .insuranceCompany(insuranceCompany)
                     .insuranceAgency(insuranceAgency)
+                    .materialDamageCovered(false)
                     .vehicle(motor) // associate the motor with this certificate
                     .build();
 
@@ -97,6 +98,7 @@ public class DatabaseSeeder {
                     .expirationDate(LocalDate.of(2025, 2, 28))
                     .insuranceCompany(insuranceCompany2)
                     .insuranceAgency(insuranceAgency2)
+                    .materialDamageCovered(true)
                     .vehicle(trailer) // associate the trailer with this certificate
                     .build();
 
