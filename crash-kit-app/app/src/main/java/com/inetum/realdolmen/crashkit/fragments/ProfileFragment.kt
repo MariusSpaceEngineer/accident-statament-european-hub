@@ -17,6 +17,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.util.Pair
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -56,6 +57,8 @@ import java.time.LocalDate
 import java.time.ZoneId
 
 class ProfileFragment : Fragment(), IValidationConfigure {
+    private lateinit var insuranceCertificateDateRangePicker: MaterialDatePicker<Pair<Long, Long>>
+
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
@@ -81,9 +84,6 @@ class ProfileFragment : Fragment(), IValidationConfigure {
             notifyPropertyChange("insuranceCertificateExpirationDate", field, newValue)
             field = newValue
         }
-    private val insuranceCertificateDateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
-        .setTitleText("Select dates")
-        .build()
 
     private var insuranceCertificates: List<InsuranceCertificate>? = null
     private var selectedCertificate: InsuranceCertificate? = null
@@ -125,6 +125,11 @@ class ProfileFragment : Fragment(), IValidationConfigure {
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
+
+        insuranceCertificateDateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
+            .setTitleText(requireContext().getString(R.string.date_range_picker_title))
+            .build()
+
         return binding.root
     }
 
