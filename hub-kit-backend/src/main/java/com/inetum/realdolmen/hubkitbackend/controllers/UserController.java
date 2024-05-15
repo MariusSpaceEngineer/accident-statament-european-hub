@@ -62,7 +62,7 @@ public class UserController {
 
 
     @PutMapping("/profile/insurance")
-    public ResponseEntity<?> updatePolicyHolderInsuranceInformation(HttpServletRequest request, @RequestBody InsuranceCertificateDTO insuranceCertificateDTO) {
+    public ResponseEntity<?> updatePolicyHolderInsuranceInformation(HttpServletRequest request, @RequestBody @Valid InsuranceCertificateDTO insuranceCertificateDTO) {
         String token = extractToken(request);
 
         if (token != null) {
