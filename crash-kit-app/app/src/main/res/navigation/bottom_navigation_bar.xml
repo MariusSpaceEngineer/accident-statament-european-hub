@@ -26,7 +26,7 @@
         android:label="VehicleANewStatementFragment" />
     <fragment
         android:id="@+id/vehicleAInsuranceFragment"
-        android:name="com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleAInsuranceFragment"
+        android:name="com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a.VehicleAMotorInsuranceFragment"
         android:label="VehicleAInsuranceFragment" />
     <fragment
         android:id="@+id/vehicleADriverFragment"
@@ -46,7 +46,7 @@
         android:label="VehicleBNewStatementFragment" />
     <fragment
         android:id="@+id/vehicleBInsuranceFragment"
-        android:name="com.inetum.realdolmen.crashkit.fragments.statement.vehicle_b.VehicleBInsuranceFragment"
+        android:name="com.inetum.realdolmen.crashkit.fragments.statement.vehicle_b.VehicleBMotorInsuranceFragment"
         android:label="VehicleBInsuranceFragment" />
     <fragment
         android:id="@+id/vehicleBDriverFragment"
