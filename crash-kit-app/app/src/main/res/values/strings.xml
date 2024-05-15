@@ -172,6 +172,7 @@
     <!--    Toasts-->
     <string name="logged_in_toast">Logged In</string>
     <string name="import_successful">Import Successful</string>
+    <string name="location_address_fetch_successful">Location has been successfully fetched!</string>
 
     <string name="forgot_password">Forgot Password?</string>
 </resources>

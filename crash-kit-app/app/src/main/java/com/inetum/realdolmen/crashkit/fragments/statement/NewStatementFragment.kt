@@ -1,6 +1,7 @@
 package com.inetum.realdolmen.crashkit.fragments.statement
 
 import android.Manifest
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,7 +12,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
@@ -27,9 +27,12 @@ import com.inetum.realdolmen.crashkit.dto.RequestResponse
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
 import com.inetum.realdolmen.crashkit.utils.DateTimePicker
 import com.inetum.realdolmen.crashkit.utils.IValidationConfigure
+import com.inetum.realdolmen.crashkit.utils.LogTags.TAG_LOCATION
+import com.inetum.realdolmen.crashkit.utils.LogTags.TAG_NETWORK_REQUEST
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
 import com.inetum.realdolmen.crashkit.utils.createSimpleDialog
+import com.inetum.realdolmen.crashkit.utils.showToast
 import com.inetum.realdolmen.crashkit.utils.to24Format
 import com.inetum.realdolmen.crashkit.utils.toLocalDateTime
 import kotlinx.coroutines.CoroutineScope
@@ -37,6 +40,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
+import java.net.SocketTimeoutException
 import java.time.LocalDateTime
 
 class NewStatementFragment : Fragment(), StatementDataHandler, IValidationConfigure {
@@ -64,8 +68,7 @@ class NewStatementFragment : Fragment(), StatementDataHandler, IValidationConfig
         if (isGranted) {
             getCurrentLocation()
         } else {
-            Toast.makeText(requireContext(), "Location permission denied", Toast.LENGTH_SHORT)
-                .show()
+            requireContext().showToast(getString(R.string.location_permission_denied))
         }
     }
 
@@ -82,7 +85,6 @@ class NewStatementFragment : Fragment(), StatementDataHandler, IValidationConfig
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentNewStatementBinding.inflate(inflater, container, false)
-
         return binding.root
     }
 
@@ -98,8 +100,6 @@ class NewStatementFragment : Fragment(), StatementDataHandler, IValidationConfig
         super.onViewCreated(view, savedInstanceState)
         navController = findNavController()
 
-        binding.btnStatementAccidentPrevious.isEnabled = false
-
         formHelper = FormHelper(requireContext(), fields)
 
         setupValidation()
@@ -111,10 +111,10 @@ class NewStatementFragment : Fragment(), StatementDataHandler, IValidationConfig
     }
 
     override fun updateUIFromViewModel(model: NewStatementViewModel) {
-        model.statementData.observe(viewLifecycleOwner, Observer { statementData ->
+        model.statementData.observe(viewLifecycleOwner) { statementData ->
             // Update the UI here based on the new statementData
             binding.etStatementAccidentDate.setText(
-                (statementData.dateOfAccident?.to24Format() ?: "")
+                (statementData.dateOfAccident?.to24Format() ?: LocalDateTime.now().to24Format())
             )
             binding.etStatementAccidentLocation.setText(statementData.accidentLocation)
             binding.cbStatementAccidentInjured.isChecked = statementData.injured
@@ -127,7 +127,7 @@ class NewStatementFragment : Fragment(), StatementDataHandler, IValidationConfig
             binding.etStatementWitnessPhone.setText(statementData.witnessPhoneNumber)
             //The checkbox needs to be unchecked to show witness fields
             binding.cbStatementWitnessPresent.isChecked = !statementData.witnessIsPresent
-        })
+        }
     }
 
     override fun updateViewModelFromUI(model: NewStatementViewModel) {
@@ -201,14 +201,8 @@ class NewStatementFragment : Fragment(), StatementDataHandler, IValidationConfig
     private fun setupWitnessCheckboxListener() {
         binding.cbStatementWitnessPresent.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                binding.llStatementWitnessFields.visibility = View.GONE
-                binding.etStatementWitnessName.text = null
-                binding.etStatementWitnessAddress.text = null
-                binding.etStatementWitnessPhone.text = null
                 removeWitnessFields()
-
             } else {
-                binding.llStatementWitnessFields.visibility = View.VISIBLE
                 addWitnessFields()
                 addWitnessFieldsForValidation()
             }
@@ -217,7 +211,6 @@ class NewStatementFragment : Fragment(), StatementDataHandler, IValidationConfig
 
     private fun setupButtonClickListeners() {
         binding.btnStatementAccidentNext.setOnClickListener {
-
             formHelper.clearErrors()
 
             updateViewModelFromUI(model)
@@ -245,62 +238,88 @@ class NewStatementFragment : Fragment(), StatementDataHandler, IValidationConfig
             requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
-
+    /**
+     * This method retrieves the current location of the device.
+     * It uses the FusedLocationProviderClient to get the current location with a high accuracy priority.
+     * High accuracy is used to get the best updates possible about the location.
+     *
+     * If the location is successfully retrieved, it fetches the address for that location.
+     * If the location retrieval fails, it handles the failure.
+     * If there's a security exception (usually due to missing permissions), it handles the security exception.
+     *
+     * @throws SecurityException if location permissions are not granted.
+     */
     private fun getCurrentLocation() {
-        //Any other priority will update the location less frequent
+        // High accuracy priority is used to get the best updates possible about the location
         val priority = Priority.PRIORITY_HIGH_ACCURACY
         val cancellationTokenSource = CancellationTokenSource()
         try {
             fusedLocationProviderClient.getCurrentLocation(priority, cancellationTokenSource.token)
                 .addOnSuccessListener { location ->
-                    Log.d("Location", "location is found: $location")
-                    CoroutineScope(Dispatchers.IO).launch {
-                        try {
-                            val response = apiService.getLocationAddress(
-                                LocationCoordinatesData(
-                                    location.latitude,
-                                    location.longitude
-                                )
-                            )
-                            withContext(Dispatchers.Main) {
-                                handleAccidentLocationResponse(response)
-                            }
-                        } catch (e: Exception) {
-                            Log.e("NetworkRequest", "Exception occurred: ", e)
-                            withContext(Dispatchers.Main) {
-                                val message = when (e) {
-                                    is java.net.SocketTimeoutException -> requireContext().getString(
-                                        R.string.error_network
-                                    )
-
-                                    else -> requireContext().getString(R.string.unknown_error)
-                                }
-                                requireContext().createSimpleDialog(
-                                    getString(R.string.error),
-                                    message
-                                )
-                            }
-                        }
-                    }
+                    Log.d(TAG_LOCATION, "Location is found: $location")
+                    fetchLocationAddress(location)
                 }
                 .addOnFailureListener { exception ->
-                    Log.d("Location", "Coordinates fetch failed with exception: $exception")
+                    handleLocationFailure(exception)
                 }
         } catch (securityException: SecurityException) {
-            Toast.makeText(
-                requireContext(),
-                requireContext().getString(R.string.location_permission_denied),
-                Toast.LENGTH_LONG
-            ).show()
+            handleSecurityException()
+        }
+    }
+
+    private fun fetchLocationAddress(location: Location) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = apiService.getLocationAddress(
+                    LocationCoordinatesData(
+                        location.latitude,
+                        location.longitude
+                    )
+                )
+                withContext(Dispatchers.Main) {
+                    handleAccidentLocationResponse(response)
+                }
+            } catch (e: Exception) {
+                handleErrorResponse(e)
+            }
+        }
+    }
+
+    private fun handleLocationFailure(exception: Exception) {
+        Log.e(TAG_LOCATION, "Coordinates fetch failed with exception: $exception")
+    }
+
+    private fun handleSecurityException() {
+        Toast.makeText(
+            requireContext(),
+            requireContext().getString(R.string.location_permission_denied),
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+    private suspend fun handleErrorResponse(e: Exception) {
+        Log.e(TAG_NETWORK_REQUEST, "Exception occurred: ", e)
+        withContext(Dispatchers.Main) {
+            val message = when (e) {
+                is SocketTimeoutException -> requireContext().getString(
+                    R.string.error_network
+                )
+
+                else -> requireContext().getString(R.string.unknown_error)
+            }
+            requireContext().createSimpleDialog(
+                getString(R.string.error),
+                message
+            )
         }
     }
 
     private fun handleAccidentLocationResponse(response: Response<RequestResponse>) {
-        Log.i("Request", "Request code: ${response.code()}")
+        Log.d(TAG_NETWORK_REQUEST, "Request code: ${response.code()}")
         val addressResponse = response.body()
         if (addressResponse != null) {
             if (response.isSuccessful) {
-                binding.etStatementAccidentLocation.setText(addressResponse.successMessage)
+                handleSuccessfulLocationAddressResponse(addressResponse)
             } else {
                 requireContext().createSimpleDialog(
                     getString(R.string.error),
@@ -308,6 +327,11 @@ class NewStatementFragment : Fragment(), StatementDataHandler, IValidationConfig
                 )
             }
         }
+    }
+
+    private fun handleSuccessfulLocationAddressResponse(addressResponse: RequestResponse) {
+        binding.etStatementAccidentLocation.setText(addressResponse.successMessage)
+        requireContext().showToast(getString(R.string.location_address_fetch_successful))
     }
 
     private fun addWitnessFieldsForValidation() {
@@ -344,6 +368,8 @@ class NewStatementFragment : Fragment(), StatementDataHandler, IValidationConfig
     }
 
     private fun addWitnessFields() {
+        binding.llStatementWitnessFields.visibility = View.VISIBLE
+
         (fields as MutableList).apply {
             add(binding.etStatementWitnessName)
             add(binding.etStatementWitnessAddress)
@@ -352,6 +378,8 @@ class NewStatementFragment : Fragment(), StatementDataHandler, IValidationConfig
     }
 
     private fun removeWitnessFields() {
+        clearWitnessFields()
+
         (validationRules as MutableList<Triple<EditText, (String?) -> Boolean, String>>).removeAll { rule ->
             rule.first == binding.etStatementWitnessName || rule.first == binding.etStatementWitnessAddress
                     || rule.first == binding.etStatementWitnessPhone
@@ -369,4 +397,10 @@ class NewStatementFragment : Fragment(), StatementDataHandler, IValidationConfig
         }
     }
 
+    private fun clearWitnessFields() {
+        binding.llStatementWitnessFields.visibility = View.GONE
+        binding.etStatementWitnessName.text = null
+        binding.etStatementWitnessAddress.text = null
+        binding.etStatementWitnessPhone.text = null
+    }
 }
