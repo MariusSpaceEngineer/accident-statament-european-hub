@@ -165,6 +165,7 @@
     <string name="accident_sketch_change_address_dialog">Enter Address</string>
     <string name="insurance_certificate_new_dialog">Create a new certificate</string>
     <string name="insurance_certificate_select_dialog">Select an insurance certificate</string>
+    <string name="date_range_picker_title">Select dates</string>
     <string name="ok">OK</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>

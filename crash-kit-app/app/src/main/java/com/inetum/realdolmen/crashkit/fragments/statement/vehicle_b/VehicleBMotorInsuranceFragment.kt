@@ -1,36 +1,38 @@
 package com.inetum.realdolmen.crashkit.fragments.statement.vehicle_b
 
+import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.util.Pair
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.inetum.realdolmen.crashkit.R
-import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleBInsuranceBinding
+import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleBMotorInsuranceBinding
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
+import com.inetum.realdolmen.crashkit.utils.IValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
-import com.inetum.realdolmen.crashkit.utils.IValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.to24Format
 import com.inetum.realdolmen.crashkit.utils.toLocalDate
-import java.beans.PropertyChangeListener
 import java.beans.PropertyChangeSupport
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 
-class VehicleBInsuranceFragment : Fragment(), StatementDataHandler, IValidationConfigure {
+class VehicleBMotorInsuranceFragment : Fragment(), StatementDataHandler, IValidationConfigure {
     private lateinit var model: NewStatementViewModel
     private lateinit var navController: NavController
+    private lateinit var insuranceCertificateDateRangePicker: MaterialDatePicker<Pair<Long, Long>>
 
-    private var _binding: FragmentVehicleBInsuranceBinding? = null
+    private var _binding: FragmentVehicleBMotorInsuranceBinding? = null
     private val binding get() = _binding!!
 
     private var fields: List<TextView> = listOf()
@@ -41,37 +43,21 @@ class VehicleBInsuranceFragment : Fragment(), StatementDataHandler, IValidationC
 
     private var insuranceCertificateAvailabilityDate: LocalDate? = null
         set(newValue) {
-            val oldValue = field
+            notifyPropertyChange("insuranceCertificateAvailabilityDate", field, newValue)
             field = newValue
-
-            // Notify listeners about the change
-            changeSupport.firePropertyChange(
-                "insuranceCertificateAvailabilityDate",
-                oldValue,
-                newValue
-            )
         }
 
     private var insuranceCertificateExpirationDate: LocalDate? = null
         set(newValue) {
-            val oldValue = field
+            notifyPropertyChange("insuranceCertificateExpirationDate", field, newValue)
             field = newValue
-
-            // Notify listeners about the change
-            changeSupport.firePropertyChange(
-                "insuranceCertificateExpirationDate",
-                oldValue,
-                newValue
-            )
         }
 
-    private val insuranceCertificateDateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
-        .setTitleText("Select dates")
-        .build()
-
-
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Lock the screen orientation to portrait
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         model = ViewModelProvider(requireActivity())[NewStatementViewModel::class.java]
 
     }
@@ -79,13 +65,16 @@ class VehicleBInsuranceFragment : Fragment(), StatementDataHandler, IValidationC
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding =
-            FragmentVehicleBInsuranceBinding.inflate(inflater, container, false)
-        val view = binding.root
+            FragmentVehicleBMotorInsuranceBinding.inflate(inflater, container, false)
 
-        return view
+        insuranceCertificateDateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
+            .setTitleText(requireContext().getString(R.string.date_range_picker_title))
+            .build()
+
+        return binding.root
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -106,64 +95,11 @@ class VehicleBInsuranceFragment : Fragment(), StatementDataHandler, IValidationC
 
         updateUIFromViewModel(model)
 
-        binding.btnStatementAccidentPrevious.setOnClickListener {
-            updateViewModelFromUI(model)
-
-            navController.popBackStack()
-        }
-
-        binding.btnStatementAccidentNext.setOnClickListener {
-            formHelper.clearErrors()
-
-            updateViewModelFromUI(model)
-
-            formHelper.validateFields(validationRules)
-
-            if (fields.none { it.error != null }) {
-                // If no errors, navigate to the next fragment
-                if (model.statementData.value?.vehicleBTrailerHasRegistration == true) {
-                    navController.navigate(R.id.vehicleBTrailerInsuranceFragment)
-                }
-                else{
-                    navController.navigate(R.id.vehicleBDriverFragment)
-                }
-            }
-        }
-
-        binding.btnDateTimePickerInsuranceCertificateAvailabilityDate.setOnClickListener {
-            insuranceCertificateDateRangePicker.show(
-                parentFragmentManager,
-                "insurance_certificate_date_picker"
-            )
-            insuranceCertificateDateRangePicker.addOnPositiveButtonClickListener { selection ->
-                insuranceCertificateAvailabilityDate = Instant.ofEpochMilli(selection.first).atZone(
-                    ZoneId.systemDefault()
-                ).toLocalDate()
-                insuranceCertificateExpirationDate = Instant.ofEpochMilli(selection.second).atZone(
-                    ZoneId.systemDefault()
-                ).toLocalDate()
-            }
-        }
-
-        addDateChangeListener {
-
-            binding.etStatementVehicleBInsuranceCompanyCertificateAvailabilityDate.setText(
-                (insuranceCertificateAvailabilityDate?.to24Format() ?: "")
-            )
-            binding.etStatementVehicleBInsuranceCompanyCertificateAvailabilityDate.error = null
-        }
-
-        addDateChangeListener {
-            binding.etStatementVehicleBInsuranceCompanyCertificateExpirationDate.setText(
-                (insuranceCertificateExpirationDate?.to24Format() ?: "")
-            )
-            binding.etStatementVehicleBInsuranceCompanyCertificateExpirationDate.error = null
-
-        }
+        setupClickListeners()
     }
 
     override fun updateUIFromViewModel(model: NewStatementViewModel) {
-        model.statementData.observe(viewLifecycleOwner, Observer { statementData ->
+        model.statementData.observe(viewLifecycleOwner) { statementData ->
             // Update the UI here based on the new statementData
             binding.etStatementVehicleBInsuranceCompanyName.setText(statementData.vehicleBInsuranceCompanyName)
             binding.etStatementVehicleBInsuranceCompanyPolicyNumber.setText(statementData.vehicleBInsuranceCompanyPolicyNumber)
@@ -181,7 +117,7 @@ class VehicleBInsuranceFragment : Fragment(), StatementDataHandler, IValidationC
             binding.etStatementVehicleBInsuranceAgencyEmail.setText(statementData.vehicleBInsuranceAgencyEmail)
             binding.cbStatementDamagedCovered.isChecked =
                 statementData.vehicleBMaterialDamageCovered
-        })
+        }
     }
 
     override fun updateViewModelFromUI(model: NewStatementViewModel) {
@@ -210,10 +146,6 @@ class VehicleBInsuranceFragment : Fragment(), StatementDataHandler, IValidationC
                 binding.etStatementVehicleBInsuranceAgencyEmail.text.toString()
             this.vehicleBMaterialDamageCovered = binding.cbStatementDamagedCovered.isChecked
         }
-    }
-
-    private fun addDateChangeListener(listener: PropertyChangeListener) {
-        changeSupport.addPropertyChangeListener(listener)
     }
 
     override fun setupValidation(
@@ -320,4 +252,73 @@ class VehicleBInsuranceFragment : Fragment(), StatementDataHandler, IValidationC
         )
     }
 
+    private fun setupClickListeners() {
+        binding.btnStatementAccidentPrevious.setOnClickListener {
+            handlePreviousButtonClick()
+        }
+
+        binding.btnStatementAccidentNext.setOnClickListener {
+            handleNextButtonClick()
+        }
+
+        binding.btnDateTimePickerInsuranceCertificateAvailabilityDate.setOnClickListener {
+            handleDatePickerButtonClick()
+        }
+    }
+
+    private fun handleDatePickerButtonClick() {
+        insuranceCertificateDateRangePicker.show(
+            parentFragmentManager,
+            "insurance_certificate_date_picker"
+        )
+        insuranceCertificateDateRangePicker.addOnPositiveButtonClickListener { selection ->
+            insuranceCertificateAvailabilityDate = Instant.ofEpochMilli(selection.first).atZone(
+                ZoneId.systemDefault()
+            ).toLocalDate()
+            binding.etStatementVehicleBInsuranceCompanyCertificateAvailabilityDate.setText(
+                insuranceCertificateAvailabilityDate?.to24Format() ?: ""
+            )
+            insuranceCertificateExpirationDate = Instant.ofEpochMilli(selection.second).atZone(
+                ZoneId.systemDefault()
+            ).toLocalDate()
+            binding.etStatementVehicleBInsuranceCompanyCertificateExpirationDate.setText(
+                insuranceCertificateExpirationDate?.to24Format() ?: ""
+            )
+        }
+    }
+
+    private fun notifyPropertyChange(propertyName: String, oldValue: Any?, newValue: Any?) {
+        changeSupport.firePropertyChange(
+            propertyName,
+            oldValue,
+            newValue
+        )
+    }
+
+    private fun handleNextButtonClick() {
+        formHelper.clearErrors()
+
+        updateViewModelFromUI(model)
+
+        formHelper.validateFields(validationRules)
+
+        if (fields.none { it.error != null }) {
+            // If no errors, navigate to the next fragment
+            navigateToNextFragment()
+        }
+    }
+
+    private fun navigateToNextFragment() {
+        if (model.statementData.value?.vehicleBTrailerHasRegistration == true) {
+            navController.navigate(R.id.vehicleBTrailerInsuranceFragment)
+        } else {
+            navController.navigate(R.id.vehicleBDriverFragment)
+        }
+    }
+
+    private fun handlePreviousButtonClick() {
+        updateViewModelFromUI(model)
+
+        navController.popBackStack()
+    }
 }

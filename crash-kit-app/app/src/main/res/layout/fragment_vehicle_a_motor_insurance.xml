@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/tertiary400"
-        tools:context=".fragments.statement.vehicle_b.VehicleBInsuranceFragment">
+        tools:context=".fragments.statement.vehicle_a.VehicleAMotorInsuranceFragment">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -34,13 +34,24 @@
 
 
             <TextView
-                android:id="@+id/tv_statement_vehicle_b_title"
+                android:id="@+id/tv_statement_vehicle_a_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:text="@string/statement_vehicle_b_title"
+                android:text="@string/statement_vehicle_a_title"
                 android:textAllCaps="true"
-                android:textColor="@color/secondary900"
+                android:textColor="@color/primary800"
+                android:textSize="35sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_statement_vehicle_a_motor_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="@string/motor_title"
+                android:textAllCaps="true"
+                android:textColor="@color/primary800"
                 android:textSize="35sp"
                 android:textStyle="bold" />
 
@@ -49,7 +60,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:background="@drawable/border_outlined_red"
+                android:background="@drawable/border_outlined_blue"
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 
@@ -60,7 +71,7 @@
                     android:layout_marginBottom="8dp"
                     android:text="@string/statement_insurance_company_title"
                     android:textAllCaps="true"
-                    android:textColor="@color/secondary900"
+                    android:textColor="@color/primary800"
                     android:textSize="30sp"
                     android:textStyle="bold" />
 
@@ -69,7 +80,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:text="@string/statement_insurance_description"
-                    android:textColor="@color/secondary900"
+                    android:textColor="@color/primary800"
                     android:textSize="20sp"
                     android:textStyle="italic" />
 
@@ -84,7 +95,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_b_insurance_company_name"
+                        android:id="@+id/et_statement_vehicle_a_insurance_company_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -102,7 +113,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_b_insurance_company_policy_number"
+                        android:id="@+id/et_statement_vehicle_a_insurance_company_policy_number"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -120,7 +131,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_b_insurance_company_green_card_number"
+                        android:id="@+id/et_statement_vehicle_a_insurance_company_green_card_number"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -138,7 +149,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_b_insurance_company_certificate_availability_date"
+                        android:id="@+id/et_statement_vehicle_a_insurance_company_certificate_availability_date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:enabled="false"
@@ -157,7 +168,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_b_insurance_company_certificate_expiration_date"
+                        android:id="@+id/et_statement_vehicle_a_insurance_company_certificate_expiration_date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:enabled="false"
@@ -167,15 +178,16 @@
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_date_time_picker_insurance_certificate_availability_date"
-                    style="@style/VehicleBBottomRoundedButton"
+                    style="@style/PrimaryBottomRoundedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginStart="15dp"
                     android:layout_marginTop="-10dp"
-                    android:layout_marginEnd="12dp"
+                    android:layout_marginEnd="15dp"
                     android:layout_marginBottom="8dp"
                     android:text="@string/label_pick_date"
                     android:textSize="16sp" />
+
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -183,7 +195,7 @@
                     android:layout_marginBottom="8dp"
                     android:text="@string/statement_insurance_agency_title"
                     android:textAllCaps="true"
-                    android:textColor="@color/secondary900"
+                    android:textColor="@color/primary800"
                     android:textSize="30sp"
                     android:textStyle="bold" />
 
@@ -199,7 +211,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_b_insurance_agency_name"
+                        android:id="@+id/et_statement_vehicle_a_insurance_agency_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -217,7 +229,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_b_insurance_agency_address"
+                        android:id="@+id/et_statement_vehicle_a_insurance_agency_address"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -235,7 +247,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_b_insurance_agency_country"
+                        android:id="@+id/et_statement_vehicle_a_insurance_agency_country"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -253,7 +265,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_b_insurance_agency_phone_number"
+                        android:id="@+id/et_statement_vehicle_a_insurance_agency_phone_number"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -271,7 +283,7 @@
                     app:boxStrokeColor="@color/primary800">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_statement_vehicle_b_insurance_agency_email"
+                        android:id="@+id/et_statement_vehicle_a_insurance_agency_email"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/input_hint" />
@@ -312,7 +324,6 @@
                     android:layout_width="190dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/rounded_main_button"
                     android:paddingLeft="65dp"
                     android:paddingRight="65dp"
                     android:text="@string/statement_front_button"
