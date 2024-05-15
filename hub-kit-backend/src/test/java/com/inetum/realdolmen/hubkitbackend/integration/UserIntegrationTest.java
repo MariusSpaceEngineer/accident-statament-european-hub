@@ -44,7 +44,7 @@ class UserIntegrationTest {
     @BeforeEach
     public void setUpRequestSpecifications() {
         String email = "johndoe@gmail.com";
-        String password = "1234";
+        String password = "Example_123";
 
         Response response =
                 given()
@@ -95,6 +95,7 @@ class UserIntegrationTest {
                 .greenCardNumber("Green123")
                 .availabilityDate(LocalDate.parse("2024-01-01"))
                 .expirationDate(LocalDate.parse("2025-01-01"))
+                .materialDamageCovered(false)
                 .insuranceAgency(insuranceAgency)
                 .insuranceCompany(insuranceCompany)
                 .vehicle(motorDTO)
@@ -149,6 +150,32 @@ class UserIntegrationTest {
                 .statusCode(200);
     }
 
+    @Test
+    public void updatePolicyHolderPersonalInformationWithInvalidEmail() throws JsonProcessingException {
+        policyHolderPersonalInformation.setEmail("wrong...email@gamil.... ");
+        String json = objectMapper.writeValueAsString(policyHolderPersonalInformation);
+
+        requestSpec
+                .body(json)
+                .when()
+                .put(baseURI + "/user/profile/personal")
+                .then()
+                .statusCode(403);
+    }
+
+    @Test
+    public void updatePolicyHolderPersonalInformationWithEmptyRequiredProperties() throws JsonProcessingException {
+        policyHolderPersonalInformation.setEmail("");
+        policyHolderPersonalInformation.setFirstName("");
+        String json = objectMapper.writeValueAsString(policyHolderPersonalInformation);
+
+        requestSpec
+                .body(json)
+                .when()
+                .put(baseURI + "/user/profile/personal")
+                .then()
+                .statusCode(403);
+    }
 
     @Test
     public void updatePolicyHolderPersonalInformationWithoutValidToken() throws JsonProcessingException {
@@ -173,6 +200,20 @@ class UserIntegrationTest {
                 .put(baseURI + "/user/profile/insurance")
                 .then()
                 .statusCode(200);
+    }
+
+    @Test
+    public void updatePolicyHolderInsuranceInformationWithEmptyRequiredProperties() throws JsonProcessingException {
+        insuranceCertificate.setPolicyNumber("");
+        insuranceCertificate.setGreenCardNumber("");
+        String json = objectMapper.writeValueAsString(insuranceCertificate);
+
+        requestSpec
+                .body(json)
+                .when()
+                .put(baseURI + "/user/profile/insurance")
+                .then()
+                .statusCode(403);
     }
 
     @Test
