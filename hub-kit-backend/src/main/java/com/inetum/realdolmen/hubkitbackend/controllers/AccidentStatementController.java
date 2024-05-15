@@ -4,6 +4,7 @@ import com.inetum.realdolmen.hubkitbackend.dto.AccidentStatementDTO;
 import com.inetum.realdolmen.hubkitbackend.dto.LocationCoordinates;
 import com.inetum.realdolmen.hubkitbackend.services.AccidentStatementService;
 import com.inetum.realdolmen.hubkitbackend.responses.Response;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class AccidentStatementController {
     }
 
     @PostMapping("/accident/location")
-    public ResponseEntity<?> getAccidentLocation(@RequestBody LocationCoordinates locationCoordinates) {
+    public ResponseEntity<Response> getAccidentLocation(@RequestBody @Valid LocationCoordinates locationCoordinates) {
         try {
             var response = service.getLocationAddress(locationCoordinates);
             return ResponseEntity.status(HttpStatus.OK).body(Response.builder().successMessage(response).build());
