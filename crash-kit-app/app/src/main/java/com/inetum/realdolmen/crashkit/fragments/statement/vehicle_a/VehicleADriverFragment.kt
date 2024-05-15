@@ -1,5 +1,7 @@
 package com.inetum.realdolmen.crashkit.fragments.statement.vehicle_a
 
+import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,9 +19,9 @@ import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.FragmentVehicleADriverBinding
 import com.inetum.realdolmen.crashkit.helpers.FormHelper
 import com.inetum.realdolmen.crashkit.utils.AccidentStatementLists
+import com.inetum.realdolmen.crashkit.utils.IValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.StatementDataHandler
-import com.inetum.realdolmen.crashkit.utils.IValidationConfigure
 import com.inetum.realdolmen.crashkit.utils.showToast
 import com.inetum.realdolmen.crashkit.utils.to24Format
 import com.inetum.realdolmen.crashkit.utils.toLocalDate
@@ -31,6 +33,8 @@ import java.time.ZoneId
 class VehicleADriverFragment : Fragment(), StatementDataHandler, IValidationConfigure {
     private lateinit var model: NewStatementViewModel
     private lateinit var navController: NavController
+    private lateinit var formHelper: FormHelper
+    private lateinit var datePicker: MaterialDatePicker<Long>
 
     private var _binding: FragmentVehicleADriverBinding? = null
     private val binding get() = _binding!!
@@ -38,48 +42,31 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, IValidationConf
     private var fields: List<TextView> = mutableListOf()
     private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> =
         mutableListOf()
-    private lateinit var formHelper: FormHelper
 
     private val changeSupport = PropertyChangeSupport(this)
 
     private var drivingLicenseExpirationDate: LocalDate? = null
         set(newValue) {
-            val oldValue = field
+            notifyPropertyChange("drivingLicenseExpirationDate", field, newValue)
             field = newValue
-
-            // Notify listeners about the change
-            changeSupport.firePropertyChange(
-                "drivingLicenseExpirationDate",
-                oldValue,
-                newValue
-            )
         }
 
     private var driverDateOfBirth: LocalDate? = null
         set(newValue) {
-            val oldValue = field
+            notifyPropertyChange("driverDateOfBirth", field, newValue)
             field = newValue
-
-            // Notify listeners about the change
-            changeSupport.firePropertyChange(
-                "driverDateOfBirth",
-                oldValue,
-                newValue
-            )
         }
-
-    private val datePicker = MaterialDatePicker.Builder.datePicker()
-        .setTitleText("Select date")
-        .build()
 
     private var currentPicker: String? = null
 
     private val drivingLicenseCategories = AccidentStatementLists.drivingLicenseCategories
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Lock the screen orientation to portrait
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         model = ViewModelProvider(requireActivity())[NewStatementViewModel::class.java]
-
     }
 
     override fun onCreateView(
@@ -88,6 +75,10 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, IValidationConf
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentVehicleADriverBinding.inflate(inflater, container, false)
+
+        datePicker = MaterialDatePicker.Builder.datePicker()
+            .setTitleText(requireContext().getString(R.string.date_picker_title))
+            .build()
 
         return binding.root
     }
@@ -105,15 +96,16 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, IValidationConf
         navController = findNavController()
 
         formHelper = FormHelper(requireContext(), fields)
-
         setupDrivingLicenseCategorySpinner()
-
         setupValidation()
 
         updateUIFromViewModel(model)
 
         setupButtonClickListeners()
+        setupCheckboxListener()
+    }
 
+    private fun setupCheckboxListener() {
         binding.cbStatementVehicleADriverIsPolicyHolder.setOnCheckedChangeListener { _, isChecked ->
             updateDriverFields(isChecked)
             removeDriverFieldsErrors()
@@ -132,47 +124,49 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, IValidationConf
     }
 
     private fun setupButtonClickListeners() {
-        binding.btnStatementAccidentPrevious.setOnClickListener {
-            updateViewModelFromUI(model)
+        setupNavigationButtons()
+        setupDatePicker()
+        setupDatePickerButtons()
+    }
 
-            navController.popBackStack()
+    private fun setupNavigationButtons() {
+        binding.btnStatementAccidentPrevious.setOnClickListener {
+            handlePreviousButtonClick()
         }
 
         binding.btnStatementAccidentNext.setOnClickListener {
-            formHelper.clearErrors()
-            formHelper.validateFields(validationRules)
-
-            if (fields.none { it.error != null } && validateSpinner(binding.spinStatementVehicleADriverCategory)) {
-                updateViewModelFromUI(model)
-                // If no errors, navigate to the next fragment
-                navController.navigate(R.id.vehicleACircumstancesFragment)
-            } else if (!validateSpinner(binding.spinStatementVehicleADriverCategory)) {
-                requireContext().showToast("Please select a valid category.")
-            }
+            handleNextButtonClick()
         }
+    }
 
+    private fun setupDatePicker() {
         datePicker.addOnPositiveButtonClickListener { selection ->
             val selectedDate =
                 Instant.ofEpochMilli(selection).atZone(ZoneId.systemDefault()).toLocalDate()
             when (currentPicker) {
-                "driving_license_date_picker" -> {
-                    drivingLicenseExpirationDate = selectedDate
-                    binding.etStatementVehicleADriverDrivingLicenseExpirationDate.setText(
-                        (drivingLicenseExpirationDate?.to24Format() ?: "")
-                    )
-                    binding.etStatementVehicleADriverDrivingLicenseExpirationDate.error = null
-                }
-
-                "date_of_birth_date_picker" -> {
-                    driverDateOfBirth = selectedDate
-                    binding.etStatementVehicleADriverDateOfBirth.setText(
-                        (driverDateOfBirth?.to24Format() ?: "")
-                    )
-                    binding.etStatementVehicleADriverDateOfBirth.error = null
-                }
+                "driving_license_date_picker" -> updateDrivingLicenseExpirationDate(selectedDate)
+                "date_of_birth_date_picker" -> updateDateOfBirth(selectedDate)
             }
         }
+    }
 
+    private fun updateDrivingLicenseExpirationDate(selectedDate: LocalDate) {
+        drivingLicenseExpirationDate = selectedDate
+        binding.etStatementVehicleADriverDrivingLicenseExpirationDate.setText(
+            (drivingLicenseExpirationDate?.to24Format() ?: "")
+        )
+        binding.etStatementVehicleADriverDrivingLicenseExpirationDate.error = null
+    }
+
+    private fun updateDateOfBirth(selectedDate: LocalDate) {
+        driverDateOfBirth = selectedDate
+        binding.etStatementVehicleADriverDateOfBirth.setText(
+            (driverDateOfBirth?.to24Format() ?: "")
+        )
+        binding.etStatementVehicleADriverDateOfBirth.error = null
+    }
+
+    private fun setupDatePickerButtons() {
         binding.btnDrivingLicenseExpirationDatePicker.setOnClickListener {
             currentPicker = "driving_license_date_picker"
             datePicker.show(parentFragmentManager, currentPicker)
@@ -182,7 +176,25 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, IValidationConf
             currentPicker = "date_of_birth_date_picker"
             datePicker.show(parentFragmentManager, currentPicker)
         }
+    }
 
+    private fun handleNextButtonClick() {
+        formHelper.clearErrors()
+        formHelper.validateFields(validationRules)
+
+        if (fields.none { it.error != null } && validateSpinner(binding.spinStatementVehicleADriverCategory)) {
+            updateViewModelFromUI(model)
+            // If no errors, navigate to the next fragment
+            navController.navigate(R.id.vehicleACircumstancesFragment)
+        } else if (!validateSpinner(binding.spinStatementVehicleADriverCategory)) {
+            requireContext().showToast(getString(R.string.no_category_selected))
+        }
+    }
+
+    private fun handlePreviousButtonClick() {
+        updateViewModelFromUI(model)
+
+        navController.popBackStack()
     }
 
     override fun updateUIFromViewModel(model: NewStatementViewModel) {
@@ -335,6 +347,12 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, IValidationConf
         )
     }
 
+    /**
+     * This method validates the selected item of a given spinner.
+     *
+     * @param spinner The Spinner object that needs to be validated.
+     * @return Boolean Returns true if the spinner has a selected item and the selected item is not blank. Otherwise, it returns false.
+     */
     private fun validateSpinner(spinner: Spinner): Boolean {
         return spinner.selectedItem != null && spinner.selectedItem.toString().isNotBlank()
     }
@@ -369,5 +387,13 @@ class VehicleADriverFragment : Fragment(), StatementDataHandler, IValidationConf
                 (field as EditText).error = null
             }
         }
+    }
+
+    private fun notifyPropertyChange(propertyName: String, oldValue: Any?, newValue: Any?) {
+        changeSupport.firePropertyChange(
+            propertyName,
+            oldValue,
+            newValue
+        )
     }
 }

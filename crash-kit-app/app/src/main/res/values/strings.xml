@@ -167,6 +167,7 @@
     <string name="insurance_certificate_select_dialog">Select an insurance certificate</string>
     <string name="policy_holder_profile_fetch_failed">An error occurred while retrieving your profile information. Please try again.</string>
     <string name="date_range_picker_title">Select dates</string>
+    <string name="date_picker_title">Select date</string>
     <string name="ok">OK</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -176,6 +177,6 @@
     <string name="import_successful">Import Successful</string>
     <string name="location_address_fetch_successful">Location has been successfully fetched!</string>
     <string name="no_vehicles_found">No vehicles found</string>
-
+    <string name="no_category_selected">Please select a valid category.</string>
     <string name="forgot_password">Forgot Password?</string>
 </resources>
