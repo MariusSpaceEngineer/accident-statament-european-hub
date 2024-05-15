@@ -22,6 +22,7 @@ import org.junit.Test
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+//TODO add profile and accident statement mock api tests
 class APIServiceTest {
     private lateinit var mockWebServer: MockWebServer
     private lateinit var apiService: ApiService
@@ -98,7 +99,10 @@ class APIServiceTest {
             "John",
             "Doe",
             "john.doe@email.com",
-            "password"
+            "12345678",
+            "Example str.",
+            "2158",
+            "Example_123"
         )
         val expectedResponse = RegisterResponse(token = "token", errorMessage = null)
         val expectedResponseBody = Gson().toJson(expectedResponse)
@@ -127,7 +131,10 @@ class APIServiceTest {
             "John",
             "Doe",
             "existing.email@email.com",
-            "password"
+            "12345678",
+            "Example str.",
+            "2158",
+            "Example_123"
         )
         val expectedResponse = RegisterResponse(token = null, errorMessage = "User already exists")
         val expectedResponseBody = Gson().toJson(expectedResponse)
@@ -192,7 +199,6 @@ class APIServiceTest {
         // Act
         val response = apiService.updatePassword(resetPasswordData)
 
-
         // Assert
         assertEquals(response.code(), 400)
     }
@@ -238,9 +244,6 @@ class APIServiceTest {
 
         // Assert
         assertEquals(response.code(), 500)
-//        val responseBody = response.body()
-//        assertEquals(expectedResponse.successMessage, responseBody?.successMessage)
-//        assertEquals(expectedResponse.errorMessage, responseBody?.errorMessage)
     }
 
 }
