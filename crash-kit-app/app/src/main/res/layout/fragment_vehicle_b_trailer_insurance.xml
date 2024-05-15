@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/tertiary400"
-        tools:context=".fragments.statement.vehicle_b.VehicleBInsuranceFragment">
+        tools:context=".fragments.statement.vehicle_b.VehicleBTrailerInsuranceFragment">
 
         <LinearLayout
             android:layout_width="match_parent"
