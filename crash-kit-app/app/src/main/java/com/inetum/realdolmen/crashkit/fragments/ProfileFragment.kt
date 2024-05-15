@@ -41,6 +41,7 @@ import com.inetum.realdolmen.crashkit.utils.LogTags
 import com.inetum.realdolmen.crashkit.utils.LogTags.TAG_CERTIFICATE
 import com.inetum.realdolmen.crashkit.utils.LogTags.TAG_NETWORK_REQUEST
 import com.inetum.realdolmen.crashkit.utils.createSimpleDialog
+import com.inetum.realdolmen.crashkit.utils.showToast
 import com.inetum.realdolmen.crashkit.utils.to24Format
 import com.inetum.realdolmen.crashkit.utils.toIsoString
 import com.inetum.realdolmen.crashkit.utils.toLocalDate
@@ -1041,7 +1042,7 @@ class ProfileFragment : Fragment(), IValidationConfigure {
                 }
                 handlePolicyHolderProfileResponse(response)
             } catch (e: Exception) {
-                handleNetworkError(e)
+                requireContext().showToast(getString(R.string.error_network))
             }
         }
     }
