@@ -33,4 +33,11 @@
         app:navGraph="@navigation/bottom_navigation_bar"
         tools:ignore="FragmentTagUsage" />
 
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fr_home_loading"
+        style="@style/FullScreenDialog"
+        android:name="com.inetum.realdolmen.crashkit.fragments.LoadingFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

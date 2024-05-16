@@ -9,10 +9,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.inetum.realdolmen.crashkit.CrashKitApp
 import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.ActivityHomeBinding
+import com.inetum.realdolmen.crashkit.fragments.LoadingFragment
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding
     private lateinit var navController: NavController
+    private lateinit var loadingFragment: LoadingFragment
 
     private val securedPreferences = CrashKitApp.securedPreferences
 
@@ -21,6 +23,8 @@ class HomeActivity : AppCompatActivity() {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        loadingFragment= getLoadingFragment()
+
         setupNavController()
 
         removeProfileFragmentIfUserIsGuest()
@@ -28,10 +32,20 @@ class HomeActivity : AppCompatActivity() {
         setupNavigation(navController, binding)
     }
 
+    override fun onResume() {
+        super.onResume()
+        loadingFragment.hideLoadingFragment()
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         // Save the NavController's state
         outState.putBundle("nav_state", navController.saveState())
         super.onSaveInstanceState(outState)
+    }
+
+    private fun getLoadingFragment(): LoadingFragment {
+        return supportFragmentManager.findFragmentById(R.id.fr_home_loading) as? LoadingFragment
+            ?: throw RuntimeException("Expected LoadingFragment not found.")
     }
 
     private fun removeProfileFragmentIfUserIsGuest() {
@@ -55,14 +69,17 @@ class HomeActivity : AppCompatActivity() {
                     navController.navigate(R.id.homeFragment)
                     true
                 }
+
                 R.id.newStatementFragment -> {
                     navController.navigate(R.id.newStatementFragment)
                     true
                 }
+
                 R.id.profileFragment -> {
                     navController.navigate(R.id.profileFragment)
                     true
                 }
+
                 else -> false
             }
         }
