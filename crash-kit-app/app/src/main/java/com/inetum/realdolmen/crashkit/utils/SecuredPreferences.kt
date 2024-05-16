@@ -7,6 +7,21 @@ import android.security.keystore.KeyProperties
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 
+/**
+ * `SecuredPreferences` is a class that provides secure storage for key-value pairs using SharedPreferences.
+ * It uses Android's EncryptedSharedPreferences for storing data securely.
+ *
+ * @function getString This function retrieves a stored String value for the given key.
+ * @function getJwtToken This function retrieves the stored JWT token.
+ * @function putJwtToken This function stores a JWT token.
+ * @function deleteJwtToken This function deletes the stored JWT token.
+ * @function rememberLogin This function sets a flag to remember the login.
+ * @function isLoginRemembered This function checks if the login is remembered.
+ * @function loggedAsGuest This function sets a flag indicating the user is logged in as a guest.
+ * @function loggedAsUser This function sets a flag indicating the user is logged in as a user.
+ * @function isGuest This function checks if the user is logged in as a guest.
+ *
+ */
 class SecuredPreferences(context: Context) {
 
     private val sharedPreferences: SharedPreferences
@@ -34,44 +49,30 @@ class SecuredPreferences(context: Context) {
         )
     }
 
-    fun putString(key: String, value: String) {
-        with(sharedPreferences.edit()) {
-            putString(key, value)
-            commit()
-        }
-    }
-
     fun getString(key: String): String? {
         return sharedPreferences.getString(key, null)
-    }
-
-    fun removeString(key: String){
-        with(sharedPreferences.edit()) {
-            remove(key)
-            apply()
-        }
     }
 
     fun getJwtToken(): String? {
         return sharedPreferences.getString("jwt_token", null)
     }
 
-    fun putJwtToken (value: String){
-        with(sharedPreferences.edit()){
+    fun putJwtToken(value: String) {
+        with(sharedPreferences.edit()) {
             putString("jwt_token", value)
                 .commit()
         }
     }
 
-    fun deleteJwtToken (){
-        with(sharedPreferences.edit()){
+    fun deleteJwtToken() {
+        with(sharedPreferences.edit()) {
             remove("jwt_token")
                 .apply()
         }
     }
 
-    fun rememberLogin(){
-        with(sharedPreferences.edit()){
+    fun rememberLogin() {
+        with(sharedPreferences.edit()) {
             putBoolean("remember", true)
             apply()
         }
@@ -81,15 +82,15 @@ class SecuredPreferences(context: Context) {
         return sharedPreferences.getBoolean("remember", false)
     }
 
-    fun loggedAsGuest(){
-        with(sharedPreferences.edit()){
+    fun loggedAsGuest() {
+        with(sharedPreferences.edit()) {
             putBoolean("guest", true)
             apply()
         }
     }
 
-    fun loggedAsUser(){
-        with(sharedPreferences.edit()){
+    fun loggedAsUser() {
+        with(sharedPreferences.edit()) {
             putBoolean("guest", false)
             apply()
         }
