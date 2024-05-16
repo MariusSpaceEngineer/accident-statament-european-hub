@@ -62,6 +62,9 @@
     <string name="label_injured">Injured</string>
     <string name="label_pick_date">Pick Date</string>
     <string name="label_driving_license_category">Driving License Category</string>
+    <string name="label_new_password">New Password</string>
+    <string name="label_confirm_new_password">Confirm New Password</string>
+    <string name="label_login_forgot_password">Forgot Password?</string>
 
     <!--    Buttons-->
     <string name="main_register_button">Register</string>
@@ -89,6 +92,7 @@
     <string name="logout_button">Logout</string>
     <string name="proceed_button">Proceed</string>
     <string name="revert_button">Revert</string>
+    <string name="forgot_credentials_password">Reset Password</string>
 
     <!--    Descriptions-->
     <string name="main_description">Save time and hassle after a crash</string>
@@ -185,5 +189,4 @@
     <string name="camera_permission_denied">Location permission denied.</string>
     <string name="maximum_photos_reached">Maximum number of images reached</string>
 
-    <string name="forgot_password">Forgot Password?</string>
 </resources>
