@@ -35,6 +35,14 @@ class NewStatementViewModel : ViewModel() {
         MutableLiveData<List<Pair<IAccidentDrawable, Point>>>(emptyList())
     }
 
+    fun clear() {
+        statementData.value = StatementData()
+        vehicleACircumstances.value = emptyList()
+        vehicleBCircumstances.value = emptyList()
+        accidentSketchShapes.value = emptyList()
+        pointOfImpactVehicleASketchShapes.value = emptyList()
+        pointOfImpactVehicleBSketchShapes.value = emptyList()
+    }
 }
 
 data class StatementData(
