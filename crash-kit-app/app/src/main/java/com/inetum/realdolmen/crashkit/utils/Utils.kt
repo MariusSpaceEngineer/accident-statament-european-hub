@@ -3,12 +3,9 @@ package com.inetum.realdolmen.crashkit.utils
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.fragment.app.FragmentManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.textfield.TextInputEditText
 import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -23,6 +20,8 @@ object LogTags {
     const val TAG_QR_CODE = "QRCode"
     const val TAG_CERTIFICATE= "Certificate"
     const val TAG_LOCATION= "Location"
+    const val TAG_SKETCH_VIEW= "SketchView"
+    const val TAG_ROTATION_GESTURE_DETECTOR= "RotationGestureDetector"
 }
 
 fun Context.createSimpleDialog(title: String, message: String) {
@@ -33,26 +32,6 @@ fun Context.createSimpleDialog(title: String, message: String) {
             dialog.dismiss()
         }
         .show()
-}
-
-fun Map<TextInputEditText, String>.areFieldsValid(): Boolean {
-    var allFieldsValid = true
-    for ((field, errorMessage) in this) {
-        if (field.text.toString().trim().isEmpty()) {
-            field.error = errorMessage
-            allFieldsValid = false
-        }
-    }
-    return allFieldsValid
-}
-
-fun FragmentManager.printBackStack() {
-    val count = this.backStackEntryCount
-    for (i in 0 until count) {
-        val entry: FragmentManager.BackStackEntry = this.getBackStackEntryAt(i)
-        Log.i("BackStack", "Entry at $i: ${entry.name}")
-    }
-    Log.i("BackStack", "BackStack count: $count")
 }
 
 fun LocalDate.toIsoString(): String {
