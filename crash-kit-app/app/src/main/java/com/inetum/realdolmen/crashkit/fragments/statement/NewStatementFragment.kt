@@ -132,7 +132,7 @@ class NewStatementFragment : Fragment(), StatementDataHandler, IValidationConfig
 
     override fun updateViewModelFromUI(model: NewStatementViewModel) {
         model.statementData.value?.apply {
-            this.dateOfAccident = dateTimePicker.dateTime
+            this.dateOfAccident = dateTimePicker.dateTime ?: LocalDateTime.now()
             this.accidentLocation = binding.etStatementAccidentLocation.text.toString()
             this.injured = binding.cbStatementAccidentInjured.isChecked
             this.materialDamageToOtherVehicles =
@@ -219,7 +219,7 @@ class NewStatementFragment : Fragment(), StatementDataHandler, IValidationConfig
 
             if (fields.none { it.error != null }) {
                 //If no errors, navigate to the next fragment
-                navController.navigate(R.id.vehicleANewStatementFragment)
+                navController.navigate(R.id.accidentStatementOverviewFragment)
             }
         }
 
