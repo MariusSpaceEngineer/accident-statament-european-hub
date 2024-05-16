@@ -48,11 +48,10 @@ class AccidentSketchFragment : Fragment(), StatementDataHandler {
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE
     }
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = FragmentAccidentSketchBinding.inflate(inflater, container, false)
         val view = binding.root
@@ -62,7 +61,20 @@ class AccidentSketchFragment : Fragment(), StatementDataHandler {
         return view
     }
 
-    //Needed otherwise the navController would crash the app as it has to be initialized first in the activity
+    /**
+     * This method is invoked when the activity's state has been created.
+     * It is crucial to initialize the NavController and NavBar within this method to prevent the app from crashing.
+     * The NavController must be initialized first in the activity, otherwise, it could lead to a crash.
+     *
+     * @deprecated This method is deprecated in Java.
+     *
+     * The method performs the following operations:
+     * 1. Initializes the NavController by finding the NavController for this fragment.
+     * 2. Initializes the NavBar by finding the BottomNavigationView in the activity.
+     * 3. If there is a saved instance state, restores the state of the NavController from it.
+     * 4. Sets the visibility of the NavBar to GONE to hide it.
+     * 5. Sets up click listeners for the activity.
+     */
     @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -82,6 +94,19 @@ class AccidentSketchFragment : Fragment(), StatementDataHandler {
     override fun onSaveInstanceState(outState: Bundle) {
         saveNavControllerState(outState)
         super.onSaveInstanceState(outState)
+    }
+
+    override fun updateUIFromViewModel(model: NewStatementViewModel) {
+        TODO()
+    }
+
+    override fun updateViewModelFromUI(model: NewStatementViewModel) {
+        model.statementData.value?.apply {
+            viewModel.statementData.value?.accidentSketch = sketchBitmap
+        }
+        model.accidentSketchShapes.value?.apply {
+            viewModel.accidentSketchShapes.value = sketchView.shapes
+        }
     }
 
     private fun setUpSketchView(view: FrameLayout) {
@@ -105,13 +130,7 @@ class AccidentSketchFragment : Fragment(), StatementDataHandler {
     private fun setupClickListeners() {
         binding.btnAccidentSketchSearchShape.setOnClickListener {
             val dialog = Dialog(requireContext(), R.style.Theme_CrashKit)
-            val recyclerView = RecyclerView(requireContext())
-            recyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
-            recyclerView.addItemDecoration(SpacesItemDecoration(20))
-            recyclerView.adapter = ShapesAdapter { drawableResId, priority ->
-                sketchView.addShape(drawableResId, priority)
-                dialog.dismiss()
-            }
+            val recyclerView = setupRecyclerView(dialog)
 
             dialog.setContentView(recyclerView)
             dialog.show()
@@ -138,6 +157,17 @@ class AccidentSketchFragment : Fragment(), StatementDataHandler {
         }
     }
 
+    private fun setupRecyclerView(dialog: Dialog): RecyclerView {
+        val recyclerView = RecyclerView(requireContext())
+        recyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
+        recyclerView.addItemDecoration(SpacesItemDecoration(20))
+        recyclerView.adapter = ShapesAdapter { drawableResId, priority ->
+            sketchView.addShape(drawableResId, priority)
+            dialog.dismiss()
+        }
+        return recyclerView
+    }
+
     private fun saveNavControllerState(outState: Bundle) {
         if (this::navController.isInitialized) {
             outState.putBundle("nav_state", navController.saveState())
@@ -149,19 +179,6 @@ class AccidentSketchFragment : Fragment(), StatementDataHandler {
         val canvas = Canvas(bitmap)
         view.draw(canvas)
         return bitmap
-    }
-
-    override fun updateUIFromViewModel(model: NewStatementViewModel) {
-        TODO()
-    }
-
-    override fun updateViewModelFromUI(model: NewStatementViewModel) {
-        model.statementData.value?.apply {
-            viewModel.statementData.value?.accidentSketch = sketchBitmap
-        }
-        model.accidentSketchShapes.value?.apply {
-            viewModel.accidentSketchShapes.value = sketchView.shapes
-        }
     }
 
 }
