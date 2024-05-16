@@ -1,5 +1,6 @@
 package com.inetum.realdolmen.crashkit.fragments.statement
 
+import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import android.graphics.Typeface
 import android.os.Bundle
@@ -16,7 +17,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
@@ -35,37 +35,63 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
     private var _binding: FragmentAccidentStatementOverviewBinding? = null
     private val binding get() = _binding!!
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Lock the screen orientation to portrait
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         model = ViewModelProvider(requireActivity())[NewStatementViewModel::class.java]
-    }
-
-    override fun onResume() {
-        super.onResume()
-        // Reset orientation
-        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        navController = findNavController()
-
-        savedInstanceState?.let {
-            navController.restoreState(it.getBundle("nav_state"))
-        }
+    ): View {
         // Inflate the layout for this fragment
         _binding = FragmentAccidentStatementOverviewBinding.inflate(inflater, container, false)
-        val view = binding.root
 
-        return view
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        navController = findNavController()
+
         updateUIFromViewModel(model)
 
+        setupButtonClickListeners()
+
+    }
+
+    override fun updateUIFromViewModel(model: NewStatementViewModel) {
+        model.statementData.observe(viewLifecycleOwner) { statementData ->
+            updateGeneralInformationCardFromViewModel(statementData)
+            updateVehicleACardFromViewModel(statementData)
+            updateVehicleBCardFromViewModel(statementData)
+        }
+    }
+
+    override fun updateViewModelFromUI(model: NewStatementViewModel) {
+        TODO()
+    }
+
+    private fun setupButtonClickListeners() {
+        setupVehicleACardButtons()
+        setupVehicleBCardButtons()
+        setupNavigationButtons()
+    }
+
+    private fun setupNavigationButtons() {
+        binding.btnStatementAccidentPrevious.setOnClickListener {
+            navController.popBackStack()
+        }
+
+        binding.btnStatementAccidentNext.setOnClickListener {
+            navController.navigate(R.id.accidentStatementSignatureFragment)
+        }
+    }
+
+    private fun setupVehicleACardButtons() {
         binding.tvStatementOverviewGeneralCardEdit.setOnClickListener {
             navController.navigate(R.id.newStatementFragment)
         }
@@ -111,8 +137,9 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
         binding.tvStatementVehicleAPageFiveEdit.setOnClickListener {
             navController.navigate(R.id.vehicleAMiscellaneousFragment)
         }
+    }
 
-
+    private fun setupVehicleBCardButtons() {
         binding.ibStatementVehicleBCardExpandButton.setOnClickListener {
             toggleCardFields(
                 binding.clStatementVehicleBCard,
@@ -151,23 +178,6 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             navController.navigate(R.id.vehicleBMiscellaneousFragment)
         }
 
-        binding.btnStatementAccidentNext.setOnClickListener {
-            navController.navigate(R.id.accidentStatementSignatureFragment)
-        }
-
-    }
-
-
-    override fun updateUIFromViewModel(model: NewStatementViewModel) {
-        model.statementData.observe(viewLifecycleOwner, Observer { statementData ->
-            updateGeneralInformationCardFromViewModel(statementData)
-            updateVehicleACardFromViewModel(statementData)
-            updateVehicleBCardFromViewModel(statementData)
-        })
-    }
-
-    override fun updateViewModelFromUI(model: NewStatementViewModel) {
-        TODO("Not yet implemented")
     }
 
     private fun toggleCardFields(
@@ -190,8 +200,15 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
             ChangeTransform()
         )
     }
-
-    private fun setBoldAndNormalText(view: TextView, label: String, appendedText: String?) {
+    /**
+     * This function sets the text of a TextView with a label and appended text.
+     * The label is displayed in bold, and the appended text (if present) is displayed in normal style.
+     *
+     * @param view The TextView to which the text is to be set.
+     * @param label The label text that will be displayed in bold.
+     * @param appendedText The text that will be appended to the label and displayed in normal style. If null, only a colon is appended to the label.
+     */
+    private fun setTextViewWithBoldLabelAndNormalText(view: TextView, label: String, appendedText: String?) {
         val spannable = SpannableStringBuilder(label)
         spannable.setSpan(
             StyleSpan(Typeface.BOLD),
@@ -214,27 +231,35 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
     }
 
     private fun updateGeneralInformationCardFromViewModel(statementData: StatementData) {
-        //General information
-        setBoldAndNormalText(
+        updateGeneralInformation(statementData)
+        updateMaterialDamageInformation(statementData)
+        updateWitnessInformation(statementData)
+        updateAccidentSketch(statementData)
+    }
+
+    private fun updateGeneralInformation(statementData: StatementData) {
+        setTextViewWithBoldLabelAndNormalText(
             binding.tvStatementOverviewGeneralCardLabelDateOfAccident,
             binding.tvStatementOverviewGeneralCardLabelDateOfAccident.text.toString(),
             statementData.dateOfAccident?.to24Format()
         )
 
-        setBoldAndNormalText(
+        setTextViewWithBoldLabelAndNormalText(
             binding.tvStatementOverviewGeneralCardLabelLocation,
             binding.tvStatementOverviewGeneralCardLabelLocation.text.toString(),
             statementData.accidentLocation
         )
 
-        setBoldAndNormalText(
+        setTextViewWithBoldLabelAndNormalText(
             binding.tvStatementOverviewGeneralCardLabelInjured,
             binding.tvStatementOverviewGeneralCardLabelInjured.text.toString(),
             if (statementData.injured) requireContext().getString(R.string.yes) else requireContext().getString(
                 R.string.no
             )
         )
+    }
 
+    private fun updateMaterialDamageInformation(statementData: StatementData) {
         if (statementData.materialDamageToOtherVehicles || statementData.materialDamageToObjects) {
             binding.tvStatementOverviewGeneralCardLabelMaterialDamage.visibility = View.VISIBLE
             if (statementData.materialDamageToOtherVehicles)
@@ -244,12 +269,14 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
                 binding.tvStatementOverviewGeneralCardMaterialDamageOtherObjects.visibility =
                     View.VISIBLE
         }
+    }
 
+    private fun updateWitnessInformation(statementData: StatementData) {
         if (statementData.witnessIsPresent) {
 
             if (statementData.witnessName.isNotEmpty()) {
                 binding.tvStatementOverviewGeneralCardWitnessName.visibility = View.VISIBLE
-                setBoldAndNormalText(
+                setTextViewWithBoldLabelAndNormalText(
                     binding.tvStatementOverviewGeneralCardWitnessName,
                     binding.tvStatementOverviewGeneralCardWitnessName.text.toString(),
                     statementData.witnessName
@@ -258,7 +285,7 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
 
             if (statementData.witnessAddress.isNotEmpty()) {
                 binding.tvStatementOverviewGeneralCardWitnessAddress.visibility = View.VISIBLE
-                setBoldAndNormalText(
+                setTextViewWithBoldLabelAndNormalText(
                     binding.tvStatementOverviewGeneralCardWitnessAddress,
                     binding.tvStatementOverviewGeneralCardWitnessAddress.text.toString(),
                     statementData.witnessAddress
@@ -267,7 +294,7 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
 
             if (statementData.witnessPhoneNumber.isNotEmpty()) {
                 binding.tvStatementOverviewGeneralCardWitnessPhoneNumber.visibility = View.VISIBLE
-                setBoldAndNormalText(
+                setTextViewWithBoldLabelAndNormalText(
                     binding.tvStatementOverviewGeneralCardWitnessPhoneNumber,
                     binding.tvStatementOverviewGeneralCardWitnessPhoneNumber.text.toString(),
                     statementData.witnessPhoneNumber
@@ -277,7 +304,9 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
         } else {
             binding.tvStatementOverviewGeneralCardWitnessNoWitness.visibility = View.VISIBLE
         }
+    }
 
+    private fun updateAccidentSketch(statementData: StatementData) {
         if (statementData.accidentSketch != null) {
             binding.tvStatementOverviewSketchLabel.visibility = View.VISIBLE
             binding.ivStatementOverviewSketch.setImageBitmap(statementData.accidentSketch)
@@ -289,39 +318,335 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
     private fun updateVehicleACardFromViewModel(
         statementData: StatementData
     ) {
-
         //Vehicle A page one
-        setBoldAndNormalText(
+        updateVehicleANewStatementFragmentFields(statementData)
+
+        //Vehicle A motor insurance page
+        updateVehicleAMotorInsuranceFragmentFields(statementData)
+
+        //Vehicle A trailer insurance page
+        updateVehicleATrailerInsuranceFragmentFields(statementData)
+
+        //Vehicle A driver page
+        updateVehicleADriverFragmentFields(statementData)
+
+        //Vehicle A page four
+        updateVehicleACircumstancesFragmentFields()
+
+        //Vehicle A page five
+        updateVehicleAMiscellaneousFragmentFields(statementData)
+    }
+
+    private fun updateVehicleBCardFromViewModel(statementData: StatementData) {
+
+        //Vehicle B page one
+        updateVehicleBNewStatementFragmentFields(statementData)
+
+        //Vehicle B motor insurance page
+        updateVehicleBMotorInsuranceFragmentFields(statementData)
+
+        //Vehicle B trailer insurance page
+        updateVehicleBTrailerInsuranceFragmentFields(statementData)
+
+        //Vehicle B driver page
+        updateVehicleBDriverFragmentFields(statementData)
+
+        //Vehicle B page four
+        updateVehicleBInsuranceFragmentFields()
+
+        //Vehicle B page five
+        updateVehicleBMiscellaneousFragmentFields(statementData)
+    }
+
+    private fun updateVehicleAMiscellaneousFragmentFields(statementData: StatementData) {
+        if (statementData.vehicleAPointOfImpactSketch != null) {
+            binding.tvStatementVehicleAPointOfImpactTitle.visibility = View.VISIBLE
+            binding.ivStatementVehicleAPointOfImpactSketch.setImageBitmap(statementData.vehicleAPointOfImpactSketch)
+            binding.ivStatementVehicleAPointOfImpactSketch.visibility = View.VISIBLE
+
+        }
+
+        if (!statementData.vehicleAAccidentPhotos.isNullOrEmpty()) {
+            val accidentImages = statementData.vehicleAAccidentPhotos!!
+            val viewPager = binding.vpStatementOverviewVehicleAAccidentPhotos
+            viewPager.visibility = View.VISIBLE
+            viewPager.adapter = ImageAdapter(accidentImages, this.requireContext())
+        }
+
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleARemarks,
+            binding.tvStatementVehicleARemarks.text.toString(),
+            statementData.vehicleARemarks
+        )
+
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleADamageDescription,
+            binding.tvStatementVehicleADamageDescription.text.toString(),
+            statementData.vehicleADamageDescription
+        )
+    }
+
+    private fun updateVehicleACircumstancesFragmentFields() {
+        if (!model.vehicleACircumstances.value.isNullOrEmpty()) {
+            binding.tvStatementVehicleAAmountOfCircumstances.visibility = View.VISIBLE
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleAAmountOfCircumstances,
+                binding.tvStatementVehicleAAmountOfCircumstances.text.toString(),
+                model.vehicleACircumstances.value!!.size.toString()
+            )
+        }
+    }
+
+    private fun updateVehicleADriverFragmentFields(statementData: StatementData) {
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleACardDriverLastName,
+            binding.tvStatementVehicleACardDriverLastName.text.toString(),
+            statementData.vehicleADriverLastName
+        )
+
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleACardDriverFirstName,
+            binding.tvStatementVehicleACardDriverFirstName.text.toString(),
+            statementData.vehicleADriverFirstName
+        )
+
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleACardDriverDateOfBirth,
+            binding.tvStatementVehicleACardDriverDateOfBirth.text.toString(),
+            statementData.vehicleADriverDateOfBirth?.to24Format()
+        )
+
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleACardDriverAddress,
+            binding.tvStatementVehicleACardDriverAddress.text.toString(),
+            statementData.vehicleADriverAddress
+        )
+
+
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleACardDriverCountry,
+            binding.tvStatementVehicleACardDriverCountry.text.toString(),
+            statementData.vehicleADriverCountry
+        )
+
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleACardDriverPhoneNumber,
+            binding.tvStatementVehicleACardDriverPhoneNumber.text.toString(),
+            statementData.vehicleADriverPhoneNumber
+        )
+
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleACardDriverCategory,
+            binding.tvStatementVehicleACardDriverCategory.text.toString(),
+            statementData.vehicleADriverDrivingLicenseCategory
+        )
+
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleACardDriverEmail,
+            binding.tvStatementVehicleACardDriverEmail.text.toString(),
+            statementData.vehicleADriverEmail
+        )
+
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleACardDriverDrivingLicenseNumber,
+            binding.tvStatementVehicleACardDriverDrivingLicenseNumber.text.toString(),
+            statementData.vehicleADriverDrivingLicenseNr
+        )
+
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleACardDriverDrivingLicenseExpirationDate,
+            binding.tvStatementVehicleACardDriverDrivingLicenseExpirationDate.text.toString(),
+            statementData.vehicleADriverDrivingLicenseExpirationDate?.to24Format()
+        )
+    }
+
+    private fun updateVehicleATrailerInsuranceFragmentFields(statementData: StatementData) {
+        if (statementData.vehicleATrailerHasRegistration) {
+            binding.llVehicleATrailerInsurance.visibility = View.VISIBLE
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleACardTrailerInsuranceCompanyName,
+                binding.tvStatementVehicleACardTrailerInsuranceCompanyName.text.toString(),
+                statementData.vehicleATrailerInsuranceCompanyName
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleACardTrailerInsurancePolicyNumber,
+                binding.tvStatementVehicleACardTrailerInsurancePolicyNumber.text.toString(),
+                statementData.vehicleATrailerInsuranceCompanyPolicyNumber
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleACardTrailerInsuranceGreenCardNumber,
+                binding.tvStatementVehicleACardTrailerInsuranceGreenCardNumber.text.toString(),
+                statementData.vehicleATrailerInsuranceCompanyGreenCardNumber
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleACardTrailerInsuranceCertificateAvailabilityDate,
+                binding.tvStatementVehicleACardTrailerInsuranceCertificateAvailabilityDate.text.toString(),
+                statementData.vehicleATrailerInsuranceCertificateAvailabilityDate?.to24Format()
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleACardTrailerInsuranceCertificateExpirationDate,
+                binding.tvStatementVehicleACardTrailerInsuranceCertificateExpirationDate.text.toString(),
+                statementData.vehicleATrailerInsuranceCertificateExpirationDate?.to24Format()
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleACardTrailerInsuranceAgencyName,
+                binding.tvStatementVehicleACardTrailerInsuranceAgencyName.text.toString(),
+                statementData.vehicleATrailerInsuranceAgencyName
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleACardTrailerInsuranceAgencyAddress,
+                binding.tvStatementVehicleACardTrailerInsuranceAgencyAddress.text.toString(),
+                statementData.vehicleATrailerInsuranceAgencyAddress
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleACardTrailerInsuranceAgencyCountry,
+                binding.tvStatementVehicleACardTrailerInsuranceAgencyCountry.text.toString(),
+                statementData.vehicleATrailerInsuranceAgencyCountry
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleACardTrailerInsuranceAgencyPhoneNumber,
+                binding.tvStatementVehicleACardTrailerInsuranceAgencyPhoneNumber.text.toString(),
+                statementData.vehicleATrailerInsuranceAgencyPhoneNumber
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleACardTrailerInsuranceAgencyEmail,
+                binding.tvStatementVehicleACardTrailerInsuranceAgencyEmail.text.toString(),
+                statementData.vehicleATrailerInsuranceAgencyEmail
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleACardTrailerInsuranceDamageCovered,
+                binding.tvStatementVehicleACardTrailerInsuranceDamageCovered.text.toString(),
+                if (statementData.vehicleATrailerMaterialDamageCovered) requireContext().getString(R.string.yes) else requireContext().getString(
+                    R.string.no
+                )
+            )
+
+        } else {
+            binding.llVehicleATrailerInsurance.visibility = View.GONE
+        }
+    }
+
+    private fun updateVehicleAMotorInsuranceFragmentFields(statementData: StatementData) {
+        if (!statementData.vehicleAMotorAbsent) {
+            binding.llVehicleAMotorInsurance.visibility = View.VISIBLE
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleACardMotorInsuranceCompanyName,
+                binding.tvStatementVehicleACardMotorInsuranceCompanyName.text.toString(),
+                statementData.vehicleAInsuranceCompanyName
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleACardMotorInsurancePolicyNumber,
+                binding.tvStatementVehicleACardMotorInsurancePolicyNumber.text.toString(),
+                statementData.vehicleAInsuranceCompanyPolicyNumber
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleACardMotorInsuranceGreenCardNumber,
+                binding.tvStatementVehicleACardMotorInsuranceGreenCardNumber.text.toString(),
+                statementData.vehicleAInsuranceCompanyGreenCardNumber
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleACardMotorInsuranceCertificateAvailabilityDate,
+                binding.tvStatementVehicleACardMotorInsuranceCertificateAvailabilityDate.text.toString(),
+                statementData.vehicleAInsuranceCertificateAvailabilityDate?.to24Format()
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleACardMotorInsuranceCertificateExpirationDate,
+                binding.tvStatementVehicleACardMotorInsuranceCertificateExpirationDate.text.toString(),
+                statementData.vehicleAInsuranceCertificateExpirationDate?.to24Format()
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleACardMotorInsuranceAgencyName,
+                binding.tvStatementVehicleACardMotorInsuranceAgencyName.text.toString(),
+                statementData.vehicleAInsuranceAgencyName
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleACardMotorInsuranceAgencyAddress,
+                binding.tvStatementVehicleACardMotorInsuranceAgencyAddress.text.toString(),
+                statementData.vehicleAInsuranceAgencyAddress
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleACardMotorInsuranceAgencyCountry,
+                binding.tvStatementVehicleACardMotorInsuranceAgencyCountry.text.toString(),
+                statementData.vehicleAInsuranceAgencyCountry
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleACardMotorInsuranceAgencyPhoneNumber,
+                binding.tvStatementVehicleACardMotorInsuranceAgencyPhoneNumber.text.toString(),
+                statementData.vehicleAInsuranceAgencyPhoneNumber
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleACardMotorInsuranceAgencyEmail,
+                binding.tvStatementVehicleACardMotorInsuranceAgencyEmail.text.toString(),
+                statementData.vehicleAInsuranceAgencyEmail
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleACardMotorInsuranceDamageCovered,
+                binding.tvStatementVehicleACardMotorInsuranceDamageCovered.text.toString(),
+                if (statementData.vehicleAMotorMaterialDamageCovered) requireContext().getString(R.string.yes) else requireContext().getString(
+                    R.string.no
+                )
+            )
+
+        } else {
+            binding.llVehicleAMotorInsurance.visibility = View.GONE
+        }
+    }
+
+    private fun updateVehicleANewStatementFragmentFields(statementData: StatementData) {
+        setTextViewWithBoldLabelAndNormalText(
             binding.tvStatementVehicleACardPolicyHolderLastName,
             binding.tvStatementVehicleACardPolicyHolderLastName.text.toString(),
             statementData.policyHolderALastName
         )
 
-        setBoldAndNormalText(
+        setTextViewWithBoldLabelAndNormalText(
             binding.tvStatementVehicleACardPolicyHolderFirstName,
             binding.tvStatementVehicleACardPolicyHolderFirstName.text.toString(),
             statementData.policyHolderAFirstName
         )
 
-        setBoldAndNormalText(
+        setTextViewWithBoldLabelAndNormalText(
             binding.tvStatementVehicleACardPolicyHolderAddress,
             binding.tvStatementVehicleACardPolicyHolderAddress.text.toString(),
             statementData.policyHolderAAddress
         )
 
-        setBoldAndNormalText(
+        setTextViewWithBoldLabelAndNormalText(
             binding.tvStatementVehicleACardPolicyHolderPostalCode,
             binding.tvStatementVehicleACardPolicyHolderPostalCode.text.toString(),
             statementData.policyHolderAPostalCode
         )
 
-        setBoldAndNormalText(
+        setTextViewWithBoldLabelAndNormalText(
             binding.tvStatementVehicleACardPolicyHolderPhoneNumber,
             binding.tvStatementVehicleACardPolicyHolderPhoneNumber.text.toString(),
             statementData.policyHolderAPhoneNumber
         )
 
-        setBoldAndNormalText(
+        setTextViewWithBoldLabelAndNormalText(
             binding.tvStatementVehicleACardPolicyHolderEmail,
             binding.tvStatementVehicleACardPolicyHolderEmail.text.toString(),
             statementData.policyHolderAEmail
@@ -329,19 +654,19 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
 
         if (!statementData.vehicleAMotorAbsent) {
             binding.llVehicleAMotorFields.visibility = View.VISIBLE
-            setBoldAndNormalText(
+            setTextViewWithBoldLabelAndNormalText(
                 binding.tvStatementVehicleACardMotorMarkType,
                 binding.tvStatementVehicleACardMotorMarkType.text.toString(),
                 statementData.vehicleAMotorMarkType
             )
 
-            setBoldAndNormalText(
+            setTextViewWithBoldLabelAndNormalText(
                 binding.tvStatementVehicleACardMotorRegistrationNumber,
                 binding.tvStatementVehicleACardMotorRegistrationNumber.text.toString(),
                 statementData.vehicleAMotorLicensePlate
             )
 
-            setBoldAndNormalText(
+            setTextViewWithBoldLabelAndNormalText(
                 binding.tvStatementVehicleACardMotorCountry,
                 binding.tvStatementVehicleACardMotorCountry.text.toString(),
                 statementData.vehicleAMotorCountryOfRegistration
@@ -361,13 +686,13 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
                 binding.tvStatementVehicleACardTrailerRegistrationNumber.visibility = View.VISIBLE
                 binding.tvStatementVehicleACardTrailerCountry.visibility = View.VISIBLE
 
-                setBoldAndNormalText(
+                setTextViewWithBoldLabelAndNormalText(
                     binding.tvStatementVehicleACardTrailerRegistrationNumber,
                     binding.tvStatementVehicleACardTrailerRegistrationNumber.text.toString(),
                     statementData.vehicleATrailerLicensePlate
                 )
 
-                setBoldAndNormalText(
+                setTextViewWithBoldLabelAndNormalText(
                     binding.tvStatementVehicleACardTrailerCountry,
                     binding.tvStatementVehicleACardTrailerCountry.text.toString(),
                     statementData.vehicleATrailerCountryOfRegistration
@@ -377,295 +702,298 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
         } else {
             binding.llVehicleATrailerFields.visibility = View.GONE
         }
-
-        //Vehicle A motor insurance page
-        if (!statementData.vehicleAMotorAbsent) {
-            binding.llVehicleAMotorInsurance.visibility = View.VISIBLE
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleACardMotorInsuranceCompanyName,
-                binding.tvStatementVehicleACardMotorInsuranceCompanyName.text.toString(),
-                statementData.vehicleAInsuranceCompanyName
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleACardMotorInsurancePolicyNumber,
-                binding.tvStatementVehicleACardMotorInsurancePolicyNumber.text.toString(),
-                statementData.vehicleAInsuranceCompanyPolicyNumber
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleACardMotorInsuranceGreenCardNumber,
-                binding.tvStatementVehicleACardMotorInsuranceGreenCardNumber.text.toString(),
-                statementData.vehicleAInsuranceCompanyGreenCardNumber
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleACardMotorInsuranceCertificateAvailabilityDate,
-                binding.tvStatementVehicleACardMotorInsuranceCertificateAvailabilityDate.text.toString(),
-                statementData.vehicleAInsuranceCertificateAvailabilityDate?.to24Format()
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleACardMotorInsuranceCertificateExpirationDate,
-                binding.tvStatementVehicleACardMotorInsuranceCertificateExpirationDate.text.toString(),
-                statementData.vehicleAInsuranceCertificateExpirationDate?.to24Format()
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleACardMotorInsuranceAgencyName,
-                binding.tvStatementVehicleACardMotorInsuranceAgencyName.text.toString(),
-                statementData.vehicleAInsuranceAgencyName
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleACardMotorInsuranceAgencyAddress,
-                binding.tvStatementVehicleACardMotorInsuranceAgencyAddress.text.toString(),
-                statementData.vehicleAInsuranceAgencyAddress
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleACardMotorInsuranceAgencyCountry,
-                binding.tvStatementVehicleACardMotorInsuranceAgencyCountry.text.toString(),
-                statementData.vehicleAInsuranceAgencyCountry
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleACardMotorInsuranceAgencyPhoneNumber,
-                binding.tvStatementVehicleACardMotorInsuranceAgencyPhoneNumber.text.toString(),
-                statementData.vehicleAInsuranceAgencyPhoneNumber
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleACardMotorInsuranceAgencyEmail,
-                binding.tvStatementVehicleACardMotorInsuranceAgencyEmail.text.toString(),
-                statementData.vehicleAInsuranceAgencyEmail
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleACardMotorInsuranceDamageCovered,
-                binding.tvStatementVehicleACardMotorInsuranceDamageCovered.text.toString(),
-                if (statementData.vehicleAMotorMaterialDamageCovered) requireContext().getString(R.string.yes) else requireContext().getString(
-                    R.string.no
-                )
-            )
-
-        } else {
-            binding.llVehicleAMotorInsurance.visibility = View.GONE
-        }
-
-        //Vehicle A motor insurance page
-        if (statementData.vehicleATrailerHasRegistration) {
-            binding.llVehicleATrailerInsurance.visibility = View.VISIBLE
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleACardTrailerInsuranceCompanyName,
-                binding.tvStatementVehicleACardTrailerInsuranceCompanyName.text.toString(),
-                statementData.vehicleATrailerInsuranceCompanyName
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleACardTrailerInsurancePolicyNumber,
-                binding.tvStatementVehicleACardTrailerInsurancePolicyNumber.text.toString(),
-                statementData.vehicleATrailerInsuranceCompanyPolicyNumber
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleACardTrailerInsuranceGreenCardNumber,
-                binding.tvStatementVehicleACardTrailerInsuranceGreenCardNumber.text.toString(),
-                statementData.vehicleATrailerInsuranceCompanyGreenCardNumber
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleACardTrailerInsuranceCertificateAvailabilityDate,
-                binding.tvStatementVehicleACardTrailerInsuranceCertificateAvailabilityDate.text.toString(),
-                statementData.vehicleATrailerInsuranceCertificateAvailabilityDate?.to24Format()
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleACardTrailerInsuranceCertificateExpirationDate,
-                binding.tvStatementVehicleACardTrailerInsuranceCertificateExpirationDate.text.toString(),
-                statementData.vehicleATrailerInsuranceCertificateExpirationDate?.to24Format()
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleACardTrailerInsuranceAgencyName,
-                binding.tvStatementVehicleACardTrailerInsuranceAgencyName.text.toString(),
-                statementData.vehicleATrailerInsuranceAgencyName
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleACardTrailerInsuranceAgencyAddress,
-                binding.tvStatementVehicleACardTrailerInsuranceAgencyAddress.text.toString(),
-                statementData.vehicleATrailerInsuranceAgencyAddress
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleACardTrailerInsuranceAgencyCountry,
-                binding.tvStatementVehicleACardTrailerInsuranceAgencyCountry.text.toString(),
-                statementData.vehicleATrailerInsuranceAgencyCountry
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleACardTrailerInsuranceAgencyPhoneNumber,
-                binding.tvStatementVehicleACardTrailerInsuranceAgencyPhoneNumber.text.toString(),
-                statementData.vehicleATrailerInsuranceAgencyPhoneNumber
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleACardTrailerInsuranceAgencyEmail,
-                binding.tvStatementVehicleACardTrailerInsuranceAgencyEmail.text.toString(),
-                statementData.vehicleATrailerInsuranceAgencyEmail
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleACardTrailerInsuranceDamageCovered,
-                binding.tvStatementVehicleACardTrailerInsuranceDamageCovered.text.toString(),
-                if (statementData.vehicleATrailerMaterialDamageCovered) requireContext().getString(R.string.yes) else requireContext().getString(
-                    R.string.no
-                )
-            )
-
-        } else {
-            binding.llVehicleATrailerInsurance.visibility = View.GONE
-        }
-
-        //Vehicle A driver page
-        setBoldAndNormalText(
-            binding.tvStatementVehicleACardDriverLastName,
-            binding.tvStatementVehicleACardDriverLastName.text.toString(),
-            statementData.vehicleADriverLastName
-        )
-
-        setBoldAndNormalText(
-            binding.tvStatementVehicleACardDriverFirstName,
-            binding.tvStatementVehicleACardDriverFirstName.text.toString(),
-            statementData.vehicleADriverFirstName
-        )
-
-        setBoldAndNormalText(
-            binding.tvStatementVehicleACardDriverDateOfBirth,
-            binding.tvStatementVehicleACardDriverDateOfBirth.text.toString(),
-            statementData.vehicleADriverDateOfBirth?.to24Format()
-        )
-
-        setBoldAndNormalText(
-            binding.tvStatementVehicleACardDriverAddress,
-            binding.tvStatementVehicleACardDriverAddress.text.toString(),
-            statementData.vehicleADriverAddress
-        )
+    }
 
 
-        setBoldAndNormalText(
-            binding.tvStatementVehicleACardDriverCountry,
-            binding.tvStatementVehicleACardDriverCountry.text.toString(),
-            statementData.vehicleADriverCountry
-        )
-
-        setBoldAndNormalText(
-            binding.tvStatementVehicleACardDriverPhoneNumber,
-            binding.tvStatementVehicleACardDriverPhoneNumber.text.toString(),
-            statementData.vehicleADriverPhoneNumber
-        )
-
-        setBoldAndNormalText(
-            binding.tvStatementVehicleACardDriverCategory,
-            binding.tvStatementVehicleACardDriverCategory.text.toString(),
-            statementData.vehicleADriverDrivingLicenseCategory
-        )
-
-        setBoldAndNormalText(
-            binding.tvStatementVehicleACardDriverEmail,
-            binding.tvStatementVehicleACardDriverEmail.text.toString(),
-            statementData.vehicleADriverEmail
-        )
-
-        setBoldAndNormalText(
-            binding.tvStatementVehicleACardDriverDrivingLicenseNumber,
-            binding.tvStatementVehicleACardDriverDrivingLicenseNumber.text.toString(),
-            statementData.vehicleADriverDrivingLicenseNr
-        )
-
-        setBoldAndNormalText(
-            binding.tvStatementVehicleACardDriverDrivingLicenseExpirationDate,
-            binding.tvStatementVehicleACardDriverDrivingLicenseExpirationDate.text.toString(),
-            statementData.vehicleADriverDrivingLicenseExpirationDate?.to24Format()
-        )
-
-        //Vehicle A page four
-        if (!model.vehicleACircumstances.value.isNullOrEmpty()) {
-            binding.tvStatementVehicleAAmountOfCircumstances.visibility = View.VISIBLE
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleAAmountOfCircumstances,
-                binding.tvStatementVehicleAAmountOfCircumstances.text.toString(),
-                model.vehicleACircumstances.value!!.size.toString()
-            )
-        }
-
-        //Vehicle A page five
-        if (statementData.vehicleAPointOfImpactSketch != null) {
-            binding.tvStatementVehicleAPointOfImpactTitle.visibility = View.VISIBLE
-            binding.ivStatementVehicleAPointOfImpactSketch.setImageBitmap(statementData.vehicleAPointOfImpactSketch)
-            binding.ivStatementVehicleAPointOfImpactSketch.visibility = View.VISIBLE
+    private fun updateVehicleBMiscellaneousFragmentFields(statementData: StatementData) {
+        if (statementData.vehicleBPointOfImpactSketch != null) {
+            binding.tvStatementVehicleBPointOfImpactTitle.visibility = View.VISIBLE
+            binding.ivStatementVehicleBPointOfImpactSketch.setImageBitmap(statementData.vehicleBPointOfImpactSketch)
+            binding.ivStatementVehicleBPointOfImpactSketch.visibility = View.VISIBLE
 
         }
+        if (!statementData.vehicleBAccidentPhotos.isNullOrEmpty()) {
 
-        if (!statementData.vehicleAAccidentPhotos.isNullOrEmpty()) {
-            val accidentImages = statementData.vehicleAAccidentPhotos!!
-            val viewPager = binding.vpStatementOverviewVehicleAAccidentPhotos
+            val accidentImages = statementData.vehicleBAccidentPhotos!!
+            val viewPager = binding.vpStatementOverviewVehicleBAccidentPhotos
             viewPager.visibility = View.VISIBLE
             viewPager.adapter = ImageAdapter(accidentImages, this.requireContext())
         }
 
-        setBoldAndNormalText(
-            binding.tvStatementVehicleARemarks,
-            binding.tvStatementVehicleARemarks.text.toString(),
-            statementData.vehicleARemarks
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleBRemarks,
+            binding.tvStatementVehicleBRemarks.text.toString(),
+            statementData.vehicleBRemarks
         )
 
-        setBoldAndNormalText(
-            binding.tvStatementVehicleADamageDescription,
-            binding.tvStatementVehicleADamageDescription.text.toString(),
-            statementData.vehicleADamageDescription
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleBDamageDescription,
+            binding.tvStatementVehicleBDamageDescription.text.toString(),
+            statementData.vehicleBDamageDescription
         )
-
     }
 
-    private fun updateVehicleBCardFromViewModel(statementData: StatementData) {
+    private fun updateVehicleBInsuranceFragmentFields() {
+        if (!model.vehicleBCircumstances.value.isNullOrEmpty()) {
+            binding.tvStatementVehicleBAmountOfCircumstances.visibility = View.VISIBLE
 
-        //Vehicle B page one
-        setBoldAndNormalText(
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBAmountOfCircumstances,
+                binding.tvStatementVehicleBAmountOfCircumstances.text.toString(),
+                model.vehicleBCircumstances.value!!.size.toString()
+            )
+        }
+    }
+
+    private fun updateVehicleBDriverFragmentFields(statementData: StatementData) {
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleBCardDriverLastName,
+            binding.tvStatementVehicleBCardDriverLastName.text.toString(),
+            statementData.vehicleBDriverLastName
+        )
+
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleBCardDriverFirstName,
+            binding.tvStatementVehicleBCardDriverFirstName.text.toString(),
+            statementData.vehicleBDriverFirstName
+        )
+
+
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleBCardDriverDateOfBirth,
+            binding.tvStatementVehicleBCardDriverDateOfBirth.text.toString(),
+            statementData.vehicleBDriverDateOfBirth?.to24Format()
+        )
+
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleBCardDriverAddress,
+            binding.tvStatementVehicleBCardDriverAddress.text.toString(),
+            statementData.vehicleBDriverAddress
+        )
+
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleBCardDriverCountry,
+            binding.tvStatementVehicleBCardDriverCountry.text.toString(),
+            statementData.vehicleBDriverCountry
+        )
+
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleBCardDriverPhoneNumber,
+            binding.tvStatementVehicleBCardDriverPhoneNumber.text.toString(),
+            statementData.vehicleBDriverPhoneNumber
+        )
+
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleBCardDriverEmail,
+            binding.tvStatementVehicleBCardDriverEmail.text.toString(),
+            statementData.vehicleBDriverEmail
+        )
+
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleBCardDriverCategory,
+            binding.tvStatementVehicleBCardDriverCategory.text.toString(),
+            statementData.vehicleBDriverDrivingLicenseCategory
+        )
+
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleBCardDriverDrivingLicenseNumber,
+            binding.tvStatementVehicleBCardDriverDrivingLicenseNumber.text.toString(),
+            statementData.vehicleBDriverDrivingLicenseNr
+        )
+
+        setTextViewWithBoldLabelAndNormalText(
+            binding.tvStatementVehicleBCardDriverDrivingLicenseExpirationDate,
+            binding.tvStatementVehicleBCardDriverDrivingLicenseExpirationDate.text.toString(),
+            statementData.vehicleBDriverDrivingLicenseExpirationDate?.to24Format()
+        )
+    }
+
+    private fun updateVehicleBTrailerInsuranceFragmentFields(statementData: StatementData) {
+        if (statementData.vehicleBTrailerHasRegistration) {
+            binding.llVehicleBTrailerInsurance.visibility = View.VISIBLE
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBCardTrailerInsuranceCompanyName,
+                binding.tvStatementVehicleBCardTrailerInsuranceCompanyName.text.toString(),
+                statementData.vehicleBTrailerInsuranceCompanyName
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBCardTrailerInsurancePolicyNumber,
+                binding.tvStatementVehicleBCardTrailerInsurancePolicyNumber.text.toString(),
+                statementData.vehicleBTrailerInsuranceCompanyPolicyNumber
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBCardTrailerInsuranceGreenCardNumber,
+                binding.tvStatementVehicleBCardTrailerInsuranceGreenCardNumber.text.toString(),
+                statementData.vehicleBTrailerInsuranceCompanyGreenCardNumber
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBCardTrailerInsuranceCertificateAvailabilityDate,
+                binding.tvStatementVehicleBCardTrailerInsuranceCertificateAvailabilityDate.text.toString(),
+                statementData.vehicleBTrailerInsuranceCertificateAvailabilityDate?.to24Format()
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBCardTrailerInsuranceCertificateExpirationDate,
+                binding.tvStatementVehicleBCardTrailerInsuranceCertificateExpirationDate.text.toString(),
+                statementData.vehicleBTrailerInsuranceCertificateExpirationDate?.to24Format()
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBCardTrailerInsuranceAgencyName,
+                binding.tvStatementVehicleBCardTrailerInsuranceAgencyName.text.toString(),
+                statementData.vehicleBTrailerInsuranceAgencyName
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBCardTrailerInsuranceAgencyAddress,
+                binding.tvStatementVehicleBCardTrailerInsuranceAgencyAddress.text.toString(),
+                statementData.vehicleBTrailerInsuranceAgencyAddress
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBCardTrailerInsuranceAgencyCountry,
+                binding.tvStatementVehicleBCardTrailerInsuranceAgencyCountry.text.toString(),
+                statementData.vehicleBTrailerInsuranceAgencyCountry
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBCardTrailerInsuranceAgencyPhoneNumber,
+                binding.tvStatementVehicleBCardTrailerInsuranceAgencyPhoneNumber.text.toString(),
+                statementData.vehicleBTrailerInsuranceAgencyPhoneNumber
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBCardTrailerInsuranceAgencyEmail,
+                binding.tvStatementVehicleBCardTrailerInsuranceAgencyEmail.text.toString(),
+                statementData.vehicleBTrailerInsuranceAgencyEmail
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBCardTrailerInsuranceDamageCovered,
+                binding.tvStatementVehicleBCardTrailerInsuranceDamageCovered.text.toString(),
+                if (statementData.vehicleBTrailerMaterialDamageCovered) requireContext().getString(R.string.yes) else requireContext().getString(
+                    R.string.no
+                )
+            )
+
+        } else {
+            binding.llVehicleBTrailerInsurance.visibility = View.GONE
+        }
+    }
+
+    private fun updateVehicleBMotorInsuranceFragmentFields(statementData: StatementData) {
+        if (!statementData.vehicleBMotorAbsent) {
+            binding.llVehicleBMotorInsurance.visibility = View.VISIBLE
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBCardMotorInsuranceCompanyName,
+                binding.tvStatementVehicleBCardMotorInsuranceCompanyName.text.toString(),
+                statementData.vehicleBInsuranceCompanyName
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBCardMotorInsurancePolicyNumber,
+                binding.tvStatementVehicleBCardMotorInsurancePolicyNumber.text.toString(),
+                statementData.vehicleBInsuranceCompanyPolicyNumber
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBCardMotorInsuranceGreenCardNumber,
+                binding.tvStatementVehicleBCardMotorInsuranceGreenCardNumber.text.toString(),
+                statementData.vehicleBInsuranceCompanyGreenCardNumber
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBCardMotorInsuranceCertificateAvailabilityDate,
+                binding.tvStatementVehicleBCardMotorInsuranceCertificateAvailabilityDate.text.toString(),
+                statementData.vehicleBInsuranceCertificateAvailabilityDate?.to24Format()
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBCardMotorInsuranceCertificateExpirationDate,
+                binding.tvStatementVehicleBCardMotorInsuranceCertificateExpirationDate.text.toString(),
+                statementData.vehicleBInsuranceCertificateExpirationDate?.to24Format()
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBCardMotorInsuranceAgencyName,
+                binding.tvStatementVehicleBCardMotorInsuranceAgencyName.text.toString(),
+                statementData.vehicleBInsuranceAgencyName
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBCardMotorInsuranceAgencyAddress,
+                binding.tvStatementVehicleBCardMotorInsuranceAgencyAddress.text.toString(),
+                statementData.vehicleBInsuranceAgencyAddress
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBCardMotorInsuranceAgencyCountry,
+                binding.tvStatementVehicleBCardMotorInsuranceAgencyCountry.text.toString(),
+                statementData.vehicleBInsuranceAgencyCountry
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBCardMotorInsuranceAgencyPhoneNumber,
+                binding.tvStatementVehicleBCardMotorInsuranceAgencyPhoneNumber.text.toString(),
+                statementData.vehicleBInsuranceAgencyPhoneNumber
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBCardMotorInsuranceAgencyEmail,
+                binding.tvStatementVehicleBCardMotorInsuranceAgencyEmail.text.toString(),
+                statementData.vehicleBInsuranceAgencyEmail
+            )
+
+            setTextViewWithBoldLabelAndNormalText(
+                binding.tvStatementVehicleBCardMotorInsuranceDamageCovered,
+                binding.tvStatementVehicleBCardMotorInsuranceDamageCovered.text.toString(),
+                if (statementData.vehicleBMaterialDamageCovered) requireContext().getString(R.string.yes) else requireContext().getString(
+                    R.string.no
+                )
+            )
+
+        } else {
+            binding.llVehicleBMotorInsurance.visibility = View.GONE
+        }
+    }
+
+    private fun updateVehicleBNewStatementFragmentFields(statementData: StatementData) {
+        setTextViewWithBoldLabelAndNormalText(
             binding.tvStatementVehicleBCardPolicyHolderLastName,
             binding.tvStatementVehicleBCardPolicyHolderLastName.text.toString(),
             statementData.policyHolderBLastName
         )
 
-        setBoldAndNormalText(
+        setTextViewWithBoldLabelAndNormalText(
             binding.tvStatementVehicleBCardPolicyHolderFirstName,
             binding.tvStatementVehicleBCardPolicyHolderFirstName.text.toString(),
             statementData.policyHolderBFirstName
         )
 
-        setBoldAndNormalText(
+        setTextViewWithBoldLabelAndNormalText(
             binding.tvStatementVehicleBCardPolicyHolderAddress,
             binding.tvStatementVehicleBCardPolicyHolderAddress.text.toString(),
             statementData.policyHolderBAddress
         )
 
-        setBoldAndNormalText(
+        setTextViewWithBoldLabelAndNormalText(
             binding.tvStatementVehicleBCardPolicyHolderPostalCode,
             binding.tvStatementVehicleBCardPolicyHolderPostalCode.text.toString(),
             statementData.policyHolderBPostalCode
         )
 
-        setBoldAndNormalText(
+        setTextViewWithBoldLabelAndNormalText(
             binding.tvStatementVehicleBCardPolicyHolderPhoneNumber,
             binding.tvStatementVehicleBCardPolicyHolderPhoneNumber.text.toString(),
             statementData.policyHolderBPhoneNumber
         )
 
-        setBoldAndNormalText(
+        setTextViewWithBoldLabelAndNormalText(
             binding.tvStatementVehicleBCardPolicyHolderEmail,
             binding.tvStatementVehicleBCardPolicyHolderEmail.text.toString(),
             statementData.policyHolderBEmail
@@ -673,19 +1001,19 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
 
         if (!statementData.vehicleBMotorAbsent) {
             binding.llVehicleBMotorFields.visibility = View.VISIBLE
-            setBoldAndNormalText(
+            setTextViewWithBoldLabelAndNormalText(
                 binding.tvStatementVehicleBCardMotorMarkType,
                 binding.tvStatementVehicleBCardMotorMarkType.text.toString(),
                 statementData.vehicleBMotorMarkType
             )
 
-            setBoldAndNormalText(
+            setTextViewWithBoldLabelAndNormalText(
                 binding.tvStatementVehicleBCardMotorRegistrationNumber,
                 binding.tvStatementVehicleBCardMotorRegistrationNumber.text.toString(),
                 statementData.vehicleBMotorLicensePlate
             )
 
-            setBoldAndNormalText(
+            setTextViewWithBoldLabelAndNormalText(
                 binding.tvStatementVehicleBCardMotorCountry,
                 binding.tvStatementVehicleBCardMotorCountry.text.toString(),
                 statementData.vehicleBMotorCountryOfRegistration
@@ -706,13 +1034,13 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
                 binding.tvStatementVehicleBCardTrailerRegistrationNumber.visibility = View.VISIBLE
                 binding.tvStatementVehicleBCardTrailerCountry.visibility = View.VISIBLE
 
-                setBoldAndNormalText(
+                setTextViewWithBoldLabelAndNormalText(
                     binding.tvStatementVehicleBCardTrailerRegistrationNumber,
                     binding.tvStatementVehicleBCardTrailerRegistrationNumber.text.toString(),
                     statementData.vehicleBTrailerLicensePlate
                 )
 
-                setBoldAndNormalText(
+                setTextViewWithBoldLabelAndNormalText(
                     binding.tvStatementVehicleBCardTrailerCountry,
                     binding.tvStatementVehicleBCardTrailerCountry.text.toString(),
                     statementData.vehicleBTrailerCountryOfRegistration
@@ -721,257 +1049,5 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
         } else {
             binding.llVehicleBTrailerFields.visibility = View.GONE
         }
-
-        //Vehicle B motor insurance page
-        if (!statementData.vehicleBMotorAbsent) {
-            binding.llVehicleBMotorInsurance.visibility = View.VISIBLE
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBCardMotorInsuranceCompanyName,
-                binding.tvStatementVehicleBCardMotorInsuranceCompanyName.text.toString(),
-                statementData.vehicleBInsuranceCompanyName
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBCardMotorInsurancePolicyNumber,
-                binding.tvStatementVehicleBCardMotorInsurancePolicyNumber.text.toString(),
-                statementData.vehicleBInsuranceCompanyPolicyNumber
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBCardMotorInsuranceGreenCardNumber,
-                binding.tvStatementVehicleBCardMotorInsuranceGreenCardNumber.text.toString(),
-                statementData.vehicleBInsuranceCompanyGreenCardNumber
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBCardMotorInsuranceCertificateAvailabilityDate,
-                binding.tvStatementVehicleBCardMotorInsuranceCertificateAvailabilityDate.text.toString(),
-                statementData.vehicleBInsuranceCertificateAvailabilityDate?.to24Format()
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBCardMotorInsuranceCertificateExpirationDate,
-                binding.tvStatementVehicleBCardMotorInsuranceCertificateExpirationDate.text.toString(),
-                statementData.vehicleBInsuranceCertificateExpirationDate?.to24Format()
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBCardMotorInsuranceAgencyName,
-                binding.tvStatementVehicleBCardMotorInsuranceAgencyName.text.toString(),
-                statementData.vehicleBInsuranceAgencyName
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBCardMotorInsuranceAgencyAddress,
-                binding.tvStatementVehicleBCardMotorInsuranceAgencyAddress.text.toString(),
-                statementData.vehicleBInsuranceAgencyAddress
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBCardMotorInsuranceAgencyCountry,
-                binding.tvStatementVehicleBCardMotorInsuranceAgencyCountry.text.toString(),
-                statementData.vehicleBInsuranceAgencyCountry
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBCardMotorInsuranceAgencyPhoneNumber,
-                binding.tvStatementVehicleBCardMotorInsuranceAgencyPhoneNumber.text.toString(),
-                statementData.vehicleBInsuranceAgencyPhoneNumber
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBCardMotorInsuranceAgencyEmail,
-                binding.tvStatementVehicleBCardMotorInsuranceAgencyEmail.text.toString(),
-                statementData.vehicleBInsuranceAgencyEmail
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBCardMotorInsuranceDamageCovered,
-                binding.tvStatementVehicleBCardMotorInsuranceDamageCovered.text.toString(),
-                if (statementData.vehicleBMaterialDamageCovered) requireContext().getString(R.string.yes) else requireContext().getString(
-                    R.string.no
-                )
-            )
-
-        } else {
-            binding.llVehicleBMotorInsurance.visibility = View.GONE
-        }
-
-        //Vehicle A motor insurance page
-        if (statementData.vehicleBTrailerHasRegistration) {
-            binding.llVehicleBTrailerInsurance.visibility = View.VISIBLE
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBCardTrailerInsuranceCompanyName,
-                binding.tvStatementVehicleBCardTrailerInsuranceCompanyName.text.toString(),
-                statementData.vehicleBTrailerInsuranceCompanyName
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBCardTrailerInsurancePolicyNumber,
-                binding.tvStatementVehicleBCardTrailerInsurancePolicyNumber.text.toString(),
-                statementData.vehicleBTrailerInsuranceCompanyPolicyNumber
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBCardTrailerInsuranceGreenCardNumber,
-                binding.tvStatementVehicleBCardTrailerInsuranceGreenCardNumber.text.toString(),
-                statementData.vehicleBTrailerInsuranceCompanyGreenCardNumber
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBCardTrailerInsuranceCertificateAvailabilityDate,
-                binding.tvStatementVehicleBCardTrailerInsuranceCertificateAvailabilityDate.text.toString(),
-                statementData.vehicleBTrailerInsuranceCertificateAvailabilityDate?.to24Format()
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBCardTrailerInsuranceCertificateExpirationDate,
-                binding.tvStatementVehicleBCardTrailerInsuranceCertificateExpirationDate.text.toString(),
-                statementData.vehicleBTrailerInsuranceCertificateExpirationDate?.to24Format()
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBCardTrailerInsuranceAgencyName,
-                binding.tvStatementVehicleBCardTrailerInsuranceAgencyName.text.toString(),
-                statementData.vehicleBTrailerInsuranceAgencyName
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBCardTrailerInsuranceAgencyAddress,
-                binding.tvStatementVehicleBCardTrailerInsuranceAgencyAddress.text.toString(),
-                statementData.vehicleBTrailerInsuranceAgencyAddress
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBCardTrailerInsuranceAgencyCountry,
-                binding.tvStatementVehicleBCardTrailerInsuranceAgencyCountry.text.toString(),
-                statementData.vehicleBTrailerInsuranceAgencyCountry
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBCardTrailerInsuranceAgencyPhoneNumber,
-                binding.tvStatementVehicleBCardTrailerInsuranceAgencyPhoneNumber.text.toString(),
-                statementData.vehicleBTrailerInsuranceAgencyPhoneNumber
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBCardTrailerInsuranceAgencyEmail,
-                binding.tvStatementVehicleBCardTrailerInsuranceAgencyEmail.text.toString(),
-                statementData.vehicleBTrailerInsuranceAgencyEmail
-            )
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBCardTrailerInsuranceDamageCovered,
-                binding.tvStatementVehicleBCardTrailerInsuranceDamageCovered.text.toString(),
-                if (statementData.vehicleBTrailerMaterialDamageCovered) requireContext().getString(R.string.yes) else requireContext().getString(
-                    R.string.no
-                )
-            )
-
-        } else {
-            binding.llVehicleBTrailerInsurance.visibility = View.GONE
-        }
-
-        //Vehicle B driver page
-        setBoldAndNormalText(
-            binding.tvStatementVehicleBCardDriverLastName,
-            binding.tvStatementVehicleBCardDriverLastName.text.toString(),
-            statementData.vehicleBDriverLastName
-        )
-
-        setBoldAndNormalText(
-            binding.tvStatementVehicleBCardDriverFirstName,
-            binding.tvStatementVehicleBCardDriverFirstName.text.toString(),
-            statementData.vehicleBDriverFirstName
-        )
-
-
-        setBoldAndNormalText(
-            binding.tvStatementVehicleBCardDriverDateOfBirth,
-            binding.tvStatementVehicleBCardDriverDateOfBirth.text.toString(),
-            statementData.vehicleBDriverDateOfBirth?.to24Format()
-        )
-
-        setBoldAndNormalText(
-            binding.tvStatementVehicleBCardDriverAddress,
-            binding.tvStatementVehicleBCardDriverAddress.text.toString(),
-            statementData.vehicleBDriverAddress
-        )
-
-        setBoldAndNormalText(
-            binding.tvStatementVehicleBCardDriverCountry,
-            binding.tvStatementVehicleBCardDriverCountry.text.toString(),
-            statementData.vehicleBDriverCountry
-        )
-
-        setBoldAndNormalText(
-            binding.tvStatementVehicleBCardDriverPhoneNumber,
-            binding.tvStatementVehicleBCardDriverPhoneNumber.text.toString(),
-            statementData.vehicleBDriverPhoneNumber
-        )
-
-        setBoldAndNormalText(
-            binding.tvStatementVehicleBCardDriverEmail,
-            binding.tvStatementVehicleBCardDriverEmail.text.toString(),
-            statementData.vehicleBDriverEmail
-        )
-
-        setBoldAndNormalText(
-            binding.tvStatementVehicleBCardDriverCategory,
-            binding.tvStatementVehicleBCardDriverCategory.text.toString(),
-            statementData.vehicleBDriverDrivingLicenseCategory
-        )
-
-        setBoldAndNormalText(
-            binding.tvStatementVehicleBCardDriverDrivingLicenseNumber,
-            binding.tvStatementVehicleBCardDriverDrivingLicenseNumber.text.toString(),
-            statementData.vehicleBDriverDrivingLicenseNr
-        )
-
-        setBoldAndNormalText(
-            binding.tvStatementVehicleBCardDriverDrivingLicenseExpirationDate,
-            binding.tvStatementVehicleBCardDriverDrivingLicenseExpirationDate.text.toString(),
-            statementData.vehicleBDriverDrivingLicenseExpirationDate?.to24Format()
-        )
-
-        //Vehicle B page four
-        if (!model.vehicleBCircumstances.value.isNullOrEmpty()) {
-            binding.tvStatementVehicleBAmountOfCircumstances.visibility = View.VISIBLE
-
-            setBoldAndNormalText(
-                binding.tvStatementVehicleBAmountOfCircumstances,
-                binding.tvStatementVehicleBAmountOfCircumstances.text.toString(),
-                model.vehicleBCircumstances.value!!.size.toString()
-            )
-        }
-
-        //Vehicle B page five
-        if (statementData.vehicleBPointOfImpactSketch != null) {
-            binding.tvStatementVehicleBPointOfImpactTitle.visibility = View.VISIBLE
-            binding.ivStatementVehicleBPointOfImpactSketch.setImageBitmap(statementData.vehicleBPointOfImpactSketch)
-            binding.ivStatementVehicleBPointOfImpactSketch.visibility = View.VISIBLE
-
-        }
-        if (!statementData.vehicleBAccidentPhotos.isNullOrEmpty()) {
-
-            val accidentImages = statementData.vehicleBAccidentPhotos!!
-            val viewPager = binding.vpStatementOverviewVehicleBAccidentPhotos
-            viewPager.visibility = View.VISIBLE
-            viewPager.adapter = ImageAdapter(accidentImages, this.requireContext())
-        }
-
-        setBoldAndNormalText(
-            binding.tvStatementVehicleBRemarks,
-            binding.tvStatementVehicleBRemarks.text.toString(),
-            statementData.vehicleBRemarks
-        )
-
-        setBoldAndNormalText(
-            binding.tvStatementVehicleBDamageDescription,
-            binding.tvStatementVehicleBDamageDescription.text.toString(),
-            statementData.vehicleBDamageDescription
-        )
     }
 }
