@@ -39,7 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:text="@string/statement_vehicle_a_title"
+                android:text="@string/statement_vehicle_b_title"
                 android:textAllCaps="true"
                 android:textColor="@color/secondary900"
                 android:textSize="35sp"
