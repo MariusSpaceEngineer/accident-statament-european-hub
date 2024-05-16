@@ -12,7 +12,16 @@ import com.inetum.realdolmen.crashkit.dto.TrailerDTO
 import com.inetum.realdolmen.crashkit.dto.Vehicle
 import java.lang.reflect.Type
 
-
+/**
+ * `VehicleAdapter` is a class that provides custom serialization and deserialization for `Vehicle` objects.
+ * It implements `JsonDeserializer<Vehicle>` and `JsonSerializer<Vehicle>`.
+ *
+ * @function deserialize This function takes a JsonElement and converts it into a `Vehicle` object.
+ * It checks the type of vehicle based on the properties present in the JSON and creates the appropriate `Vehicle` object.
+ *
+ * @function serialize This function takes a `Vehicle` object and converts it into a JsonElement.
+ * It checks the type of the vehicle and adds the appropriate properties to the JSON.
+ */
 class VehicleAdapter : JsonDeserializer<Vehicle>, JsonSerializer<Vehicle> {
     override fun deserialize(
         json: JsonElement,
@@ -61,6 +70,7 @@ class VehicleAdapter : JsonDeserializer<Vehicle>, JsonSerializer<Vehicle> {
             is TrailerDTO -> {
                 jsonObject.addProperty("hasRegistration", src.hasRegistration)
             }
+
             is MotorDTO -> {
                 jsonObject.addProperty("markType", src.markType)
             }

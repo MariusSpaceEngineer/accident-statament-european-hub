@@ -9,9 +9,12 @@ import java.beans.PropertyChangeListener
 import java.beans.PropertyChangeSupport
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
+/**
+ * This class is a utility for picking date and time. It implements DatePickerDialog.OnDateSetListener and TimePickerDialog.OnTimeSetListener.
+ * It provides functionality to pick a date and time, and notify listeners when the selected date and time changes.
+ */
 class DateTimePicker(private val context: Context) : DatePickerDialog.OnDateSetListener,
     TimePickerDialog.OnTimeSetListener {
 
@@ -29,7 +32,7 @@ class DateTimePicker(private val context: Context) : DatePickerDialog.OnDateSetL
 
     private val changeSupport = PropertyChangeSupport(this)
 
-    public var dateTime: LocalDateTime? = null
+    var dateTime: LocalDateTime? = null
         set(newValue) {
             val oldValue = field
             field = newValue
@@ -65,15 +68,10 @@ class DateTimePicker(private val context: Context) : DatePickerDialog.OnDateSetL
     }
 
 
-    public fun pickDateTime() {
+    fun pickDateTime() {
         getDateTimeCalendar()
         DatePickerDialog(context, this, year, month, day).show()
 
-    }
-
-    public fun getFormattedDateTime(localDateTime: LocalDateTime?): String {
-        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
-        return localDateTime?.format(formatter) ?: ""
     }
 
     fun addDateChangeListener(listener: PropertyChangeListener) {

@@ -29,7 +29,7 @@ class CrashKitApp: Application() {
             .create()
 
         val okHttpClient = NetworkModule.provideOkHttpClient(securedPreferences)
-        val retrofit = NetworkModule.provideRetrofit(okHttpClient, gson) // Pass the Gson instance
+        val retrofit = NetworkModule.provideRetrofit(okHttpClient, gson)
         apiService = NetworkModule.provideApiService(retrofit)
     }
 }
