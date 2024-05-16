@@ -218,8 +218,7 @@ class NewStatementFragment : Fragment(), StatementDataHandler, IValidationConfig
             formHelper.validateFields(validationRules)
 
             if (fields.none { it.error != null }) {
-                //If no errors, navigate to the next fragment
-                navController.navigate(R.id.accidentStatementOverviewFragment)
+                navController.navigate(R.id.vehicleANewStatementFragment)
             }
         }
 

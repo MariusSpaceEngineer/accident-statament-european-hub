@@ -87,6 +87,8 @@
     <string name="remove_button">Remove</string>
     <string name="submit_button">Submit</string>
     <string name="logout_button">Logout</string>
+    <string name="proceed_button">Proceed</string>
+    <string name="revert_button">Revert</string>
 
     <!--    Descriptions-->
     <string name="main_description">Save time and hassle after a crash</string>
@@ -165,6 +167,8 @@
     <string name="insurance_certificate_new_dialog">Create a new certificate</string>
     <string name="insurance_certificate_select_dialog">Select an insurance certificate</string>
     <string name="policy_holder_profile_fetch_failed">An error occurred while retrieving your profile information. Please try again.</string>
+    <string name="accident_statement_submission_failed">An error occurred while submitting accident statement. Please try again.</string>
+    <string name="accident_statement_created">Accident statement successfully created!</string>
     <string name="date_range_picker_title">Select dates</string>
     <string name="date_picker_title">Select date</string>
     <string name="ok">OK</string>
