@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -19,18 +20,27 @@ import com.inetum.realdolmen.crashkit.R
 import com.inetum.realdolmen.crashkit.databinding.ActivityForgotCredentialsBinding
 import com.inetum.realdolmen.crashkit.dto.RequestResponse
 import com.inetum.realdolmen.crashkit.dto.ResetPasswordData
-import com.inetum.realdolmen.crashkit.utils.areFieldsValid
+import com.inetum.realdolmen.crashkit.helpers.FormHelper
+import com.inetum.realdolmen.crashkit.utils.IValidationConfigure
+import com.inetum.realdolmen.crashkit.utils.LogTags
+import com.inetum.realdolmen.crashkit.utils.LogTags.TAG_NETWORK_REQUEST
 import com.inetum.realdolmen.crashkit.utils.createSimpleDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
+import java.net.SocketTimeoutException
 
-class ForgotCredentialsActivity : AppCompatActivity() {
+class ForgotCredentialsActivity : AppCompatActivity(), IValidationConfigure {
     private lateinit var binding: ActivityForgotCredentialsBinding
     private val apiService = CrashKitApp.apiService
+    private lateinit var formHelper: FormHelper
 
+
+    private var fields: List<TextView> = mutableListOf()
+    private var validationRules: List<Triple<EditText, (String?) -> Boolean, String>> =
+        mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,81 +48,131 @@ class ForgotCredentialsActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        val fields = mapOf(
-            binding.etForgotCredentialsEmail to "Email is required!",
-            binding.etForgotCredentialsNewPassword to "New password is required!",
-            binding.etForgotCredentialsNewPasswordConfirm to "Confirm password is required!",
-        )
+        setupForm()
 
+        setupClickListeners()
+    }
+
+    private fun setupClickListeners() {
         binding.btnForgotCredentialsSubmit.setOnClickListener {
-            if (fields.areFieldsValid()) {
-                if (binding.etForgotCredentialsNewPassword.text.toString() != binding.etForgotCredentialsNewPasswordConfirm.text.toString()) {
-                    binding.etForgotCredentialsNewPassword.error = "Passwords are not the same!"
-                    binding.etForgotCredentialsNewPasswordConfirm.error =
-                        "Passwords are not the same!"
-                } else {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        try {
-                            val resetPasswordData = ResetPasswordData(
-                                binding.etForgotCredentialsEmail.text.toString(),
-                                null,
-                                null
-                            )
-                            apiService.resetPassword(resetPasswordData)
-
-                            withContext(Dispatchers.Main) {
-                                // Show the dialog to enter the new password
-                                createCustomDialog(
-                                    this@ForgotCredentialsActivity,
-                                    R.layout.password_reset_dialog,
-                                    R.color.input_field_background,
-                                    R.color.input_field_background,
-                                    "Submit",
-                                    "Cancel",
-                                    R.drawable.reset_password_dialog_background,
-                                ) { securityCode, errorMessage ->
-                                    // Make the API call to update the password
-                                    CoroutineScope(Dispatchers.IO).launch {
-                                        try {
-                                            val newPasswordData = ResetPasswordData(
-                                                binding.etForgotCredentialsEmail.text.toString(),
-                                                binding.etForgotCredentialsNewPassword.text.toString(),
-                                                securityCode
-                                            )
-                                            Log.i("data", newPasswordData.toString())
-                                            val response =
-                                                apiService.updatePassword(newPasswordData)
-                                            withContext(Dispatchers.Main) {
-                                                if (errorMessage != null) {
-                                                    handleResponse(response, errorMessage)
-                                                }
-                                            }
-                                        } catch (e: Exception) {
-                                            // Handle exception
-                                        }
-                                    }
-                                }
-                            }
-
-                        } catch (e: Exception) {
-                            Log.e("NetworkRequest", "Exception occurred: ", e)
-                            withContext(Dispatchers.Main) {
-                                if (e is java.net.SocketTimeoutException) {
-                                    this@ForgotCredentialsActivity.createSimpleDialog(
-                                        getString(R.string.error),
-                                        this@ForgotCredentialsActivity.getString(
-                                            R.string.error_network
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
+            validateForm()
+            if (fields.none { it.error != null }) {
+                resetPassword()
             }
         }
     }
 
+    private fun resetPassword() {
+        showPasswordResetDialog()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val resetPasswordData = createResetPasswordData()
+                apiService.resetPassword(resetPasswordData)
+
+            } catch (_: Exception) {
+            }
+        }
+    }
+
+    private fun createResetPasswordData(): ResetPasswordData {
+        return ResetPasswordData(
+            binding.etForgotCredentialsEmail.text.toString(),
+            null,
+            null
+        )
+    }
+
+    private fun showPasswordResetDialog() {
+        createCustomDialog(
+            this@ForgotCredentialsActivity,
+            R.layout.password_reset_dialog,
+            R.color.input_field_background,
+            R.color.input_field_background,
+            getString(R.string.submit_button),
+            getString(R.string.cancel_button),
+            R.drawable.reset_password_dialog_background,
+        ) { securityCode, errorMessage ->
+            if (securityCode != null) {
+                updatePassword(securityCode, errorMessage)
+            }
+        }
+    }
+
+    private fun updatePassword(securityCode: String, errorMessage: TextView?) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val newPasswordData = createNewPasswordData(securityCode)
+                val response = apiService.updatePassword(newPasswordData)
+                withContext(Dispatchers.Main) {
+                    if (errorMessage != null) {
+                        handleResponse(response, errorMessage)
+                    }
+                }
+            } catch (e: Exception) {
+                handleException(e)
+            }
+        }
+    }
+
+    private fun createNewPasswordData(securityCode: String): ResetPasswordData {
+        return ResetPasswordData(
+            binding.etForgotCredentialsEmail.text.toString(),
+            binding.etForgotCredentialsNewPassword.text.toString(),
+            securityCode
+        )
+    }
+
+    private suspend fun handleException(e: Exception) {
+        Log.e("NetworkRequest", "Exception occurred: ", e)
+        withContext(Dispatchers.Main) {
+            if (e is SocketTimeoutException) {
+                this@ForgotCredentialsActivity.createSimpleDialog(
+                    getString(R.string.error),
+                    this@ForgotCredentialsActivity.getString(
+                        R.string.error_network
+                    )
+                )
+            }
+        }
+    }
+
+    private fun setupForm() {
+        formHelper = FormHelper(this@ForgotCredentialsActivity, fields)
+        setupValidation()
+    }
+
+    private fun validateForm() {
+        formHelper.clearErrors()
+        formHelper.validateFields(validationRules)
+        validatePasswords()
+    }
+
+    private fun validatePasswords() {
+        val passwordError =
+            formHelper.validatePassword(binding.etForgotCredentialsNewPassword.text.toString())
+        if (passwordError != null) {
+            binding.etForgotCredentialsNewPassword.error = passwordError
+        }
+        if (binding.etForgotCredentialsNewPassword.text.toString() != binding.etForgotCredentialsNewPasswordConfirm.text.toString()) {
+            Log.d(LogTags.TAG_FIELD_VALIDATION, "Passwords are not the same.")
+            binding.etForgotCredentialsNewPasswordConfirm.error =
+                this@ForgotCredentialsActivity.getString(R.string.passwords_not_the_same)
+        }
+    }
+    /**
+     * This function creates a custom dialog with the specified layout and buttons.
+     *
+     * @param context The context in which the dialog should be created.
+     * @param layoutResId The resource ID of the layout to inflate for the dialog.
+     * @param positiveButtonColorResId The resource ID of the color to use for the positive button text.
+     * @param negativeButtonColorResId The resource ID of the color to use for the negative button text.
+     * @param positiveButtonText The text to display on the positive button.
+     * @param negativeButtonText The text to display on the negative button. If null, no negative button is created.
+     * @param backgroundColorResId The resource ID of the color to use for the dialog's background.
+     * @param shouldRedirectOnDismiss If true, the function will start a new LoginActivity when the dialog is dismissed.
+     * @param onPositiveClick A lambda function to execute when the positive button is clicked. It receives the text from the security code EditText and the error message TextView as parameters.
+     */
     private fun createCustomDialog(
         context: Context,
         layoutResId: Int,
@@ -121,7 +181,7 @@ class ForgotCredentialsActivity : AppCompatActivity() {
         positiveButtonText: String,
         negativeButtonText: String?,
         backgroundColorResId: Int,
-        shouldRedirectOnDismiss: Boolean = false, // New parameter with default value as false
+        shouldRedirectOnDismiss: Boolean = false,
         onPositiveClick: (String?, TextView?) -> Unit,
     ) {
         val builder = MaterialAlertDialogBuilder(context)
@@ -159,7 +219,7 @@ class ForgotCredentialsActivity : AppCompatActivity() {
             }
         }
 
-        if (shouldRedirectOnDismiss) { // Only set the dismiss listener if the parameter is true
+        if (shouldRedirectOnDismiss) {
             dialog.setOnDismissListener {
                 // Redirects to the new activity when the dialog is dismissed
                 context.startActivity(Intent(context, LoginActivity::class.java))
@@ -167,9 +227,8 @@ class ForgotCredentialsActivity : AppCompatActivity() {
         }
     }
 
-
     private fun handleResponse(response: Response<RequestResponse>, errorMessage: TextView) {
-        Log.i("Response", response.message())
+        Log.d(TAG_NETWORK_REQUEST, response.message())
 
         if (response.isSuccessful) {
             closeKeyboard(this)
@@ -178,7 +237,7 @@ class ForgotCredentialsActivity : AppCompatActivity() {
                 R.layout.password_reset_success_dialog,
                 R.color.input_field_background,
                 R.color.input_field_background,
-                "OK",
+                getString(R.string.ok),
                 null,
                 R.drawable.submit_dialog_background,
                 true
@@ -198,6 +257,41 @@ class ForgotCredentialsActivity : AppCompatActivity() {
             val imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
+    }
+
+    override fun setupValidation() {
+        this.fields = mutableListOf(
+            binding.etForgotCredentialsEmail,
+            binding.etForgotCredentialsNewPassword,
+            binding.etForgotCredentialsNewPasswordConfirm,
+        )
+
+        this.validationRules = mutableListOf<Triple<EditText, (String?) -> Boolean, String>>(
+            Triple(
+                binding.etForgotCredentialsEmail,
+                { value -> value.isNullOrEmpty() },
+                formHelper.errors.fieldRequired
+            ),
+            Triple(
+                binding.etForgotCredentialsEmail,
+                { value ->
+                    !value.isNullOrEmpty() && !android.util.Patterns.EMAIL_ADDRESS.matcher(
+                        value
+                    ).matches()
+                },
+                formHelper.errors.invalidEmail
+            ),
+            Triple(
+                binding.etForgotCredentialsNewPassword,
+                { value -> value.isNullOrEmpty() },
+                formHelper.errors.fieldRequired
+            ),
+            Triple(
+                binding.etForgotCredentialsNewPasswordConfirm,
+                { value -> value.isNullOrEmpty() },
+                formHelper.errors.fieldRequired
+            )
+        )
     }
 
 }
