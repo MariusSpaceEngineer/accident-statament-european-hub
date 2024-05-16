@@ -4,6 +4,7 @@ import android.graphics.Matrix
 import android.graphics.PointF
 import android.util.Log
 import android.view.MotionEvent
+import com.inetum.realdolmen.crashkit.utils.LogTags.TAG_ROTATION_GESTURE_DETECTOR
 import kotlin.math.atan2
 
 class RotationGestureDetector(private val mListener: OnRotationGestureListener) {
@@ -20,7 +21,7 @@ class RotationGestureDetector(private val mListener: OnRotationGestureListener) 
         private set
 
     fun onTouchEvent(event: MotionEvent): Boolean {
-        Log.d("RotationGestureDetector", "Touch event: ${event.actionMasked}")
+        Log.d(TAG_ROTATION_GESTURE_DETECTOR, "Touch event: ${event.actionMasked}")
         when (event.actionMasked) {
             //When one pointer is down it sets that as the start point for the rotation
             MotionEvent.ACTION_DOWN -> {
@@ -42,7 +43,7 @@ class RotationGestureDetector(private val mListener: OnRotationGestureListener) 
         val x = event.getX(0) - event.getX(1)
         val y = event.getY(0) - event.getY(1)
         val angle = Math.toDegrees(atan2(y.toDouble(), x.toDouble()))
-        Log.d("RotationGestureDetector", "Calculated angle: $angle")
+        Log.d(TAG_ROTATION_GESTURE_DETECTOR, "Calculated angle: $angle")
         return angle.toFloat()
     }
 }

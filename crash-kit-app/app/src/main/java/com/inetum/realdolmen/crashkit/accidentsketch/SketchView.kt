@@ -24,6 +24,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.inetum.realdolmen.crashkit.R
+import com.inetum.realdolmen.crashkit.utils.LogTags.TAG_SKETCH_VIEW
 import com.inetum.realdolmen.crashkit.utils.NewStatementViewModel
 import com.inetum.realdolmen.crashkit.utils.RotationGestureDetector
 import java.util.Locale
@@ -52,12 +53,11 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
     private var isScaling: Boolean = false
     private var isRotating: Boolean = false
 
-
     private val scaleGestureDetector =
         ScaleGestureDetector(context, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
             override fun onScale(detector: ScaleGestureDetector): Boolean {
                 val scaleFactor = detector.scaleFactor
-                Log.d("SketchView", "onScale called with scale factor $scaleFactor")
+                Log.d(TAG_SKETCH_VIEW, "onScale called with scale factor $scaleFactor")
 
                 mScaleFactor *= scaleFactor
                 mScaleFactor = max(0.1f, min(mScaleFactor, 5.0f))
@@ -80,8 +80,6 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                         newX + newWidth / 2,
                         newY + newHeight / 2
                     )
-                    Log.i("Size", drawable.bounds.toString())
-
                     invalidate()
                 }
                 return true
@@ -92,7 +90,7 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
         RotationGestureDetector(object : RotationGestureDetector.OnRotationGestureListener {
             override fun onRotation(rotationDetector: RotationGestureDetector?): Boolean {
                 val rotationAngle = rotationDetector?.angle ?: 0f
-                Log.i("SketchView", "onRotation called with rotation angle $rotationDetector")
+                Log.d(TAG_SKETCH_VIEW, "onRotation called with rotation angle $rotationDetector")
 
                 currentShape?.let { (drawable, _) ->
                     if (drawable is RotatableMovableDrawable) {
@@ -105,7 +103,19 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                 return true
             }
         })
-
+    /**
+     * This function handles touch events on the view.
+     *
+     * @param event The MotionEvent object containing full information about the event.
+     * @return A boolean indicating whether the event was handled.
+     *
+     * The function handles different types of motion events:
+     * - ACTION_DOWN and ACTION_POINTER_DOWN: These events occur when a pointer (finger) touches the screen.
+     *   If there's only one pointer, it updates the button's visibility. If there are multiple pointers, it checks if at least one finger is on the figure and near the edge.
+     * - ACTION_MOVE: This event occurs when a pointer moves. If there's only one pointer and no scaling or rotating gesture is in progress, it moves the shape.
+     *   If there are multiple pointers and a scaling or rotating gesture is in progress, it defers to the ScaleGestureDetector or RotationGestureDetector respectively.
+     * - ACTION_UP and ACTION_POINTER_UP: These events occur when a pointer leaves the screen. If all fingers are up or only one finger is left, it ends the multiple pointer gestures.
+     */
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.actionMasked) {
@@ -175,6 +185,11 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
     }
 
     fun setupButtons(deleteBtn: Button, changeAddressBtn: Button) {
+        setupDeleteButton(deleteBtn)
+        setupChangeAddressButton(changeAddressBtn)
+    }
+
+    private fun setupDeleteButton(deleteBtn: Button) {
         deleteButton = deleteBtn
         deleteButton.setOnClickListener {
             // Remove the currentShape from shapes
@@ -188,37 +203,48 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
             // Redraw the view
             invalidate()
         }
+    }
 
+    private fun setupChangeAddressButton(changeAddressBtn: Button) {
         changeAddressButton = changeAddressBtn
         changeAddressButton.setOnClickListener {
-            val builder = MaterialAlertDialogBuilder(context)
-
-            // Create an EditText that can be used by the user to add a address name
-            val editText = EditText(context)
-
-            builder.setTitle(context.getString(R.string.accident_sketch_change_address_dialog))
-                .setView(editText)
-                .setPositiveButton(context.getString(R.string.ok)) { dialog, _ ->
-                    // Create a new TextView and set its text to the text entered in the EditText
-                    val textView = TextView(context)
-                    textView.text = editText.text.toString()
-
-                    currentShape?.let {
-                        //Add the text to the shape
-                        it.third?.text = textView.text
-                    }
-                    dialog.dismiss()
-
-                    // Redraw the view
-                    invalidate()
-                }
-                .setNegativeButton(context.getString(R.string.cancel_button)) { dialog, _ ->
-                    dialog.dismiss()
-                }
-            // Show the dialog
-            builder.show()
+            showChangeAddressDialog()
         }
     }
+
+    private fun showChangeAddressDialog() {
+        val builder = MaterialAlertDialogBuilder(context)
+
+        // Create an EditText that can be used by the user to add a address name
+        val editText = EditText(context)
+
+        builder.setTitle(context.getString(R.string.accident_sketch_change_address_dialog))
+            .setView(editText)
+            .setPositiveButton(context.getString(R.string.ok)) { dialog, _ ->
+                updateShapeText(editText.text.toString())
+                dialog.dismiss()
+
+                // Redraw the view
+                invalidate()
+            }
+            .setNegativeButton(context.getString(R.string.cancel_button)) { dialog, _ ->
+                dialog.dismiss()
+            }
+        // Show the dialog
+        builder.show()
+    }
+
+    private fun updateShapeText(text: String) {
+        // Create a new TextView and set its text to the text entered in the EditText
+        val textView = TextView(context)
+        textView.text = text
+
+        currentShape?.let {
+            //Add the text to the shape
+            it.third?.text = textView.text
+        }
+    }
+
 
     fun addShape(resId: Int, priority: Int) {
         val drawable = ContextCompat.getDrawable(context, resId)
@@ -294,7 +320,7 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                         shape.first as Drawable
                     ))
         ) {
-            Log.i("SketchView", "At least one finger is near the edge of a shape")
+            Log.d(TAG_SKETCH_VIEW, "At least one finger is near the edge of a shape")
             // At least one finger is on the figure and near the edge, start a scale gesture
             currentShape = shape
             isScaling = true
@@ -422,10 +448,10 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
             val shape = shapesAtPoint.maxByOrNull { (drawable, _) ->
                 drawable.priority
             }
-            Log.i("SketchView", "Shape found at ${shape?.second?.x} -${shape?.second?.y}")
+            Log.d(TAG_SKETCH_VIEW, "Shape found at ${shape?.second?.x} -${shape?.second?.y}")
             shape
         } else {
-            Log.i("SketchView", "Shape not found")
+            Log.d(TAG_SKETCH_VIEW, "Shape not found")
             null
         }
     }
@@ -438,11 +464,9 @@ class SketchView(context: Context, attrs: AttributeSet) : View(context, attrs) {
     ): Boolean {
         val bounds = drawable.bounds
         val threshold = (bounds.width() * thresholdPercentage).toInt()
-        val result = (x <= bounds.left + threshold || x >= bounds.right - threshold ||
-                y <= bounds.top + threshold || y >= bounds.bottom - threshold)
 
-        Log.i("Near the edge", result.toString())
-        return result
+        return (x <= bounds.left + threshold || x >= bounds.right - threshold ||
+                y <= bounds.top + threshold || y >= bounds.bottom - threshold)
     }
 
 }
