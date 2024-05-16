@@ -91,6 +91,12 @@ class VehicleBMiscellaneousFragment : Fragment(), StatementDataHandler {
         model = ViewModelProvider(requireActivity())[NewStatementViewModel::class.java]
     }
 
+    @SuppressLint("SourceLockedOrientationActivity")
+    override fun onResume() {
+        super.onResume()
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -165,7 +171,7 @@ class VehicleBMiscellaneousFragment : Fragment(), StatementDataHandler {
 
         binding.btnStatementAccidentNext.setOnClickListener {
             handleNavigationButtonClick()
-            navController.navigate(R.id.vehicleBNewStatementFragment)
+            navController.navigate(R.id.accidentSketchFragment)
         }
 
         binding.btnStatementAccidentPicture.setOnClickListener {
