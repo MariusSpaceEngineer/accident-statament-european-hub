@@ -22,7 +22,6 @@ import org.junit.Test
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-//TODO add profile and accident statement mock api tests
 class APIServiceTest {
     private lateinit var mockWebServer: MockWebServer
     private lateinit var apiService: ApiService
