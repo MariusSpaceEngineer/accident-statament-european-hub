@@ -43,6 +43,12 @@ class AccidentStatementOverviewFragment : Fragment(), StatementDataHandler {
         model = ViewModelProvider(requireActivity())[NewStatementViewModel::class.java]
     }
 
+    @SuppressLint("SourceLockedOrientationActivity")
+    override fun onResume() {
+        super.onResume()
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
