@@ -1,6 +1,5 @@
 package com.inetum.realdolmen.hubkitbackend.controllers;
 
-
 import com.inetum.realdolmen.hubkitbackend.dto.InsuranceCertificateDTO;
 import com.inetum.realdolmen.hubkitbackend.dto.PolicyHolderDTO;
 import com.inetum.realdolmen.hubkitbackend.dto.PolicyHolderPersonalInformationDTO;
@@ -28,7 +27,7 @@ public class UserController {
     @GetMapping("/profile")
     public ResponseEntity<PolicyHolderDTO> getPolicyHolderProfile(HttpServletRequest request) {
         String token = extractToken(request);
-        if (token != null) {
+        if (token != null && !token.isEmpty()) {
             try {
                 Optional<PolicyHolderDTO> userProfile = service.fetchPolicyHolderProfile(token);
                 return userProfile.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
@@ -46,7 +45,7 @@ public class UserController {
     @PutMapping("/profile/personal")
     public ResponseEntity<PolicyHolderPersonalInformationDTO> updatePolicyHolderPersonalInformation(HttpServletRequest request, @Valid @RequestBody PolicyHolderPersonalInformationDTO policyHolderDTO) {
         String token = extractToken(request);
-        if (token != null) {
+        if (token != null && !token.isEmpty()) {
             try {
                 Optional<PolicyHolderPersonalInformationDTO> policyHolderPersonalInformationDTO = service.updatePolicyHolderPersonalInformation(token, policyHolderDTO);
                 return policyHolderPersonalInformationDTO.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
@@ -65,7 +64,7 @@ public class UserController {
     public ResponseEntity<?> updatePolicyHolderInsuranceInformation(HttpServletRequest request, @RequestBody @Valid InsuranceCertificateDTO insuranceCertificateDTO) {
         String token = extractToken(request);
 
-        if (token != null) {
+        if (token != null && !token.isEmpty()) {
             try {
                 Optional<List<InsuranceCertificateDTO>> insuranceCertificate = service.updateInsuranceCertificateInformation(token, insuranceCertificateDTO);
                 return insuranceCertificate.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
