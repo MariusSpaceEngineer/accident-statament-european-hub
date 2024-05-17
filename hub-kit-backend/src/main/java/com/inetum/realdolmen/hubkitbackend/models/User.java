@@ -2,6 +2,8 @@ package com.inetum.realdolmen.hubkitbackend.models;
 
 import com.inetum.realdolmen.hubkitbackend.utils.Roles;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,10 +23,12 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "users")
 public class User implements UserDetails {
-
     @Id
     @GeneratedValue
     private Integer id;
+    @NonNull
+    @NotEmpty
+    @Email
     private String email;
     private String password;
     @Enumerated(EnumType.STRING)

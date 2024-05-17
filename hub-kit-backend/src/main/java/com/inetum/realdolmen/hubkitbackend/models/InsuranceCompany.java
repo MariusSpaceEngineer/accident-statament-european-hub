@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
 @Builder
@@ -17,5 +18,7 @@ public class InsuranceCompany {
     @Id
     @GeneratedValue
     private Integer id;
+    @NonNull
+    @NotEmpty
     private String name;
 }

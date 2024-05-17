@@ -1,7 +1,8 @@
 package com.inetum.realdolmen.hubkitbackend.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
-import org.antlr.v4.runtime.misc.NotNull;
 
 import java.time.LocalDate;
 
@@ -12,22 +13,33 @@ import java.time.LocalDate;
 @Builder
 public class DriverDTO {
     private Integer id;
-    @NotNull
+    @NonNull
+    @NotEmpty
     private String firstName;
-    @NotNull
+    @NonNull
+    @NotEmpty
     private String lastName;
-    @NotNull
+    @NonNull
     private LocalDate birthday;
-    @NotNull
+    @NonNull
+    @NotEmpty
     private String address;
-    @NotNull
+    @NonNull
+    @NotEmpty
     private String country;
+    @NonNull
+    @NotEmpty
     private String phoneNumber;
+    @Email
+    @NonNull
+    @NotEmpty
     private String email;
-    @NotNull
+    @NonNull
+    @NotEmpty
     private String drivingLicenseNr;
-    @NotNull
+    @NonNull
+    @NotEmpty
     private String category;
-    @NotNull
+    @NonNull
     private LocalDate drivingLicenseExpirationDate;
 }

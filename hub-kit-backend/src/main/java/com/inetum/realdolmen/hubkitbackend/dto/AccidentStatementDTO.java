@@ -1,6 +1,7 @@
 package com.inetum.realdolmen.hubkitbackend.dto;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,6 +39,7 @@ public class AccidentStatementDTO {
     private List<TrailerDTO> unregisteredTrailers;
     private List<String> vehicleACircumstances;
     private byte[] vehicleAInitialImpactSketch;
+    @Size(max = 250)
     private String vehicleAVisibleDamageDescription;
     private List<AccidentImageDTO> vehicleAAccidentImages;
     private String vehicleARemark;
@@ -46,6 +48,7 @@ public class AccidentStatementDTO {
     private byte[] vehicleASignature;
     private List<String> vehicleBCircumstances;
     private byte[] vehicleBInitialImpactSketch;
+    @Size(max = 250)
     private String vehicleBVisibleDamageDescription;
     private List<AccidentImageDTO> vehicleBAccidentImages;
     private String vehicleBRemark;
