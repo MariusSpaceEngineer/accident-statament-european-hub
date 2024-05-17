@@ -17,7 +17,7 @@ public class AccidentStatementController {
     private final AccidentStatementService service;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createStatement(@RequestBody AccidentStatementDTO accidentStatementDTO) {
+    public ResponseEntity<Response> createStatement(@RequestBody @Valid AccidentStatementDTO accidentStatementDTO) {
         try {
             var response = service.createAccidentStatement(accidentStatementDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(Response.builder().successMessage(response).build());
