@@ -1,9 +1,10 @@
 package com.inetum.realdolmen.hubkitbackend.dto;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.antlr.v4.runtime.misc.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,6 +17,7 @@ public class AccidentStatementDTO {
     @NotNull
     private LocalDateTime date;
     @NotNull
+    @NotEmpty
     private String location;
     @NotNull
     private Boolean injured;
@@ -27,9 +29,11 @@ public class AccidentStatementDTO {
     private Integer numberOfCircumstances;
     private byte[] sketchOfAccident;
     @NotNull
+    @NotEmpty
     private List<DriverDTO> drivers;
     private WitnessDTO witness;
     @NotNull
+    @NotEmpty
     private List<PolicyHolderDTO> policyHolders;
     private List<TrailerDTO> unregisteredTrailers;
     private List<String> vehicleACircumstances;
@@ -38,6 +42,7 @@ public class AccidentStatementDTO {
     private List<AccidentImageDTO> vehicleAAccidentImages;
     private String vehicleARemark;
     @NotNull
+    @NotEmpty
     private byte[] vehicleASignature;
     private List<String> vehicleBCircumstances;
     private byte[] vehicleBInitialImpactSketch;
@@ -45,5 +50,6 @@ public class AccidentStatementDTO {
     private List<AccidentImageDTO> vehicleBAccidentImages;
     private String vehicleBRemark;
     @NotNull
+    @NotEmpty
     private byte[] vehicleBSignature;
 }
