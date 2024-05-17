@@ -127,7 +127,7 @@ public class PolicyHolderService {
         }
     }
 
-    private Optional<User> getUser(String token) {
+    Optional<User> getUser(String token) {
         String email = jwtService.extractUsername(token);
         return userRepository.findByEmail(email);
     }
@@ -223,7 +223,7 @@ public class PolicyHolderService {
      * @return The existing or newly created Vehicle, or null if the VehicleDTO is not of type MotorDTO or TrailerDTO.
      * @throws VehicleMismatchException If the type of the existing Vehicle doesn't match the type of the VehicleDTO.
      */
-    private Vehicle getOrCreateVehicle(InsuranceCertificateDTO insuranceCertificateDTO) throws Exception {
+    Vehicle getOrCreateVehicle(InsuranceCertificateDTO insuranceCertificateDTO) throws Exception {
         Optional<Vehicle> existingVehicle = vehicleRepository.findVehicleByLicensePlate(insuranceCertificateDTO.getVehicle().getLicensePlate());
         if (existingVehicle.isPresent()) {
             Vehicle vehicle = existingVehicle.get();
