@@ -17,7 +17,6 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
@@ -141,6 +140,7 @@ public class AccidentStatementIntegrationTest {
                 .greenCardNumber("GC498491989")
                 .availabilityDate(LocalDate.parse("2024-01-01"))
                 .expirationDate(LocalDate.parse("2025-01-01"))
+                .materialDamageCovered(false)
                 .insuranceAgency(insuranceAgencyPolicyHolderA)
                 .insuranceCompany(insuranceCompanyPolicyHolderA)
                 .vehicle(motorA)
@@ -152,6 +152,7 @@ public class AccidentStatementIntegrationTest {
                 .availabilityDate(LocalDate.parse("2024-01-01"))
                 .expirationDate(LocalDate.parse("2025-01-01"))
                 .insuranceAgency(insuranceAgencyPolicyHolderA)
+                .materialDamageCovered(false)
                 .insuranceCompany(insuranceCompanyPolicyHolderA)
                 .vehicle(registeredTrailerA)
                 .build();
@@ -163,7 +164,7 @@ public class AccidentStatementIntegrationTest {
                 .address("123 Policy St")
                 .postalCode("12345")
                 .phoneNumber("1234567890")
-                .insuranceCertificates(new ArrayList<>(List.of(insuranceCertificatePolicyHolderAMotor,insuranceCertificatePolicyHolderATrailer)))
+                .insuranceCertificates(new ArrayList<>(List.of(insuranceCertificatePolicyHolderAMotor, insuranceCertificatePolicyHolderATrailer)))
                 .build();
 
         InsuranceAgencyDTO insuranceAgencyPolicyHolderB = InsuranceAgencyDTO.builder()
@@ -183,6 +184,7 @@ public class AccidentStatementIntegrationTest {
                 .greenCardNumber("GC9874469")
                 .availabilityDate(LocalDate.parse("2025-02-02"))
                 .expirationDate(LocalDate.parse("2026-02-02"))
+                .materialDamageCovered(true)
                 .insuranceAgency(insuranceAgencyPolicyHolderB)
                 .insuranceCompany(insuranceCompanyPolicyHolderB)
                 .vehicle(motorB)
@@ -254,7 +256,7 @@ public class AccidentStatementIntegrationTest {
         requestSpec.body(jsonBody)
                 .post("/statement/create")
                 .then()
-                .statusCode(HttpStatus.CONFLICT.value());
+                .statusCode(403);
     }
 
     @Test

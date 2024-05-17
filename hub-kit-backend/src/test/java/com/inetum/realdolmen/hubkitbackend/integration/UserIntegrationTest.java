@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.inetum.realdolmen.hubkitbackend.dto.*;
+import com.inetum.realdolmen.hubkitbackend.services.JwtService;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import jakarta.transaction.Transactional;
@@ -11,8 +12,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
@@ -22,16 +23,17 @@ import static io.restassured.RestAssured.given;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("test")
 @Transactional
 class UserIntegrationTest {
     private static ObjectMapper objectMapper;
-
 
     private PolicyHolderPersonalInformationDTO policyHolderPersonalInformation;
     private InsuranceCertificateDTO insuranceCertificate;
 
     private RequestSpecification requestSpec;
+
+    @Mock
+    private JwtService jwtService;
 
     @BeforeAll
     public static void setUpClass() {
