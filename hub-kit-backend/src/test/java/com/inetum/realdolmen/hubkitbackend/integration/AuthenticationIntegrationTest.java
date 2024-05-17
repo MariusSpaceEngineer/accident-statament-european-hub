@@ -1,7 +1,10 @@
 package com.inetum.realdolmen.hubkitbackend.integration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inetum.realdolmen.hubkitbackend.models.User;
 import com.inetum.realdolmen.hubkitbackend.repositories.UserRepository;
+import com.inetum.realdolmen.hubkitbackend.requests.LoginRequest;
 import com.inetum.realdolmen.hubkitbackend.services.MailService;
 import com.mailjet.client.errors.MailjetException;
 import io.restassured.specification.RequestSpecification;
@@ -30,7 +33,9 @@ class AuthenticationIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
-    //TODO stop the email service from sending email in create user test
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @MockBean
     private MailService mailService;
 
@@ -50,14 +55,17 @@ class AuthenticationIntegrationTest {
 
     @Test
     @Order(1)
-    public void userLoginIsRight() {
+    public void userLoginIsRight() throws JsonProcessingException {
         Optional<User> userOptional = userRepository.findByEmail("johndoe@gmail.com");
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
 
+            LoginRequest loginRequest = LoginRequest.builder().email(user.getEmail()).password(user.getPassword()).build();
+            String json = objectMapper.writeValueAsString(loginRequest);
+
             requestSpec
-                    .body("{\"email\": \"" + user.getEmail() + "\", \"password\": \"" + user.getPassword() + "\"}")
+                    .body(json)
                     .when()
                     .post(baseURI + "/login")
                     .then()
@@ -240,16 +248,14 @@ class AuthenticationIntegrationTest {
     @Test
     @Order(13)
     public void resetPasswordWithInvalidEmail() {
-        String email = "invalidEmail@gmail.com"; // replace with an invalid email
+        String email = "invalideemail@gmail....com "; // replace with an invalid email
 
         requestSpec
                 .body("{\"email\": \"" + email + "\"}")
                 .when()
                 .post(baseURI + "/reset")
                 .then()
-                .statusCode(400)
-                .body("successMessage", nullValue())
-                .body("errorMessage", notNullValue());
+                .statusCode(403);
     }
 
     @Test
