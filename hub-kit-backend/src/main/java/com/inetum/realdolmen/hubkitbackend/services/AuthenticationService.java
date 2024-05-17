@@ -8,6 +8,7 @@ import com.inetum.realdolmen.hubkitbackend.repositories.UserRepository;
 import com.inetum.realdolmen.hubkitbackend.requests.LoginRequest;
 import com.inetum.realdolmen.hubkitbackend.requests.PolicyHolderRegisterRequest;
 import com.inetum.realdolmen.hubkitbackend.requests.ResetCredentialsRequest;
+import com.mailjet.client.errors.MailjetException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.*;
@@ -33,11 +34,11 @@ public class AuthenticationService {
     private final MailService mailService;
 
     public String register(PolicyHolderRegisterRequest request) throws Exception {
-        try{
+        try {
             if (repository.existsByEmail(request.getEmail())) {
                 throw new UserAlreadyExistsException("An user already exists with the given email, please try another one.");
             } else {
-                if (validatePassword(request.getPassword()) != null){
+                if (validatePassword(request.getPassword()) != null) {
                     throw new IllegalArgumentException("Password does not meet the required criteria.");
                 }
                 var policyHolder = PolicyHolder.builder()
@@ -57,16 +58,13 @@ public class AuthenticationService {
 
                 return jwtService.generateToken(policyHolder);
             }
-        }
-        catch (UserAlreadyExistsException e) {
+        } catch (UserAlreadyExistsException e) {
             log.error("User already exists:", e);
             throw e;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             log.error("Unexpected error during validation:", e);
             throw e;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             log.error("Unexpected error during registration", e);
             throw new Exception("Internal server error");
         }
@@ -87,44 +85,48 @@ public class AuthenticationService {
             throw new UserLockedException("User account is locked");
         } catch (AuthenticationException e) {
             throw new AuthenticationFailedException("Authentication failed");
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("Unexpected error during authentication", e);
             throw new Exception("Internal server error");
         }
     }
 
-    public void resetPassword(String email) throws Exception {
+    public String resetPassword(String email) throws Exception {
         var user = repository.findByEmail(email);
         if (user.isEmpty()) {
             throw new UserNotFoundException("User not found");
-        }
-        else {
-            // Generate a random 6-digit code
-            String code = String.format("%06d", new Random().nextInt(999999));
-
-            // Save the code to the user's record
-            User userEntity = user.get();
-            userEntity.setResetCode(code);
-            repository.save(userEntity);
-
+        } else {
             try {
+                // Generate a random 6-digit code
+                String code = String.format("%06d", new Random().nextInt(999999));
+
+                // Save the code to the user's record
+                User userEntity = user.get();
+                userEntity.setResetCode(code);
+                repository.save(userEntity);
+
                 mailService.sendResetCodeEmail(userEntity.getEmail(), code);
-            } catch (Exception e) {
+                return "Password reset email sent successfully";
+            } catch (MailjetException e) {
+                log.error("Unexpected error during sending of email:", e);
                 throw new Exception("Error sending reset code email", e);
+            } catch (Exception e) {
+                log.error("Unexpected error during creating reset code:", e);
+                throw new Exception("Error creating reset code", e);
             }
         }
     }
 
-    public void updatePassword(ResetCredentialsRequest resetCredentialsRequest) throws Exception {
+    public String updatePassword(ResetCredentialsRequest resetCredentialsRequest) throws Exception {
         var user = repository.findByEmail(resetCredentialsRequest.getEmail());
         if (user.isEmpty()) {
             throw new UserNotFoundException("User not found");
-        }
-        else {
+        } else {
             User userEntity = user.get();
             if (Objects.equals(resetCredentialsRequest.getSecurityCode(), userEntity.getResetCode())) {
                 userEntity.setPassword(passwordEncoder.encode(resetCredentialsRequest.getNewPassword()));
                 repository.save(userEntity);
+                return "Password reset successful";
             } else {
                 throw new Exception("Security code does not match reset code");
             }
@@ -154,7 +156,5 @@ public class AuthenticationService {
         // If no errors, return null
         return passwordErrors.isEmpty() ? null : String.join("\n", passwordErrors);
     }
-
-
 
 }
