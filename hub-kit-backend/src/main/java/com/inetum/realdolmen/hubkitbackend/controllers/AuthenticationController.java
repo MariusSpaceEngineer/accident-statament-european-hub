@@ -23,7 +23,7 @@ public class AuthenticationController {
     private final AuthenticationService service;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody PolicyHolderRegisterRequest request) {
+    public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody PolicyHolderRegisterRequest request) {
         try {
             var jwtToken = service.register(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(AuthenticationResponse.builder().token(jwtToken).build());
@@ -31,16 +31,15 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(AuthenticationResponse.builder().errorMessage(e.getMessage()).build());
 
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(AuthenticationResponse.builder().errorMessage(e.getMessage()).build());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AuthenticationResponse.builder().errorMessage(e.getMessage()).build());
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody LoginRequest request) {
         try {
             var jwtToken = service.login(request);
             return ResponseEntity.ok(AuthenticationResponse.builder().token(jwtToken).build());
@@ -53,21 +52,23 @@ public class AuthenticationController {
     }
 
     @PostMapping("/reset")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetCredentialsRequest request) {
+    public ResponseEntity<Response> resetPassword(@RequestBody @Valid ResetCredentialsRequest request) {
         try {
-            service.resetPassword(request.getEmail());
-            return ResponseEntity.ok(Response.builder().successMessage("Password reset email sent successfully").build());
+            var result = service.resetPassword(request.getEmail());
+            return ResponseEntity.ok(Response.builder().successMessage(result).build());
 
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Response.builder().successMessage(e.getMessage()).build());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Response.builder().errorMessage(e.getMessage()).build());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Response.builder().errorMessage(e.getMessage()).build());
         }
     }
 
     @PostMapping("/reset/password")
-    public ResponseEntity<?> updatePassword(@RequestBody ResetCredentialsRequest request) {
+    public ResponseEntity<Response> updatePassword(@RequestBody @Valid ResetCredentialsRequest request) {
         try {
-            service.updatePassword(request);
-            return ResponseEntity.ok(Response.builder().successMessage("Password reset successful").build());
+            var result = service.updatePassword(request);
+            return ResponseEntity.ok(Response.builder().successMessage(result).build());
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.builder().errorMessage(e.getMessage()).build());
