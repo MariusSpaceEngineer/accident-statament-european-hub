@@ -2,6 +2,7 @@ package com.inetum.realdolmen.hubkitbackend.controllers;
 
 import com.inetum.realdolmen.hubkitbackend.dto.AccidentStatementDTO;
 import com.inetum.realdolmen.hubkitbackend.dto.LocationCoordinates;
+import com.inetum.realdolmen.hubkitbackend.interfaces.controllers.IAccidentStatementController;
 import com.inetum.realdolmen.hubkitbackend.services.AccidentStatementService;
 import com.inetum.realdolmen.hubkitbackend.responses.Response;
 import jakarta.validation.Valid;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/statement")
 @RequiredArgsConstructor
-public class AccidentStatementController {
+public class AccidentStatementController implements IAccidentStatementController {
     private final AccidentStatementService service;
 
     @PostMapping("/create")

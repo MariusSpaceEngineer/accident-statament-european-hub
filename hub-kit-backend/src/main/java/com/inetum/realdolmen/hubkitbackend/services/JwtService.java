@@ -15,8 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-// TODO add logout logic
-// TODO add renewal token logic
 @Service
 public class JwtService {
 
@@ -64,7 +62,6 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    //TODO handle expired tokens
     //Uses the signing key defined to parse the JWT token and extract the claims inside it
     //The key has to be 256 characters long
     private Claims extractAllClaims(String token) {

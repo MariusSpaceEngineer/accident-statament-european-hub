@@ -1,5 +1,6 @@
 package com.inetum.realdolmen.hubkitbackend.services;
 
+import com.inetum.realdolmen.hubkitbackend.interfaces.services.IMailService;
 import com.inetum.realdolmen.hubkitbackend.models.AccidentStatement;
 import com.inetum.realdolmen.hubkitbackend.models.Driver;
 import com.inetum.realdolmen.hubkitbackend.models.InsuranceCertificate;
@@ -25,7 +26,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 @Service
-public class MailService {
+public class MailService implements IMailService {
 
     @Autowired
     private MailjetClient mailjetClient;
@@ -57,6 +58,7 @@ public class MailService {
         return CompletableFuture.completedFuture(null);
     }
 
+
     public void sendStatement(File pdfFile, AccidentStatement accidentStatement) throws MailjetException, IOException {
         String encodedString = convertPDFFileToBase64(pdfFile);
         String fileName = pdfFile.getName();
@@ -70,36 +72,53 @@ public class MailService {
             Driver driver = accidentStatement.getDrivers().get(i);
 
             // Send email to policyholder
-            sendEmailWithPDFAttachment(policyHolder.getEmail(), "An accident statement has been created on your name",
-                    "Dear " + policyHolder.getFirstName() + " " + policyHolder.getLastName() + ",\n\nPlease find attached the accident statement for your insurance. If you have any issues or this wasn't intended, please inform your insurance agency.\n\nBest,\nThe CrashKit Team",
-                    "<p>Dear " + policyHolder.getFirstName() + " " + policyHolder.getLastName() + ",<br/>Please find attached the accident statement for your insurance. If you have any issues or this wasn't intended, please inform your insurance agency.</p><p>Best,<br/>The CrashKit Team</p>",
-                    encodedString, fileName);
+            sendToPolicyHolderEmail(policyHolder, encodedString, fileName);
 
             // Send email to insurance agencies
-            for (InsuranceCertificate insuranceCertificate : policyHolder.getInsuranceCertificates()) {
-                if (!insuranceEmails.contains(insuranceCertificate.getInsuranceAgency().getEmail())) {
-                    sendEmailWithPDFAttachment(insuranceCertificate.getInsuranceAgency().getEmail(), "One of your clients has had an accident",
-                            "Dear Agency,\n\nAn accident statement has been made for one of your clients with the name: " + policyHolder.getFirstName() + " " + policyHolder.getLastName() + ". Please find the details in the attached document.\n\nBest,\nThe CrashKit Team",
-                            "<p>Dear Agency,<br/>An accident statement has been made for one of your clients with the name: " + policyHolder.getFirstName() + " " + policyHolder.getLastName() + ". Please find the details in the attached document.</p><p>Best,<br/>The CrashKit Team</p>",
-                            encodedString, fileName);
-                    insuranceEmails.add(insuranceCertificate.getInsuranceAgency().getEmail());
-                }
-            }
+            sendToInsuranceAgencyEmails(policyHolder, insuranceEmails, encodedString, fileName);
 
             // Send email to driver if the driver's email is not the same as the policyholder's email
             if (!driver.getEmail().equals(policyHolder.getEmail())) {
-                sendEmailWithPDFAttachment(driver.getEmail(), "An accident statement has been created on your name",
-                        "Dear " + driver.getFirstName() + " " + driver.getLastName() + ",\n\nHere is a copy of the accident statement to which you were part of but were not the policy holder. If there are any discrepancies, please inform your insurance agency.\n\nBest,\nThe CrashKit Team",
-                        "<p>Dear " + driver.getFirstName() + " " + driver.getLastName() + ",<br/>Here is a copy of the accident statement to which you were part of but were not the policy holder. If there are any discrepancies, please inform your insurance agency.</p><p>Best,<br/>The CrashKit Team</p>",
-                        encodedString, fileName);
+                sendToDriverEmail(driver, encodedString, fileName);
             }
+        }
 
-            // Delete the PDF file
-            if (!pdfFile.delete()) {
-                System.out.println("Failed to delete the file: " + pdfFile.getAbsolutePath());
+        // Delete the PDF file
+        deletePdfFile(pdfFile);
+    }
+
+    private void sendToPolicyHolderEmail(PolicyHolder policyHolder, String encodedString, String fileName) throws MailjetException, IOException {
+        sendEmailWithPDFAttachment(policyHolder.getEmail(), "An accident statement has been created on your name",
+                "Dear " + policyHolder.getFirstName() + " " + policyHolder.getLastName() + ",\n\nPlease find attached the accident statement for your insurance. If you have any issues or this wasn't intended, please inform your insurance agency.\n\nBest,\nThe CrashKit Team",
+                "<p>Dear " + policyHolder.getFirstName() + " " + policyHolder.getLastName() + ",<br/>Please find attached the accident statement for your insurance. If you have any issues or this wasn't intended, please inform your insurance agency.</p><p>Best,<br/>The CrashKit Team</p>",
+                encodedString, fileName);
+    }
+
+    private void sendToInsuranceAgencyEmails(PolicyHolder policyHolder, Set<String> insuranceEmails, String encodedString, String fileName) throws MailjetException, IOException {
+        for (InsuranceCertificate insuranceCertificate : policyHolder.getInsuranceCertificates()) {
+            if (!insuranceEmails.contains(insuranceCertificate.getInsuranceAgency().getEmail())) {
+                sendEmailWithPDFAttachment(insuranceCertificate.getInsuranceAgency().getEmail(), "One of your clients has had an accident",
+                        "Dear Agency,\n\nAn accident statement has been made for one of your clients with the name: " + policyHolder.getFirstName() + " " + policyHolder.getLastName() + ". Please find the details in the attached document.\n\nBest,\nThe CrashKit Team",
+                        "<p>Dear Agency,<br/>An accident statement has been made for one of your clients with the name: " + policyHolder.getFirstName() + " " + policyHolder.getLastName() + ". Please find the details in the attached document.</p><p>Best,<br/>The CrashKit Team</p>",
+                        encodedString, fileName);
+                insuranceEmails.add(insuranceCertificate.getInsuranceAgency().getEmail());
             }
         }
     }
+
+    private void sendToDriverEmail(Driver driver, String encodedString, String fileName) throws MailjetException, IOException {
+        sendEmailWithPDFAttachment(driver.getEmail(), "An accident statement has been created on your name",
+                "Dear " + driver.getFirstName() + " " + driver.getLastName() + ",\n\nHere is a copy of the accident statement to which you were part of but were not the policy holder. If there are any discrepancies, please inform your insurance agency.\n\nBest,\nThe CrashKit Team",
+                "<p>Dear " + driver.getFirstName() + " " + driver.getLastName() + ",<br/>Here is a copy of the accident statement to which you were part of but were not the policy holder. If there are any discrepancies, please inform your insurance agency.</p><p>Best,<br/>The CrashKit Team</p>",
+                encodedString, fileName);
+    }
+
+    private void deletePdfFile(File pdfFile) {
+        if (!pdfFile.delete()) {
+            System.out.println("Failed to delete the file: " + pdfFile.getAbsolutePath());
+        }
+    }
+
 
     private void sendEmailWithPDFAttachment(String recipientEmail, String subject, String textPart, String htmlPart, String encodedString, String fileName) throws MailjetException, IOException {
         MailjetRequest request = new MailjetRequest(Emailv31.resource)

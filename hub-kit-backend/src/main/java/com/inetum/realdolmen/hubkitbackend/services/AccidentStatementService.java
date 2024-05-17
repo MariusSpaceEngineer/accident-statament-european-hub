@@ -4,6 +4,7 @@ import com.inetum.realdolmen.hubkitbackend.dto.*;
 import com.inetum.realdolmen.hubkitbackend.exceptions.AccidentStatementCreationFailed;
 import com.inetum.realdolmen.hubkitbackend.exceptions.FetchLocationAddressFailedException;
 import com.inetum.realdolmen.hubkitbackend.exceptions.MissingPropertyException;
+import com.inetum.realdolmen.hubkitbackend.interfaces.services.IAccidentStatementService;
 import com.inetum.realdolmen.hubkitbackend.mappers.*;
 import com.inetum.realdolmen.hubkitbackend.models.*;
 import com.inetum.realdolmen.hubkitbackend.repositories.*;
@@ -32,12 +33,11 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AccidentStatementService {
+public class AccidentStatementService implements IAccidentStatementService {
     private final AccidentStatementRepository accidentStatementRepository;
     private final AccidentImageRepository accidentImageRepository;
     private final DriverRepository driverRepository;
     private final WitnessRepository witnessRepository;
-    private final MotorRepository motorRepository;
     private final TrailerRepository trailerRepository;
     private final InsuranceCertificateRepository insuranceCertificateRepository;
     private final InsuranceAgencyRepository insuranceAgencyRepository;

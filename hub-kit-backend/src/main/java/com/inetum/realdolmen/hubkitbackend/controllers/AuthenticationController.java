@@ -1,6 +1,7 @@
 package com.inetum.realdolmen.hubkitbackend.controllers;
 
 import com.inetum.realdolmen.hubkitbackend.exceptions.*;
+import com.inetum.realdolmen.hubkitbackend.interfaces.controllers.IAuthenticationController;
 import com.inetum.realdolmen.hubkitbackend.requests.LoginRequest;
 import com.inetum.realdolmen.hubkitbackend.requests.PolicyHolderRegisterRequest;
 import com.inetum.realdolmen.hubkitbackend.requests.ResetCredentialsRequest;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-public class AuthenticationController {
+public class AuthenticationController implements IAuthenticationController {
     private final AuthenticationService service;
 
     @PostMapping("/register")

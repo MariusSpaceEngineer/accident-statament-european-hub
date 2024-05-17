@@ -4,6 +4,7 @@ import com.inetum.realdolmen.hubkitbackend.dto.InsuranceCertificateDTO;
 import com.inetum.realdolmen.hubkitbackend.dto.PolicyHolderDTO;
 import com.inetum.realdolmen.hubkitbackend.dto.PolicyHolderPersonalInformationDTO;
 import com.inetum.realdolmen.hubkitbackend.exceptions.VehicleMismatchException;
+import com.inetum.realdolmen.hubkitbackend.interfaces.controllers.IUserController;
 import com.inetum.realdolmen.hubkitbackend.services.PolicyHolderService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -20,7 +21,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
-public class UserController {
+public class UserController implements IUserController {
 
     private final PolicyHolderService service;
 

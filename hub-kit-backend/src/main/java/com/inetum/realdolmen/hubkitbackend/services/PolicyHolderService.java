@@ -48,7 +48,7 @@ public class PolicyHolderService {
         }
     }
 
-    public Optional<PolicyHolderPersonalInformationDTO> updatePolicyHolderPersonalInformation(String token, PolicyHolderPersonalInformationDTO policyHolderDTO) throws Exception {
+    public Optional<PolicyHolderPersonalInformationDTO> updatePolicyHolderPersonalInformation(String token, PolicyHolderPersonalInformationDTO policyHolderDTO) {
         Optional<User> user = getUser(token);
 
         if (user.isPresent()) {

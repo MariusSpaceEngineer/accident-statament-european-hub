@@ -1,5 +1,6 @@
 package com.inetum.realdolmen.hubkitbackend.services;
 
+import com.inetum.realdolmen.hubkitbackend.interfaces.services.IAuthenticationService;
 import com.inetum.realdolmen.hubkitbackend.utils.Roles;
 import com.inetum.realdolmen.hubkitbackend.exceptions.*;
 import com.inetum.realdolmen.hubkitbackend.models.PolicyHolder;
@@ -25,7 +26,7 @@ import java.util.Random;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AuthenticationService {
+public class AuthenticationService implements IAuthenticationService {
 
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
