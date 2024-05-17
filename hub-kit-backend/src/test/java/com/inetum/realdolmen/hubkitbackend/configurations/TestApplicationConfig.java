@@ -1,5 +1,8 @@
 package com.inetum.realdolmen.hubkitbackend.configurations;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.inetum.realdolmen.hubkitbackend.repositories.UserRepository;
 import com.mailjet.client.ClientOptions;
 import com.mailjet.client.MailjetClient;
@@ -63,11 +66,18 @@ public class TestApplicationConfig {
     }
 
     @Bean
-    public MailjetClient testMailjetClient(){
+    public MailjetClient testMailjetClient() {
         ClientOptions options = ClientOptions.builder()
                 .apiKey(mailjetApiKey)
                 .apiSecretKey(mailjetSecretKey)
                 .build();
         return new MailjetClient(options);
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return JsonMapper.builder()
+                .addModule(new JavaTimeModule())
+                .build();
     }
 }
