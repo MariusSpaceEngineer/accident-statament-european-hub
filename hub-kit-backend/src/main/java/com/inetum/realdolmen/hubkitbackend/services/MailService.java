@@ -1,6 +1,5 @@
 package com.inetum.realdolmen.hubkitbackend.services;
 
-import com.inetum.realdolmen.hubkitbackend.interfaces.services.IMailService;
 import com.inetum.realdolmen.hubkitbackend.models.AccidentStatement;
 import com.inetum.realdolmen.hubkitbackend.models.Driver;
 import com.inetum.realdolmen.hubkitbackend.models.InsuranceCertificate;
@@ -26,7 +25,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 @Service
-public class MailService implements IMailService {
+public class MailService {
 
     @Autowired
     private MailjetClient mailjetClient;
