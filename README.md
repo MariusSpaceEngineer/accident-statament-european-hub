@@ -13,3 +13,6 @@ During my internship, I worked on an exciting project: an app designed to assist
 - Frontend: [Android]
 - Backend: [Spring Boot]
 - Database: [MySQL]
+
+Check out this video demo of the project:
+https://drive.google.com/file/d/1XfJjgdnKUS6GOztLoaDorV_EJg3s53pJ/view?usp=sharing
